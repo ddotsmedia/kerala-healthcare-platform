@@ -34,7 +34,7 @@
 - (none)
 
 ### Needs human decision
-- [NEEDS DECISION] Confirm GitHub remote/repo slug for the CI badge URL.
+- [FIXED] GitHub repo slug confirmed: `ddotsmedia/kerala-healthcare-platform`. CI badge URL updated.
 - [NEEDS DECISION] Legal review of COMPLIANCE.md (DPDP timelines, DPO appointment, data-residency) before launch.
 
 ---

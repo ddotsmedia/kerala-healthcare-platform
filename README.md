@@ -2,7 +2,7 @@
 
 > Kerala-first digital healthcare ecosystem. Malayalam-first, English secondary. Built for millions of users, India-expansion ready.
 
-[![CI](https://github.com/Ddotsmedia/kerala-healthcare-platform/actions/workflows/ci.yml/badge.svg)](https://github.com/Ddotsmedia/kerala-healthcare-platform/actions/workflows/ci.yml)
+[![CI](https://github.com/ddotsmedia/kerala-healthcare-platform/actions/workflows/ci.yml/badge.svg)](https://github.com/ddotsmedia/kerala-healthcare-platform/actions/workflows/ci.yml)
 
 ---
 
