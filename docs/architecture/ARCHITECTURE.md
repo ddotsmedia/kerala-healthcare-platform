@@ -138,7 +138,17 @@ Managed with **pnpm workspaces**.
 
 ---
 
-## 12. Scalability path
+## 12. Deployment targets
+
+| Environment | Host | Notes |
+|---|---|---|
+| Production VPS | `194.164.151.202` | Primary Kerala-first deploy target. Shares the box with protected sibling projects — **never touch** `ayurconnect` · `ddots-erp` · `wa-crm` · `healthportal` · `ddotshop` · `ddotsmediajobs`. |
+
+Deploy specifics (paths, ports, process manager, reverse proxy) defined in `infra/` when Phase 1 lands. No app deployed yet (Phase 0).
+
+---
+
+## 13. Scalability path
 
 1. Vertical scale PG; read replicas for directory/search reads.
 2. Move search to OpenSearch (Phase 5).
