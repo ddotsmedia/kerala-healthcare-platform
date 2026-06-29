@@ -37,6 +37,20 @@
 - [FIXED] GitHub repo slug confirmed: `ddotsmedia/kerala-healthcare-platform`. CI badge URL updated.
 - [NEEDS DECISION] Legal review of COMPLIANCE.md (DPDP timelines, DPO appointment, data-residency) before launch.
 
+## Session: 2026-06-30 — Phase 0 scaffolding completion
+
+### Assumptions
+- [ASSUMPTION] Created monorepo directory skeleton (apps/packages/services/infra) with `.gitkeep` so the structure documented in ARCHITECTURE.md physically exists. No app code inside.
+- [ASSUMPTION] Added `.env.example` mirroring the env list in CLAUDE.md (placeholders only) — `.gitignore` already allowlists it.
+- [ASSUMPTION] Added root `package.json` + `pnpm-workspace.yaml` with ZERO dependencies. Scripts are Phase-0 placeholders (echo). Deliberately omitted any `db:seed` script — only `db:seed:demo` exists.
+- [ASSUMPTION] Recorded production VPS `194.164.151.202` as deploy target in ARCHITECTURE.md §12 (record-only, no connection made).
+
+### Errors fixed
+- (none)
+
+### Needs human decision
+- (none new)
+
 ---
 
 *Kerala Health Portal · Universal Prompt Law · Claude Code Engineering Kit v1.0*

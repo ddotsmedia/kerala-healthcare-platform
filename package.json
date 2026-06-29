@@ -1,0 +1,26 @@
+{
+  "name": "kerala-healthcare-platform",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Kerala-first digital healthcare ecosystem — Malayalam-first, verification-first, AI guides only.",
+  "license": "UNLICENSED",
+  "type": "module",
+  "engines": {
+    "node": ">=20",
+    "pnpm": ">=9"
+  },
+  "packageManager": "pnpm@9.0.0",
+  "workspaces": [
+    "apps/*",
+    "packages/*",
+    "services/*"
+  ],
+  "scripts": {
+    "dev": "echo \"[phase 0] no apps yet — added in Phase 1\"",
+    "build": "echo \"[phase 0] no apps yet — added in Phase 1\"",
+    "lint": "echo \"[phase 0] no lintable packages yet — added in Phase 1\"",
+    "test": "echo \"[phase 0] no tests yet — added in Phase 1\"",
+    "db:migrate": "echo \"[phase 0] no migrations yet — added in Phase 1\"",
+    "db:seed:demo": "echo \"[phase 0] no demo seed yet — added in Phase 1\""
+  }
+}
