@@ -1,0 +1,56 @@
+# Dependencies
+node_modules/
+.pnpm-store/
+.pnpm-debug.log*
+
+# Environment & secrets — NEVER commit
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# Next.js
+.next/
+out/
+build/
+dist/
+
+# Turbo / monorepo caches
+.turbo/
+.cache/
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Test & coverage
+coverage/
+.nyc_output/
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editors / IDE
+.vscode/*
+!.vscode/extensions.json
+.idea/
+*.swp
+*.swo
+
+# Local data / uploads
+/tmp/
+/uploads/
+*.local
+
+# Docker
+docker-compose.override.yml
+
+# Misc
+*.tsbuildinfo
+.vercel

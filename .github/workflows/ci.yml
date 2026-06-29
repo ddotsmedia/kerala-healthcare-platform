@@ -1,0 +1,99 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+# Additive, non-destructive pipeline. Lint + test only in Phase 0.
+# Build/migrate jobs are added in later phases as app code lands.
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  NODE_VERSION: "20"
+  PNPM_VERSION: "9"
+
+jobs:
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+        continue-on-error: true
+
+      - name: Lint
+        run: pnpm lint
+        continue-on-error: true
+
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+        continue-on-error: true
+
+      - name: Test
+        run: pnpm test
+        continue-on-error: true
+
+  guardrails:
+    name: Repo guardrails
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Reject TypeScript source files
+        run: |
+          if git ls-files '*.ts' '*.tsx' | grep -v '\.d\.ts$' | grep .; then
+            echo "TypeScript is forbidden in this repo (JavaScript only)."
+            exit 1
+          fi
+          echo "OK: no TypeScript source files."
+
+      - name: Required governance docs present
+        run: |
+          for f in README.md CLAUDE.md CODEX.md AGENTS.md \
+                   docs/prd/MASTER_PRD.md docs/architecture/ARCHITECTURE.md \
+                   docs/security/SECURITY.md docs/compliance/COMPLIANCE.md \
+                   docs/ai-safety/AI_SAFETY.md docs/roadmap/ROADMAP.md; do
+            if [ ! -f "$f" ]; then
+              echo "Missing required doc: $f"
+              exit 1
+            fi
+          done
+          echo "OK: all governance docs present."

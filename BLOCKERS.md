@@ -1,0 +1,42 @@
+# BLOCKERS.md — Kerala Health Portal
+
+> This file is maintained automatically by Claude Code during every session.
+> Claude Code writes here instead of asking questions.
+> Review this file after each session and resolve NEEDS DECISION items before starting the next phase.
+> Do not delete this file.
+
+---
+
+## How to read this file
+
+| Tag | Meaning |
+|---|---|
+| `[ASSUMPTION]` | Claude Code picked a default and continued — review if needed |
+| `[FIXED]` | An error was encountered and resolved automatically |
+| `[NEEDS DECISION]` | Cannot be auto-resolved — human must decide before next phase |
+
+---
+
+## Session Log
+
+<!-- Claude Code appends new sessions below this line -->
+
+## Session: 2026-06-29 — Phase 0 Foundation (AI-agent repository)
+
+### Assumptions
+- [ASSUMPTION] `CLAUDE.md` already existed (comprehensive, v1.0). Kept as-is per no-delete/additive rule instead of overwriting from the task list.
+- [ASSUMPTION] Repo slug/URL assumed `Ddotsmedia/kerala-healthcare-platform` for README CI badge (matches git user + folder name).
+- [ASSUMPTION] CI lint/test/install steps set `continue-on-error: true` for Phase 0 since no app code, lockfile, or package.json exists yet; tightened in later phases.
+- [ASSUMPTION] Default AI model recorded as `claude-haiku-20241022` per existing CLAUDE.md (not the platform default elsewhere).
+- [ASSUMPTION] Docs marked "additive edits only" and dated to today's locale context.
+
+### Errors fixed
+- (none)
+
+### Needs human decision
+- [NEEDS DECISION] Confirm GitHub remote/repo slug for the CI badge URL.
+- [NEEDS DECISION] Legal review of COMPLIANCE.md (DPDP timelines, DPO appointment, data-residency) before launch.
+
+---
+
+*Kerala Health Portal · Universal Prompt Law · Claude Code Engineering Kit v1.0*
