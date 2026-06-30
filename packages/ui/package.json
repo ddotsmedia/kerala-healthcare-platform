@@ -1,0 +1,11 @@
+{
+  "name": "@khp/ui",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "main": "index.js",
+  "description": "Shared React component library (presentational, locale-agnostic).",
+  "peerDependencies": {
+    "react": "^18.3.0"
+  }
+}

@@ -71,7 +71,21 @@
 ### Phase 1 build notes
 - [ASSUMPTION] Admin verification UI assumes the request is already an authenticated `verification_agent` / `platform_admin`. Auth/session + `verified_by` capture land in Phase 2 (OTP/JWT). For now `verified_by` is recorded as null.
 - [ASSUMPTION] `lockfileVersion`/install not run in this environment; package.jsons declare deps for CI/dev. `pnpm install` needed before `pnpm dev`/`build` succeed.
-- [NEEDS DECISION] Search vector population: tsvectors (`search_ml`/`search_manglish`) are populated by `services/search` helpers on provider create/update — needs wiring into the (future) provider write/CMS path, or a backfill job.
+- [FIXED] Search vector population WIRED into the write path: `apps/portal/lib/profile.js → updateProfile` repopulates `search_ml`/`search_manglish` via `@khp/search` `doctorVectorUpdate` in the same transaction as each profile save. Hospital editor will wire `hospitalVectorUpdate` identically. (A one-off backfill for pre-existing rows can reuse the same helpers if needed.)
+
+## Session: 2026-06-30 — Phase 1 missing pieces (ui, portal, vector wiring)
+
+### Assumptions
+- [ASSUMPTION] `docs/phases/PHASE_1_SPEC.md` does NOT exist in the repo (referenced but never created). Could not read/reconcile against it — did not fabricate its contents. Built the three explicitly-named deliverables instead: `packages/ui/components/directory/`, `apps/portal` doctor profile management, and tsvector write-path wiring.
+- [ASSUMPTION] `packages/ui` components are presentational and locale-agnostic (labels passed as props) to avoid duplicating the locale-bound cards already in `apps/web`. No existing web component was copied or replaced.
+- [ASSUMPTION] `apps/portal` (port 3001) assumes the authenticated doctor; until Phase 2 auth, the doctor id is read from `PORTAL_DEMO_DOCTOR_ID`. Doctors cannot self-verify or self-publish — those fields are not editable in the portal.
+- [ASSUMPTION] Added `next`/`react`/`react-dom` for `apps/portal`; `@khp/ui` has a react peer dep only. Workspace deps via `workspace:*`.
+
+### Errors fixed
+- (none)
+
+### Needs human decision
+- (none new)
 
 ### Needs human decision
 - [FIXED] NMC verification (Phase 1): MANUAL cross-check. A `verification_agent` looks up the registration number on the NMC public search portal, then records `nmc_checked`/`nmc_match` + evidence in `provider_verifications`. Automated NMC API integration deferred to a future phase.

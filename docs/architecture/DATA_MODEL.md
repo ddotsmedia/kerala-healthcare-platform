@@ -48,6 +48,7 @@ Both `doctors` and `hospitals` carry `verification_status` and `listing_status`.
 - `search_ml` and `search_manglish` are `tsvector` columns, populated by the app/search service (`services/search/`).
 - GIN indexes on both vectors; `pg_trgm` GIN index on display name for fuzzy matching.
 - `unaccent` folds diacritics so Manglish (Roman transliteration) queries match.
+- **Write-path wiring:** the vectors are repopulated on every provider profile write. The doctor portal (`apps/portal`, `lib/profile.js → updateProfile`) calls `@khp/search`'s `doctorVectorUpdate` inside the same transaction as the field update. Hospital writes will wire `hospitalVectorUpdate` the same way when the hospital editor lands.
 
 ---
 
