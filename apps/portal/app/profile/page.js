@@ -48,6 +48,20 @@ export default async function ProfilePage() {
 
       <form action={saveProfileAction} className="space-y-4 rounded-xl border border-gray-200 bg-white p-4">
         <h3 className="text-sm font-semibold text-gray-700">Edit profile</h3>
+        <fieldset className="space-y-3 rounded-lg bg-amber-50 p-3">
+          <legend className="px-1 text-xs font-medium text-amber-800">
+            Key fields — editing name or registration resets verification to “pending” and unpublishes until re-verified
+          </legend>
+          <FormRow label="Name (English)" htmlFor="name_en">
+            <input id="name_en" name="name_en" defaultValue={doctor.name_en || doctor.display_name || ''} className={inputCls} />
+          </FormRow>
+          <FormRow label="Name (Malayalam)" htmlFor="name_ml">
+            <input id="name_ml" name="name_ml" defaultValue={doctor.name_ml || ''} className={inputCls} />
+          </FormRow>
+          <FormRow label="NMC registration number" htmlFor="registration_number">
+            <input id="registration_number" name="registration_number" defaultValue={doctor.nmc_registration_no || ''} className={inputCls} />
+          </FormRow>
+        </fieldset>
         <FormRow label="About (Malayalam)" htmlFor="about_ml">
           <textarea id="about_ml" name="about_ml" rows={3} defaultValue={doctor.about_ml || ''} className={inputCls} />
         </FormRow>

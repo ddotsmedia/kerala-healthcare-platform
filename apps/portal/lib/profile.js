@@ -56,20 +56,37 @@ async function updateProfile(id, fields) {
   const client = await getPool().connect();
   try {
     await client.query('BEGIN');
+
+    // Detect changes to KEY fields (name, registration_number). Per spec, these
+    // reset verification to 'pending' and unpublish until re-verified.
+    const cur = (await client.query(
+      `SELECT name_en, name_ml, nmc_registration_no FROM doctors WHERE id = $1`,
+      [id]
+    )).rows[0] || {};
+    const newName = fields.name_en || cur.name_en;
+    const newReg = fields.registration_number || cur.nmc_registration_no;
+    const keyChanged =
+      (fields.name_en != null && fields.name_en !== cur.name_en) ||
+      (fields.name_ml != null && fields.name_ml !== cur.name_ml) ||
+      (fields.registration_number != null && fields.registration_number !== cur.nmc_registration_no);
+
     await client.query(
       `UPDATE doctors
-          SET about_ml = $1, about_en = $2, photo_url = $3,
+          SET about_ml = $1, about_en = $2, bio_ml = $1, bio_en = $2, photo_url = $3,
               years_experience = $4, consultation_fee = $5, languages = $6,
+              name_en = COALESCE($7, name_en), name_ml = COALESCE($8, name_ml),
+              display_name = COALESCE($7, display_name),
+              nmc_registration_no = COALESCE($9, nmc_registration_no),
+              verification_status = CASE WHEN $10 THEN 'pending' ELSE verification_status END,
+              nmc_verified        = CASE WHEN $10 THEN false ELSE nmc_verified END,
+              verified_at         = CASE WHEN $10 THEN NULL ELSE verified_at END,
+              listing_status      = CASE WHEN $10 THEN 'draft' ELSE listing_status END,
               updated_at = now()
-        WHERE id = $7 AND deleted_at IS NULL`,
+        WHERE id = $11 AND deleted_at IS NULL`,
       [
-        fields.about_ml || null,
-        fields.about_en || null,
-        fields.photo_url || null,
-        fields.years_experience,
-        fields.consultation_fee,
-        fields.languages,
-        id
+        fields.about_ml || null, fields.about_en || null, fields.photo_url || null,
+        fields.years_experience, fields.consultation_fee, fields.languages,
+        newName, fields.name_ml || null, newReg, keyChanged, id
       ]
     );
 
@@ -84,6 +101,7 @@ async function updateProfile(id, fields) {
     }
 
     await client.query('COMMIT');
+    return { reverified: keyChanged };
   } catch (err) {
     await client.query('ROLLBACK');
     throw err;
@@ -92,14 +110,36 @@ async function updateProfile(id, fields) {
   }
 }
 
-/** Append an education entry. */
+/** Reset verification to pending + unpublish (qualifications change is a key change). */
+async function resetVerification(client, id) {
+  await client.query(
+    `UPDATE doctors
+        SET verification_status = 'pending', nmc_verified = false,
+            verified_at = NULL, listing_status = 'draft', updated_at = now()
+      WHERE id = $1 AND deleted_at IS NULL`,
+    [id]
+  );
+}
+
+/** Append an education entry. Qualifications change → re-verification required. */
 async function addEducation(id, edu) {
   if (!id) throw new Error('No doctor id');
-  await getPool().query(
-    `INSERT INTO provider_education (doctor_id, degree, institution_ml, institution_en, year_completed)
-     VALUES ($1, $2, $3, $4, $5)`,
-    [id, edu.degree, edu.institution_ml || null, edu.institution_en || null, edu.year_completed]
-  );
+  const client = await getPool().connect();
+  try {
+    await client.query('BEGIN');
+    await client.query(
+      `INSERT INTO provider_education (doctor_id, provider_id, degree, institution_ml, institution_en, year_completed)
+       VALUES ($1, $1, $2, $3, $4, $5)`,
+      [id, edu.degree, edu.institution_ml || null, edu.institution_en || null, edu.year_completed]
+    );
+    await resetVerification(client, id);
+    await client.query('COMMIT');
+  } catch (err) {
+    await client.query('ROLLBACK');
+    throw err;
+  } finally {
+    client.release();
+  }
 }
 
 export { currentDoctorId, getMyProfile, updateProfile, addEducation };

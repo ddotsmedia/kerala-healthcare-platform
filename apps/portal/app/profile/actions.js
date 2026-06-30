@@ -30,7 +30,10 @@ export async function saveProfileAction(formData) {
     photo_url: formData.get('photo_url'),
     years_experience: toIntOrNull(formData.get('years_experience')),
     consultation_fee: toNumOrNull(formData.get('consultation_fee')),
-    languages: csvToArray(formData.get('languages'))
+    languages: csvToArray(formData.get('languages')),
+    name_en: formData.get('name_en') || null,
+    name_ml: formData.get('name_ml') || null,
+    registration_number: formData.get('registration_number') || null
   });
   revalidatePath('/profile');
 }
