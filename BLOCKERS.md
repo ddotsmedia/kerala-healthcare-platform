@@ -64,7 +64,7 @@
 - (none)
 
 ### Needs human decision
-- [NEEDS DECISION] NMC registry integration: API endpoint/credentials or manual cross-check process for `nmc_checked` / `nmc_match`. Currently a manual field.
+- [FIXED] NMC verification (Phase 1): MANUAL cross-check. A `verification_agent` looks up the registration number on the NMC public search portal, then records `nmc_checked`/`nmc_match` + evidence in `provider_verifications`. Automated NMC API integration deferred to a future phase.
 - [NEEDS DECISION] Confirm specialty taxonomy list is complete for launch (12 seeded).
 
 ---

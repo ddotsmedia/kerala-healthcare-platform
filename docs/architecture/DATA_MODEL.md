@@ -33,6 +33,7 @@ Both `doctors` and `hospitals` carry `verification_status` and `listing_status`.
 - A row **cannot** reach `listing_status = 'published'` unless `verification_status = 'verified'` (doctors also require `nmc_verified = true`).
 - Enforced by **BEFORE INSERT/UPDATE triggers** (`trg_doctor_publish_guard`, `trg_hospital_publish_guard`) — defense in depth on top of app-layer checks.
 - Every decision recorded in `provider_verifications` with `verified_by`, `verified_at`, `evidence_ref`, and (for doctors) NMC cross-check result.
+- **NMC check (Phase 1) is MANUAL:** a `verification_agent` looks up the registration number on the NMC public search portal and records `nmc_checked` / `nmc_match` + evidence. Automated NMC API integration is deferred to a future phase.
 
 ---
 
