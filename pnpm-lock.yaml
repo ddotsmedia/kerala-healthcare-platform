@@ -22,6 +22,16 @@ importers:
       react-dom:
         specifier: ^18.3.0
         version: 18.3.1(react@18.3.1)
+    devDependencies:
+      autoprefixer:
+        specifier: ^10.4.0
+        version: 10.5.2(postcss@8.5.16)
+      postcss:
+        specifier: ^8.4.0
+        version: 8.5.16
+      tailwindcss:
+        specifier: ^3.4.0
+        version: 3.4.19
 
   apps/portal:
     dependencies:
@@ -43,6 +53,16 @@ importers:
       react-dom:
         specifier: ^18.3.0
         version: 18.3.1(react@18.3.1)
+    devDependencies:
+      autoprefixer:
+        specifier: ^10.4.0
+        version: 10.5.2(postcss@8.5.16)
+      postcss:
+        specifier: ^8.4.0
+        version: 8.5.16
+      tailwindcss:
+        specifier: ^3.4.0
+        version: 3.4.19
 
   apps/web:
     dependencies:
@@ -711,6 +731,15 @@ snapshots:
       fraction.js: 5.3.4
       picocolors: 1.1.1
       postcss: 8.4.31
+      postcss-value-parser: 4.2.0
+
+  autoprefixer@10.5.2(postcss@8.5.16):
+    dependencies:
+      browserslist: 4.28.4
+      caniuse-lite: 1.0.30001799
+      fraction.js: 5.3.4
+      picocolors: 1.1.1
+      postcss: 8.5.16
       postcss-value-parser: 4.2.0
 
   baseline-browser-mapping@2.10.40: {}
