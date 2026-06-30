@@ -239,7 +239,7 @@ Update this section at the end of each phase.
 | Phase | Name | Status | Git Tag |
 |---|---|---|---|
 | 0 | Foundation & Infrastructure | ✅ Complete | — |
-| 1 | Healthcare Directory | 🟡 In progress | — |
+| 1 | Healthcare Directory | ✅ Complete | v0.2.0-directory |
 | 2 | Appointments & Patient Portal | ⬜ Not started | — |
 | 3 | Health Knowledge Centre | ⬜ Not started | — |
 | 4 | Healthcare Jobs Portal | ⬜ Not started | — |
