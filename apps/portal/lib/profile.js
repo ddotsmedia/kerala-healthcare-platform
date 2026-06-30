@@ -93,8 +93,11 @@ async function updateProfile(id, fields) {
     // Repopulate search vectors from the fresh row (write-path wiring).
     const { rows } = await client.query(
       `SELECT d.id, d.display_name, d.about_ml, d.about_en,
-              di.name_ml AS district_ml, di.name_en AS district_en
-         FROM doctors d LEFT JOIN districts di ON di.id = d.district_id
+              di.name_ml AS district_ml, di.name_en AS district_en,
+              s.name_ml AS specialty_ml, s.name_en AS specialty_en
+         FROM doctors d
+         LEFT JOIN districts di ON di.id = d.district_id
+         LEFT JOIN specialties s ON s.id = d.specialty_id
         WHERE d.id = $1`,
       [id]
     );

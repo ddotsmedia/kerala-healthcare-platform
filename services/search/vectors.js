@@ -13,12 +13,12 @@ const SEARCH_CONFIG = 'simple'; // language-agnostic; unaccent handles folding
  * @param {object} d doctor row-ish { display_name, about_ml, district_ml, ... }
  */
 function doctorMlText(d) {
-  return [d.display_name, d.about_ml, d.district_ml].filter(Boolean).join(' ');
+  return [d.display_name, d.about_ml, d.district_ml, d.specialty_ml].filter(Boolean).join(' ');
 }
 
 /**
  * Compose the Manglish (romanised) search text for a doctor.
- * Romanises Malayalam fields, folds in English fields and the district name.
+ * Romanises Malayalam fields, folds in English fields, district and specialty.
  */
 function doctorManglishText(d) {
   const parts = [
@@ -26,7 +26,9 @@ function doctorManglishText(d) {
     malayalamToLatin(d.display_name || ''),
     normalizeLatin(d.about_en || ''),
     normalizeLatin(d.district_en || ''),
-    malayalamToLatin(d.district_ml || '')
+    malayalamToLatin(d.district_ml || ''),
+    normalizeLatin(d.specialty_en || ''),
+    malayalamToLatin(d.specialty_ml || '')
   ];
   return parts.filter(Boolean).join(' ');
 }

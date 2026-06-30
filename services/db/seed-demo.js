@@ -109,8 +109,11 @@ async function seedFacilities(pool) {
 async function populateVectors(pool) {
   const docs = await pool.query(
     `SELECT d.id, d.display_name, d.about_ml, d.about_en,
-            di.name_ml AS district_ml, di.name_en AS district_en
-       FROM doctors d LEFT JOIN districts di ON di.id = d.district_id
+            di.name_ml AS district_ml, di.name_en AS district_en,
+            s.name_ml AS specialty_ml, s.name_en AS specialty_en
+       FROM doctors d
+       LEFT JOIN districts di ON di.id = d.district_id
+       LEFT JOIN specialties s ON s.id = d.specialty_id
       WHERE d.slug = ANY($1)`,
     [DEMO_DOCTORS.map((d) => d[3])]
   );
