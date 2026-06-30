@@ -55,6 +55,28 @@ function listSpecialties() {
   });
 }
 
+/** Clinic / diagnostic-centre listings (verified + published). */
+function listFacilities({ kind, districtId, page = 1, limit = 20 } = {}) {
+  const where = [`f.deleted_at IS NULL`, `f.listing_status = 'published'`, `f.verification_status = 'verified'`];
+  const values = [];
+  if (kind) { values.push(kind); where.push(`f.kind = $${values.length}`); }
+  if (districtId) { values.push(districtId); where.push(`f.district_id = $${values.length}`); }
+  const lim = Math.min(50, Math.max(1, parseInt(limit, 10) || 20));
+  const off = (Math.max(1, parseInt(page, 10) || 1) - 1) * lim;
+  values.push(lim); const li = values.length;
+  values.push(off); const oi = values.length;
+  return run({
+    text: `SELECT f.id, f.kind, f.name_ml, f.name_en, f.slug,
+                  di.name_ml AS district_ml, di.name_en AS district_en
+             FROM facilities f
+             LEFT JOIN districts di ON di.id = f.district_id
+            WHERE ${where.join(' AND ')}
+            ORDER BY f.published_at DESC NULLS LAST
+            LIMIT $${li} OFFSET $${oi}`,
+    values
+  });
+}
+
 /** Public doctor profile by permanent slug (verified + published only). */
 async function getDoctorBySlug(slug) {
   const doctor = await runOne(
@@ -107,5 +129,6 @@ async function getHospitalBySlug(slug) {
 
 export {
   searchDoctors, searchHospitals, searchAllProviders,
-  listDistricts, listSpecialties, getDoctorBySlug, getHospitalBySlug
+  listDistricts, listSpecialties, listFacilities,
+  getDoctorBySlug, getHospitalBySlug
 };

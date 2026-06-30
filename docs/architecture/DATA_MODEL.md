@@ -23,6 +23,7 @@
 | 0013 | `0013_hospitals_additive_columns.sql` | hospitals: type, icu_beds, nicu_beds, website |
 | 0014 | `0014_hospital_services_slug.sql` | hospital_services: service_slug catalogue + available |
 | 0015 | `0015_healthcare_providers_reconcile.sql` | spec columns on doctors, `healthcare_providers` view, junction `provider_id` |
+| 0016 | `0016_facilities.sql` | clinics + diagnostic centres (`facilities`, publish-gated) |
 
 ## Spec reconciliation — `healthcare_providers`
 

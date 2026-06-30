@@ -34,6 +34,13 @@ const DEMO_HOSPITALS = [
 
 const DEPTS = [['കാർഡിയോളജി', 'Cardiology'], ['പീഡിയാട്രിക്സ്', 'Pediatrics']];
 
+// kind, name_ml, name_en, slug, district_code, about_ml, about_en
+const DEMO_FACILITIES = [
+  ['clinic', 'സിറ്റി ക്ലിനിക്ക്', 'City Clinic', 'city-clinic-ernakulam', 'EKM', 'പ്രാഥമിക ചികിത്സ', 'Primary care clinic'],
+  ['clinic', 'ഫാമിലി ക്ലിനിക്ക്', 'Family Clinic', 'family-clinic-thiruvananthapuram', 'TVM', 'കുടുംബ ചികിത്സ', 'Family care clinic'],
+  ['diagnostic_centre', 'മെഡി സ്കാൻ', 'Medi Scan Diagnostics', 'medi-scan-diagnostics-kozhikode', 'KKD', 'ഡയഗ്നോസ്റ്റിക് സെന്റർ', 'Diagnostic centre']
+];
+
 async function seedDoctors(pool) {
   for (const d of DEMO_DOCTORS) {
     await pool.query(
@@ -85,6 +92,20 @@ async function seedDepartments(pool) {
   }
 }
 
+async function seedFacilities(pool) {
+  for (const f of DEMO_FACILITIES) {
+    await pool.query(
+      `INSERT INTO facilities
+         (kind,name_ml,name_en,slug,verification_status,listing_status,published_at,
+          district_id,about_ml,about_en)
+       SELECT $1,$2,$3,$4,'verified','published',now(),di.id,$5,$6
+         FROM districts di WHERE di.code=$7
+       ON CONFLICT (slug) DO NOTHING`,
+      [f[0], f[1], f[2], f[3], f[5], f[6], f[4]]
+    );
+  }
+}
+
 async function populateVectors(pool) {
   const docs = await pool.query(
     `SELECT id,display_name,about_ml,about_en FROM doctors WHERE slug = ANY($1)`,
@@ -111,8 +132,9 @@ async function main() {
   await seedDoctors(pool);
   await seedHospitals(pool);
   await seedDepartments(pool);
+  await seedFacilities(pool);
   const counts = await populateVectors(pool);
-  console.log(`Demo seed complete. Doctors: ${counts.doctors}, Hospitals: ${counts.hospitals}, Departments: ${DEMO_HOSPITALS.length * DEPTS.length}.`);
+  console.log(`Demo seed complete. Doctors: ${counts.doctors}, Hospitals: ${counts.hospitals}, Departments: ${DEMO_HOSPITALS.length * DEPTS.length}, Facilities: ${DEMO_FACILITIES.length}.`);
 }
 
 main()
