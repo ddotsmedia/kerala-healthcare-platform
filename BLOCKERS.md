@@ -118,4 +118,17 @@
 
 ---
 
+### Items 2–9 — gap closure decisions
+- [ASSUMPTION] Item 3: `manglish.js` is a whole-word medical-term dictionary (~50 terms) and takes priority over `transliterate.js` (char-level) in `resolveTerm`; unmatched input still falls back to transliteration. Both retained.
+- [ASSUMPTION] Item 4: public search builders keep `verified+published` as the default; `verificationStatus` filter overrides the verification check only (still published) — admin/non-public queries are a separate concern.
+- [ASSUMPTION] Item 5: kept the original `apps/web/components` cards (no delete); web list pages now import the canonical `@khp/ui` cards. Path stays `apps/web/app` (not the spec's `src/app`) — consistent with the existing tree.
+- [ASSUMPTION] Item 7: the re-verification rule resets `verification_status='pending'`, clears `nmc_verified`/`verified_at`, AND sets `listing_status='draft'` — required so the publish-gate trigger does not reject the update. Triggers on name/registration (profile) and any education add/delete (qualifications).
+- [ASSUMPTION] Item 8: REST routes added alongside the existing server actions (both kept). RBAC is a PLACEHOLDER reading `x-khp-role` header (admin) — real session/JWT auth is Phase 2. Portal routes use the `PORTAL_DEMO_DOCTOR_ID` stand-in.
+- [ASSUMPTION] Item 9: clinics + diagnostic centres modelled as one `facilities` table with a `kind` CHECK, publish-gated like hospitals. Minimal listing page only (no profile pages yet).
+
+### Still blocked (no DB / build environment)
+- [NEEDS DECISION] SMOKE TESTS (8-item checklist in PHASE_1_SPEC) and Lighthouse SEO ≥90 are NOT run — requires a running Postgres + a built/served app. Migrations 0001–0016 and `pnpm db:seed:demo` are authored and syntax-clean but unexecuted here (no `DATABASE_URL`, Docker daemon down). Run once an environment exists before tagging v0.2.0-directory.
+
+---
+
 *Kerala Health Portal · Universal Prompt Law · Claude Code Engineering Kit v1.0*
