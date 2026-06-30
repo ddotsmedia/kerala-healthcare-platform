@@ -1,0 +1,11 @@
+{
+  "name": "@khp/appointments",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "main": "index.js",
+  "description": "Slot availability computation and concurrency-safe booking.",
+  "dependencies": {
+    "@khp/db": "workspace:*"
+  }
+}

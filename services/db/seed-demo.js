@@ -107,6 +107,33 @@ async function seedFacilities(pool) {
   }
 }
 
+async function seedPatientAndAvailability(pool) {
+  // One demo patient (idempotent by name).
+  await pool.query(
+    `INSERT INTO users (role, full_name, locale)
+     SELECT 'patient','Demo Patient','ml'
+      WHERE NOT EXISTS (SELECT 1 FROM users WHERE full_name = 'Demo Patient')`
+  );
+  // Mon-Fri availability for every demo doctor: 09:00-12:00 in-person, 14:00-16:00 video.
+  const windows = [['09:00', '12:00', 'in_person'], ['14:00', '16:00', 'video']];
+  for (const d of DEMO_DOCTORS) {
+    for (let dow = 1; dow <= 5; dow++) {
+      for (const [start, end, mode] of windows) {
+        await pool.query(
+          `INSERT INTO availability_templates
+             (provider_id, day_of_week, start_time, end_time, slot_duration_minutes, consultation_mode)
+           SELECT id, $2, $3, $4, 30, $5 FROM doctors WHERE slug = $1
+             AND NOT EXISTS (
+               SELECT 1 FROM availability_templates a
+                WHERE a.provider_id = doctors.id AND a.day_of_week = $2 AND a.start_time = $3
+             )`,
+          [d[3], dow, start, end, mode]
+        );
+      }
+    }
+  }
+}
+
 async function populateVectors(pool) {
   const docs = await pool.query(
     `SELECT d.id, d.display_name, d.about_ml, d.about_en,
@@ -143,6 +170,7 @@ async function main() {
   await seedHospitals(pool);
   await seedDepartments(pool);
   await seedFacilities(pool);
+  await seedPatientAndAvailability(pool);
   const counts = await populateVectors(pool);
   console.log(`Demo seed complete. Doctors: ${counts.doctors}, Hospitals: ${counts.hospitals}, Departments: ${DEMO_HOSPITALS.length * DEPTS.length}, Facilities: ${DEMO_FACILITIES.length}.`);
 }
