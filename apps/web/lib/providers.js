@@ -4,7 +4,7 @@
 // when the database is unavailable, so pages still render.
 
 import { getPool } from '@khp/db';
-import { buildDoctorSearch, buildHospitalSearch } from '@khp/search';
+import { buildDoctorSearch, buildHospitalSearch, searchAll } from '@khp/search';
 
 async function run(query) {
   try {
@@ -27,9 +27,32 @@ function searchDoctors(opts) {
   return run(buildDoctorSearch(opts));
 }
 
-/** @param {object} opts { term, districtId, page, limit } */
+/** @param {object} opts { term, districtId, serviceSlug, department, page, limit } */
 function searchHospitals(opts) {
   return run(buildHospitalSearch(opts));
+}
+
+/** Unified search across doctors + hospitals. @returns {{doctors, hospitals}} */
+async function searchAllProviders(opts) {
+  const q = searchAll(opts);
+  const [doctors, hospitals] = await Promise.all([run(q.doctors), run(q.hospitals)]);
+  return { doctors, hospitals };
+}
+
+/** All districts (for filter dropdowns), Malayalam-first ordering. */
+function listDistricts() {
+  return run({
+    text: `SELECT id, code, name_ml, name_en FROM districts WHERE deleted_at IS NULL ORDER BY name_en`,
+    values: []
+  });
+}
+
+/** All specialties (for filter multiselect). */
+function listSpecialties() {
+  return run({
+    text: `SELECT id, slug, name_ml, name_en FROM specialties WHERE deleted_at IS NULL ORDER BY name_en`,
+    values: []
+  });
 }
 
 /** Public doctor profile by permanent slug (verified + published only). */
@@ -82,4 +105,7 @@ async function getHospitalBySlug(slug) {
   return hospital;
 }
 
-export { searchDoctors, searchHospitals, getDoctorBySlug, getHospitalBySlug };
+export {
+  searchDoctors, searchHospitals, searchAllProviders,
+  listDistricts, listSpecialties, getDoctorBySlug, getHospitalBySlug
+};
