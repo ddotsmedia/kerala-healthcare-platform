@@ -3,6 +3,7 @@
 // Only verified + published rows are searchable. Parameterised SQL only.
 
 import { isMalayalam, malayalamToLatin, normalizeLatin } from './transliterate.js';
+import { expandManglish } from './manglish.js';
 import { SEARCH_CONFIG } from './vectors.js';
 
 const DEFAULT_LIMIT = 20;
@@ -20,13 +21,21 @@ function paginate(page, limit) {
 
 /**
  * Pick the right vector column and normalise the term for the query script.
- * Malayalam input -> search_ml; Latin/Manglish input -> search_manglish.
+ * Priority:
+ *   1. Malayalam script input -> search_ml.
+ *   2. Manglish medical term recognised by manglish.js -> search_ml (expanded
+ *      to Malayalam), so dictionary terms beat char-level transliteration.
+ *   3. Otherwise Latin/Manglish -> search_manglish (char transliteration).
  */
 function resolveTerm(term) {
   const raw = (term || '').trim();
   if (!raw) return null;
   if (isMalayalam(raw)) {
     return { column: 'search_ml', value: raw };
+  }
+  const expanded = expandManglish(raw);
+  if (expanded.hasMatch) {
+    return { column: 'search_ml', value: expanded.malayalam };
   }
   return { column: 'search_manglish', value: normalizeLatin(raw) || malayalamToLatin(raw) };
 }
