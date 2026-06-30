@@ -177,6 +177,12 @@ Result: **6 PASS, 2 FAIL** (items 5, 6 — both data/indexing gaps, logged above
 
 ## Session: 2026-06-30 — Phase 2 (Appointments & Patient Portal)
 
+### Task 2.4 — notifications
+- [ASSUMPTION] No new npm packages added. SMS uses global `fetch` against `OTP_SMS_GATEWAY_URL`; without it, sends are logged as `simulated`. Real email (SES SMTP) needs an SMTP client lib — deferred to infra; `email.js` returns `simulated` until then. BullMQ queue/cron scheduling is the deployment wrapper (infra); jobs are implemented as directly-callable functions + a `pnpm notify:reminders` CLI.
+- [ASSUMPTION] Patient contact is column-encrypted (`mobile_enc`/`email_enc`) and not decryptable in this layer; recipient uses `DEMO_NOTIFY_TO` for dev and is masked in `notification_log`.
+- [ASSUMPTION] Quiet hours (22:00–07:00) applied to REMINDERS; immediate confirmation/cancellation/reschedule are transactional and always attempted.
+- [FIXED] `notification_log` insert failed with "inconsistent types deduced for parameter $5" (param reused as status value + in a CASE). Compute `sent_at` in JS, pass as its own parameter. Verified: booking → 2 log rows (sms+email) within ~21ms; video booking gets a room id.
+
 ### Task 2.1 — schema
 - [ASSUMPTION] Created a minimal `users` table (0017) as the FK target for `appointments.patient_id` (and `cancelled_by`). Full OTP/JWT auth is still Phase 2 work not yet built; patient identity uses a demo stand-in like Phase 1.
 - [ASSUMPTION] `appointments.provider_id` / availability tables FK `doctors(id)`, not `healthcare_providers` (which is a VIEW and cannot be an FK target). `doctors.id` == view id, so this matches the spec intent.

@@ -3,6 +3,7 @@
 import { NextResponse } from 'next/server';
 import { currentDoctorId } from '@/lib/profile';
 import { rescheduleAppointment } from '@/lib/schedule';
+import { notifyAppointmentEvent } from '@khp/notifications';
 
 export const dynamic = 'force-dynamic';
 
@@ -18,5 +19,6 @@ export async function PATCH(request, { params }) {
     const code = result.error === 'slot_taken' ? 409 : 400;
     return NextResponse.json({ data: null, meta: null, errors: [result.error] }, { status: code });
   }
+  try { await notifyAppointmentEvent('rescheduled', params.id); } catch (err) { console.error(err.message); }
   return NextResponse.json({ data: result.appointment, meta: null, errors: null });
 }

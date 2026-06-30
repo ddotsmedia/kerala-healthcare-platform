@@ -1,0 +1,11 @@
+{
+  "name": "@khp/notifications",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "main": "index.js",
+  "description": "Appointment notifications (SMS + email), templates, and audit log.",
+  "dependencies": {
+    "@khp/db": "workspace:*"
+  }
+}

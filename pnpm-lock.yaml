@@ -47,6 +47,9 @@ importers:
       '@khp/db':
         specifier: workspace:*
         version: link:../../services/db
+      '@khp/notifications':
+        specifier: workspace:*
+        version: link:../../services/notifications
       '@khp/search':
         specifier: workspace:*
         version: link:../../services/search
@@ -87,6 +90,9 @@ importers:
       '@khp/db':
         specifier: workspace:*
         version: link:../../services/db
+      '@khp/notifications':
+        specifier: workspace:*
+        version: link:../../services/notifications
       '@khp/search':
         specifier: workspace:*
         version: link:../../services/search
@@ -139,6 +145,12 @@ importers:
       pg:
         specifier: ^8.11.0
         version: 8.22.0
+
+  services/notifications:
+    dependencies:
+      '@khp/db':
+        specifier: workspace:*
+        version: link:../db
 
   services/search: {}
 

@@ -16,7 +16,8 @@
     "@khp/db": "workspace:*",
     "@khp/search": "workspace:*",
     "@khp/ui": "workspace:*",
-    "@khp/appointments": "workspace:*"
+    "@khp/appointments": "workspace:*",
+    "@khp/notifications": "workspace:*"
   },
   "devDependencies": {
     "tailwindcss": "^3.4.0",
