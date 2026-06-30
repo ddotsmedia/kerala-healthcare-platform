@@ -108,7 +108,10 @@ async function seedFacilities(pool) {
 
 async function populateVectors(pool) {
   const docs = await pool.query(
-    `SELECT id,display_name,about_ml,about_en FROM doctors WHERE slug = ANY($1)`,
+    `SELECT d.id, d.display_name, d.about_ml, d.about_en,
+            di.name_ml AS district_ml, di.name_en AS district_en
+       FROM doctors d LEFT JOIN districts di ON di.id = d.district_id
+      WHERE d.slug = ANY($1)`,
     [DEMO_DOCTORS.map((d) => d[3])]
   );
   for (const row of docs.rows) {
@@ -116,7 +119,10 @@ async function populateVectors(pool) {
     await pool.query(u.text, u.values);
   }
   const hosps = await pool.query(
-    `SELECT id,name_ml,name_en,about_ml,about_en FROM hospitals WHERE slug = ANY($1)`,
+    `SELECT h.id, h.name_ml, h.name_en, h.about_ml, h.about_en,
+            di.name_ml AS district_ml, di.name_en AS district_en
+       FROM hospitals h LEFT JOIN districts di ON di.id = h.district_id
+      WHERE h.slug = ANY($1)`,
     [DEMO_HOSPITALS.map((h) => h[2])]
   );
   for (const row of hosps.rows) {

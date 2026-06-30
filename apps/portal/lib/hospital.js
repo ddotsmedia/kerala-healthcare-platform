@@ -73,7 +73,10 @@ async function updateHospital(id, f) {
 
     // Repopulate search vectors from the fresh row (write-path wiring).
     const { rows } = await client.query(
-      `SELECT id, name_ml, name_en, about_ml, about_en FROM hospitals WHERE id = $1`,
+      `SELECT h.id, h.name_ml, h.name_en, h.about_ml, h.about_en,
+              di.name_ml AS district_ml, di.name_en AS district_en
+         FROM hospitals h LEFT JOIN districts di ON di.id = h.district_id
+        WHERE h.id = $1`,
       [id]
     );
     if (rows[0]) {
