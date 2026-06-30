@@ -65,6 +65,7 @@
 
 ### Packages added (logged per rule)
 - [ASSUMPTION] Added `pg` (node-postgres) in `services/db/package.json` — zero-alternative PostgreSQL driver for Node. Required by the migration runner and app data access.
+- [ASSUMPTION] Added `next`, `react`, `react-dom` in `apps/web/package.json` — mandated stack (CLAUDE.md), zero-alternative for the Next.js App Router. Plus `tailwindcss`/`autoprefixer`/`postcss` config (dev styling). Workspace deps `@khp/db`, `@khp/search` via `workspace:*`.
 
 ### Needs human decision
 - [FIXED] NMC verification (Phase 1): MANUAL cross-check. A `verification_agent` looks up the registration number on the NMC public search portal, then records `nmc_checked`/`nmc_match` + evidence in `provider_verifications`. Automated NMC API integration deferred to a future phase.
