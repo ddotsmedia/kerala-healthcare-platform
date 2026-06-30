@@ -63,6 +63,9 @@
 ### Errors fixed
 - (none)
 
+### Packages added (logged per rule)
+- [ASSUMPTION] Added `pg` (node-postgres) in `services/db/package.json` — zero-alternative PostgreSQL driver for Node. Required by the migration runner and app data access.
+
 ### Needs human decision
 - [FIXED] NMC verification (Phase 1): MANUAL cross-check. A `verification_agent` looks up the registration number on the NMC public search portal, then records `nmc_checked`/`nmc_match` + evidence in `provider_verifications`. Automated NMC API integration deferred to a future phase.
 - [FIXED] Specialty taxonomy: 12 seeded specialties accepted for Phase 1 launch. More can be added later via additive migration (new INSERT ... ON CONFLICT DO NOTHING) without disrupting existing data.
