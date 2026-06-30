@@ -108,4 +108,14 @@
 
 ---
 
+## Session: 2026-06-30 — Phase 1 gap closure (spec reconciliation)
+
+### Item 1 — schema reconciliation
+- [ASSUMPTION] `healthcare_providers` reconciled as a VIEW over `doctors` (migration 0015), not a rename or data-copy table. `view.id == doctors.id` so existing junctions stay valid; added `provider_id` (= `doctor_id`) to the three junctions for spec-shape parity. `doctors` remains the physical write table; `type` column carries doctor|nurse|physio|psychologist. Chosen over a duplicate copy table to avoid dual-write drift.
+- [ASSUMPTION] DEVIATION from spec: hospitals `phone`/`email` kept as ENCRYPTED `phone_enc`/`email_enc` (SECURITY.md column-level encryption) instead of the spec's plaintext `phone TEXT[]`/`email TEXT`. Added only non-sensitive spec fields (`type`, `icu_beds`, `nicu_beds`, `website`).
+- [ASSUMPTION] `hospital_services.service_slug` added with a CHECK catalogue (mri|ct|icu|nicu|dialysis|ivf|cath_lab|...); existing free-text `name_ml/name_en` kept (no drop).
+- [ASSUMPTION] `specialties.parent_id` and `districts.slug` from the spec NOT added yet (not required by the gap list items); can be additive later if needed.
+
+---
+
 *Kerala Health Portal · Universal Prompt Law · Claude Code Engineering Kit v1.0*

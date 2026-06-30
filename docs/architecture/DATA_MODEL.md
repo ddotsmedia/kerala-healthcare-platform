@@ -20,6 +20,24 @@
 | 0010 | `0010_hospital_services.sql` | Hospital services / facilities |
 | 0011 | `0011_hospital_accreditations.sql` | Hospital accreditations (NABH/NABL/ISO) |
 | 0012 | `0012_hospital_providers.sql` | Hospital ↔ doctor (many-to-many) |
+| 0013 | `0013_hospitals_additive_columns.sql` | hospitals: type, icu_beds, nicu_beds, website |
+| 0014 | `0014_hospital_services_slug.sql` | hospital_services: service_slug catalogue + available |
+| 0015 | `0015_healthcare_providers_reconcile.sql` | spec columns on doctors, `healthcare_providers` view, junction `provider_id` |
+
+## Spec reconciliation — `healthcare_providers`
+
+`PHASE_1_SPEC` names the provider table `healthcare_providers` (polymorphic via
+`type`). The physical table is `doctors`. Reconciled **additively, no rename, no
+drop**:
+- `doctors` gained `type` (default `doctor`), `user_id`, `name_ml/name_en`,
+  `bio_ml/bio_en`, `registration_council`, `verified_at/verified_by`,
+  `consultation_modes`.
+- `healthcare_providers` is a **VIEW** over `doctors` exposing the spec column
+  names. `view.id == doctors.id`, so existing junction rows already resolve.
+- Junctions (`provider_specialties`, `provider_education`, `hospital_providers`)
+  gained `provider_id` (= `doctor_id`) to match the spec's `provider_id` shape.
+- `doctors` stays the physical write table; other provider types (nurse/physio)
+  extend through `type`.
 
 ---
 
