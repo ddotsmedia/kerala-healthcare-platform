@@ -165,7 +165,7 @@ Result: **6 PASS, 2 FAIL** (items 5, 6 — both data/indexing gaps, logged above
 ### Item 2 — Manglish token normalization (FIXED)
 - [FIXED] `manglish.js` now strips trailing anusvara/visarga/virama (`normalizeMalayalamTerm`) so dictionary forms match seeded stems. Verified vs DB: `hridrogam`→4 cardiologists, `shishurogam`→3 pediatricians, `twakrogam`→3 dermatologists. Also fixed two malformed dict entries (Malayalam-in-key `പ്രമേഹം`, `rakthapariശോധന`).
 - [ASSUMPTION] tsvector config kept `simple`/exact-token per instruction. FUTURE IMPROVEMENT: full Malayalam stemming (a real text-search dictionary / normalization step at index + query time) would handle inflections generally instead of trailing-sign stripping — larger change, deferred.
-- [NEEDS DECISION] Smoke item 6 (`vaidyan`/`kaliveedu`) still returns 0: those terms/entities are absent from the seed data (no provider text contains വൈദ്യൻ; clinic listings are outside doctor/hospital search). Needs matching seed data and/or pulling facilities into unified search. Item 5 (`thrissur` term) also still open (district not in vector).
+- [FIXED] Smoke items 5 & 6 now PASS (HTTP, rebuilt web). District + specialty names indexed into the search vectors (commits 289e724, b6dcc46); `vaidyan`/`kaliveedu`/`ayurvedam`/`garbhini`/`kuttikal` added to the Manglish dict with a matching Ayurveda demo doctor (1475176). Verified: `thrissur`→2 Thrissur doctors, `vaidyan`→1, `kaliveedu`→1. **All 8 smoke items now pass.**
 
 ---
 
