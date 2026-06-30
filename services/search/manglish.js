@@ -10,6 +10,9 @@ const MEDICAL_TERMS = {
   doctor: 'ഡോക്ടർ', vaidyan: 'വൈദ്യൻ', daktar: 'ഡോക്ടർ',
   aashupatri: 'ആശുപത്രി', aaspathri: 'ആശുപത്രി', aspathri: 'ആശുപത്രി',
   clinic: 'ക്ലിനിക്ക്', kaliveedu: 'ക്ലിനിക്ക്', nurse: 'നഴ്സ്',
+  ayurvedam: 'ആയുർവേദം', ayurveda: 'ആയുർവേദം',
+  garbhini: 'ഗർഭിണി', pregnancy: 'ഗർഭിണി',
+  kuttikal: 'കുട്ടികൾ', children: 'കുട്ടികൾ',
   // Specialties
   hridrogam: 'ഹൃദ്രോഗം', hrudrogam: 'ഹൃദ്രോഗം', cardiology: 'ഹൃദ്രോഗ',
   shishurogam: 'ശിശുരോഗം', pediatrics: 'ശിശുരോഗ',
@@ -35,11 +38,13 @@ const MEDICAL_TERMS = {
 };
 
 // Word-final Malayalam modifiers that the 'simple' tsvector config treats as
-// part of the token. Stripping them lets dictionary forms (e.g. ഹൃദ്രോഗം)
-// match the stem that compound seeded text actually tokenizes to (ഹൃദ്രോഗ in
-// "ഹൃദ്രോഗ വിദഗ്ധൻ"). Keep the tsvector config 'simple'/exact-token for now;
-// full Malayalam stemming is a larger change (see BLOCKERS.md).
-const TRAILING_SIGNS = /[ംഃ്]+$/;
+// part of the token. Stripping trailing anusvara (ം) / visarga (ഃ) lets
+// dictionary forms (e.g. ഹൃദ്രോഗം) match the stem that compound seeded text
+// actually tokenizes to (ഹൃദ്രോഗ in "ഹൃദ്രോഗ വിദഗ്ധൻ"). Virama (്) is NOT
+// stripped — it is part of valid word-final tokens like ക്ലിനിക്ക്.
+// Keep the tsvector config 'simple'/exact-token for now; full Malayalam
+// stemming is a larger change (see BLOCKERS.md).
+const TRAILING_SIGNS = /[ംഃ]+$/;
 
 /**
  * Normalise a Malayalam dictionary term to its searchable stem by removing

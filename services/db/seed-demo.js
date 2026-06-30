@@ -20,7 +20,8 @@ const DEMO_DOCTORS = [
   ['Vinod', 'Raj', 'Dr. Vinod Raj', 'dr-vinod-raj-cardiology-thiruvananthapuram', 'KL-2010-101255', 'cardiology', 'TVM', ['ml', 'en'], 'ഹൃദ്രോഗ വിദഗ്ധൻ', 'Senior cardiologist', 18, 700, ['in_person']],
   ['Lakshmi', 'Devi', 'Dr. Lakshmi Devi', 'dr-lakshmi-devi-pediatrics-kozhikode', 'KL-2018-101366', 'pediatrics', 'KKD', ['ml', 'en'], 'ശിശുരോഗ വിദഗ്ധ', 'Consultant pediatrician', 7, 350, ['in_person', 'phone']],
   ['Thomas', 'Jacob', 'Dr. Thomas Jacob', 'dr-thomas-jacob-dermatology-kottayam', 'KL-2013-101477', 'dermatology', 'KTM', ['ml', 'en'], 'ത്വക്രോഗ വിദഗ്ധൻ', 'Consultant dermatologist', 12, 450, ['in_person', 'video']],
-  ['Priya', 'Suresh', 'Dr. Priya Suresh', 'dr-priya-suresh-cardiology-thrissur', 'KL-2019-101588', 'cardiology', 'TSR', ['ml', 'en'], 'ഹൃദ്രോഗ വിദഗ്ധ', 'Consultant cardiologist', 6, 400, ['in_person', 'video']]
+  ['Priya', 'Suresh', 'Dr. Priya Suresh', 'dr-priya-suresh-cardiology-thrissur', 'KL-2019-101588', 'cardiology', 'TSR', ['ml', 'en'], 'ഹൃദ്രോഗ വിദഗ്ധ', 'Consultant cardiologist', 6, 400, ['in_person', 'video']],
+  ['Gopalan', 'Vaidyan', 'Dr. Gopalan Vaidyan', 'dr-gopalan-vaidyan-general-physician-kottayam', 'KL-2009-100099', 'general-physician', 'KTM', ['ml', 'en'], 'ആയുർവേദ വൈദ്യൻ ക്ലിനിക്ക് ചികിത്സ ഗർഭിണി കുട്ടികൾ', 'Ayurveda physician clinic', 20, 300, ['in_person']]
 ];
 
 // name_ml, name_en, slug, type, district_code, reg_no, beds, icu, nicu, emergency, website, desc_ml, desc_en
