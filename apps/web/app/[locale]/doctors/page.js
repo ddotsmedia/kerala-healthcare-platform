@@ -3,7 +3,7 @@
 import { resolveLocale, t } from '@/lib/i18n';
 import { searchDoctors } from '@/lib/providers';
 import SearchBar from '@/components/SearchBar';
-import DoctorCard from '@/components/DoctorCard';
+import { DoctorCard } from '@khp/ui';
 
 export const dynamic = 'force-dynamic';
 

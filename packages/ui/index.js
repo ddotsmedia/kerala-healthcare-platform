@@ -1,5 +1,15 @@
 // @khp/ui — shared presentational components.
 
+// Directory (spec-named)
+export { default as DoctorCard } from './components/directory/DoctorCard.js';
+export { default as HospitalCard } from './components/directory/HospitalCard.js';
+export { default as SpecialtyFilter } from './components/directory/SpecialtyFilter.js';
+export { default as DistrictFilter } from './components/directory/DistrictFilter.js';
+export { default as ConsultationModeFilter } from './components/directory/ConsultationModeFilter.js';
+export { default as VerificationBadge } from './components/directory/VerificationBadge.js';
+export { default as ConsultationModeChip } from './components/directory/ConsultationModeChip.js';
+
+// Generic helpers
 export { default as VerificationStatusBadge } from './components/directory/VerificationStatusBadge.js';
 export { default as ListingStatusBadge } from './components/directory/ListingStatusBadge.js';
 export { default as ProfileField } from './components/directory/ProfileField.js';

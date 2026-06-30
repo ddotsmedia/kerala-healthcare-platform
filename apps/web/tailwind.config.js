@@ -3,7 +3,8 @@ export default {
   content: [
     './app/**/*.{js,jsx}',
     './components/**/*.{js,jsx}',
-    './lib/**/*.{js,jsx}'
+    './lib/**/*.{js,jsx}',
+    '../../packages/ui/**/*.{js,jsx}'
   ],
   theme: {
     extend: {
