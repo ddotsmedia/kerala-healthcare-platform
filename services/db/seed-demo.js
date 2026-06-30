@@ -67,8 +67,8 @@ async function seedHospitals(pool) {
       `INSERT INTO hospitals
          (name_ml,name_en,slug,type,verification_status,listing_status,
           published_at,district_id,registration_no,bed_count,icu_beds,nicu_beds,
-          emergency_24x7,website,about_ml,about_en,description_ml,description_en)
-       SELECT $1,$2,$3,$4,'verified','published',now(),di.id,$5,$6,$7,$8,$9,$10,$11,$12,$11,$12
+          emergency_24x7,website,about_ml,about_en)
+       SELECT $1,$2,$3,$4,'verified','published',now(),di.id,$5,$6,$7,$8,$9,$10,$11,$12
          FROM districts di WHERE di.code=$13
        ON CONFLICT (slug) DO NOTHING`,
       [h[0], h[1], h[2], h[3], h[5], h[6], h[7], h[8], h[9], h[10], h[11], h[12], h[4]]
