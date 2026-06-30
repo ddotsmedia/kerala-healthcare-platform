@@ -8,7 +8,7 @@
 ## Project
 
 **Name:** Kerala Health Portal
-**Path:** `C:\websites\Kerala Health Portal`
+**Path:** `c:\websites\kerala-healthcare-platform`
 **Type:** Kerala-first Digital Healthcare Ecosystem
 **Scale:** Millions of users · Enterprise-grade · India expansion ready
 
@@ -55,7 +55,7 @@ These rules apply to every task, every file, every session. No exceptions.
 ## Monorepo Structure
 
 ```
-C:\websites\Kerala Health Portal\
+c:\websites\kerala-healthcare-platform\
 ├── apps/
 │   ├── web/          # Next.js — patient-facing public site
 │   ├── portal/       # Next.js — doctor & hospital portal
@@ -238,7 +238,7 @@ Update this section at the end of each phase.
 
 | Phase | Name | Status | Git Tag |
 |---|---|---|---|
-| 0 | Foundation & Infrastructure | ⬜ Not started | — |
+| 0 | Foundation & Infrastructure | ✅ Complete | — |
 | 1 | Healthcare Directory | ⬜ Not started | — |
 | 2 | Appointments & Patient Portal | ⬜ Not started | — |
 | 3 | Health Knowledge Centre | ⬜ Not started | — |
@@ -296,5 +296,5 @@ S3_SECRET_KEY=
 
 ---
 
-*Last updated: Phase 0 — Foundation*
+*Last updated: Phase 0 — Foundation complete (repo scaffolding, agent contracts, governance docs)*
 *Kerala Health Portal · Claude Code Engineering Kit v1.0*
