@@ -145,4 +145,23 @@
 
 ---
 
+## Session: 2026-06-30 — Phase 1 smoke checklist (executed against local DB)
+
+### Build fix
+- [FIXED] `apps/web` build failed: `Cannot find module 'tailwindcss'`. Added `tailwindcss`/`autoprefixer`/`postcss` as devDependencies (referenced by config but never declared). Build then succeeded. (Same devDeps still need adding to apps/portal + apps/admin before those build.)
+
+### 8-item smoke results
+1. GET /ml/doctors renders Malayalam — **PASS** (HTTP 200, Malayalam text, doctor cards).
+2. GET /ml/doctors/[slug] renders + JSON-LD — **PASS** (200, `"@type":"Physician"`, Malayalam).
+3. GET /ml/hospitals/[slug] renders — **PASS** (200, `"@type":"Hospital"`, disclaimer w/ 108).
+4. Search "cardiology" → cardiologists — **PASS** (4 cardiologists).
+5. Search "thrissur" → Thrissur providers — **FAIL**. District name is NOT in the doctor search vector, so term search returns 0. The district dropdown filter (?district=) is the working path. Fix: index district name_ml/name_en into search_ml/search_manglish, or map a district term to the district filter. [NEEDS DECISION]
+6. Manglish "vaidyan"/"kaliveedu" → results — **FAIL**. Neither term/entity exists in the seed data (no provider text contains വൈദ്യൻ; clinics with ക്ലിനിക്ക് are not in the doctor/hospital search scope). The item-2 fix makes dictionary terms like `hridrogam` match, but vaidyan/kaliveedu also need matching seed data. [NEEDS DECISION]
+7. Admin verification queue loads + approve works — **PASS** (pending row appears in listQueue; recordDecision approve → doctor verification_status='verified', nmc_verified=true).
+8. Doctor edits bio → visible on public profile — **PASS at data layer** (updateProfile writes about_ml; public read path reflects it; stays verified+published). Login itself is N/A until Phase 2 auth (PORTAL_DEMO_DOCTOR_ID stand-in).
+
+Result: **6 PASS, 2 FAIL** (items 5, 6 — both data/indexing gaps, logged above).
+
+---
+
 *Kerala Health Portal · Universal Prompt Law · Claude Code Engineering Kit v1.0*
