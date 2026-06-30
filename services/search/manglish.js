@@ -25,19 +25,36 @@ const MEDICAL_TERMS = {
   // Symptoms / conditions
   pani: 'പനി', chuma: 'ചുമ', thalavedana: 'തലവേദന', vedana: 'വേദന',
   ksheenam: 'ക്ഷീണം', chumaykk: 'ചുമ', allergy: 'അലർജി',
-  pressure: 'രക്തസമ്മർദ്ദം', bp: 'രക്തസമ്മർദ്ദം', പ്രമേഹം: 'പ്രമേഹം',
+  pressure: 'രക്തസമ്മർദ്ദം', bp: 'രക്തസമ്മർദ്ദം',
   pramehom: 'പ്രമേഹം', diabetes: 'പ്രമേഹം', sugar: 'പ്രമേഹം',
   // Services / facilities
-  scan: 'സ്കാൻ', xray: 'എക്സ്റേ', lab: 'ലാബ്', rakthapariശോധന: 'രക്തപരിശോധന',
+  scan: 'സ്കാൻ', xray: 'എക്സ്റേ', lab: 'ലാബ്', rakthaparishodhana: 'രക്തപരിശോധന',
   ambulance: 'ആംബുലൻസ്', emergency: 'അത്യാഹിതം', operation: 'ഓപ്പറേഷൻ',
   surgery: 'ശസ്ത്രക്രിയ', medicine: 'മരുന്ന്', marunnu: 'മരുന്ന്',
   chikitsa: 'ചികിത്സ', treatment: 'ചികിത്സ'
 };
 
+// Word-final Malayalam modifiers that the 'simple' tsvector config treats as
+// part of the token. Stripping them lets dictionary forms (e.g. ഹൃദ്രോഗം)
+// match the stem that compound seeded text actually tokenizes to (ഹൃദ്രോഗ in
+// "ഹൃദ്രോഗ വിദഗ്ധൻ"). Keep the tsvector config 'simple'/exact-token for now;
+// full Malayalam stemming is a larger change (see BLOCKERS.md).
+const TRAILING_SIGNS = /[ംഃ്]+$/;
+
 /**
- * Expand a Manglish query into Malayalam using the medical-term dictionary.
- * Unknown tokens are dropped from the Malayalam expansion (the caller falls back
- * to transliteration for those).
+ * Normalise a Malayalam dictionary term to its searchable stem by removing
+ * trailing anusvara/visarga/virama. Idempotent.
+ * @param {string} term
+ * @returns {string}
+ */
+function normalizeMalayalamTerm(term) {
+  return (term || '').replace(TRAILING_SIGNS, '');
+}
+
+/**
+ * Expand a Manglish query into Malayalam (normalised stems) using the
+ * medical-term dictionary. Unknown tokens are dropped from the expansion (the
+ * caller falls back to transliteration for those).
  * @param {string} text
  * @returns {{ malayalam: string, hasMatch: boolean, matched: string[] }}
  */
@@ -47,7 +64,7 @@ function expandManglish(text) {
   const matched = [];
   for (const tok of tokens) {
     const key = tok.replace(/[^a-z0-9ഀ-ൿ]/g, '');
-    if (MEDICAL_TERMS[key]) matched.push(MEDICAL_TERMS[key]);
+    if (MEDICAL_TERMS[key]) matched.push(normalizeMalayalamTerm(MEDICAL_TERMS[key]));
   }
   return { malayalam: matched.join(' '), hasMatch: matched.length > 0, matched };
 }
@@ -62,4 +79,4 @@ function lookupTerm(token) {
   return MEDICAL_TERMS[key] || null;
 }
 
-export { MEDICAL_TERMS, expandManglish, lookupTerm };
+export { MEDICAL_TERMS, expandManglish, lookupTerm, normalizeMalayalamTerm };
