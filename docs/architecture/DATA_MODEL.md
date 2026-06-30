@@ -14,6 +14,12 @@
 | 0004 | `0004_doctors.sql` | Doctor directory + NMC verification gate + search |
 | 0005 | `0005_hospitals.sql` | Hospital directory + verification gate + search |
 | 0006 | `0006_provider_verification.sql` | Verification queue + audit trail |
+| 0007 | `0007_provider_specialties.sql` | Doctor ↔ specialty (many-to-many) |
+| 0008 | `0008_provider_education.sql` | Doctor qualifications / education |
+| 0009 | `0009_hospital_departments.sql` | Hospital departments |
+| 0010 | `0010_hospital_services.sql` | Hospital services / facilities |
+| 0011 | `0011_hospital_accreditations.sql` | Hospital accreditations (NABH/NABL/ISO) |
+| 0012 | `0012_hospital_providers.sql` | Hospital ↔ doctor (many-to-many) |
 
 ---
 
@@ -69,6 +75,24 @@ Bilingual name, permanent slug, verification, district FK, location (lat/lng), p
 
 ### `provider_verifications`
 Polymorphic (`provider_type` + `provider_id`) verification queue and audit log. NMC check fields for doctors.
+
+### `provider_specialties`
+Doctor ↔ specialty many-to-many (`is_primary` flag). `doctors.specialty_id` stays as the primary specialty for the SEO slug.
+
+### `provider_education`
+Doctor qualifications: degree, institution (ml/en), year completed.
+
+### `hospital_departments`
+Hospital departments (ml/en). Taxonomy only — no clinical content.
+
+### `hospital_services`
+Hospital services/facilities (ml/en, `available_24x7`). Facility listing only — no clinical claims.
+
+### `hospital_accreditations`
+Accreditations (NABH/NABL/ISO): body, number, validity, verified flag, evidence.
+
+### `hospital_providers`
+Hospital ↔ doctor many-to-many, optional `department_id` and `role`.
 
 ---
 
