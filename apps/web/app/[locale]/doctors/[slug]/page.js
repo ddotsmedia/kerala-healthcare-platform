@@ -49,6 +49,11 @@ export default async function DoctorProfile({ params }) {
         </div>
       </header>
 
+      <a href={`/${locale}/book/${doctor.slug}`}
+         className="inline-block rounded-lg bg-brand px-4 py-2 text-sm font-medium text-white hover:bg-brand-dark">
+        {t(locale, 'book_now')}
+      </a>
+
       {about && <p className="text-sm leading-relaxed text-gray-800">{about}</p>}
 
       {doctor.education && doctor.education.length > 0 && (
