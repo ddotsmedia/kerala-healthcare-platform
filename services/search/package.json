@@ -1,0 +1,8 @@
+{
+  "name": "@khp/search",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "main": "index.js",
+  "description": "Directory search query builders — Malayalam script + Manglish transliteration. Zero dependencies."
+}
