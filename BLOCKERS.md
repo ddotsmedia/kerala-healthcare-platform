@@ -51,6 +51,22 @@
 ### Needs human decision
 - (none new)
 
+## Session: 2026-06-30 — Phase 1 Healthcare Directory (DB foundation)
+
+### Assumptions
+- [ASSUMPTION] "PASTE INTO CLAUDE CODE — PHASE 1" arrived with header only, no spec body. Per Universal Prompt Law (never ask), built Phase 1 from the ROADMAP/CLAUDE.md definition: provider data model + mandatory verification + NMC gate + SEO slugs + Malayalam/Manglish search.
+- [ASSUMPTION] Scoped this slice to the DB foundation (additive migrations 0001–0006) + DATA_MODEL.md. App/API/UI for the directory are the next sub-step, not built yet.
+- [ASSUMPTION] Seeded reference data (14 districts, 12 specialties) inside migrations with ON CONFLICT DO NOTHING — additive, idempotent. Specialties are a taxonomy only, NOT diagnostic categories.
+- [ASSUMPTION] Publish gate enforced by DB triggers in addition to app layer: a doctor/hospital cannot be 'published' unless verified (doctor also needs nmc_verified).
+- [ASSUMPTION] Sensitive contact stored as bytea (mobile_enc/email_enc/phone_enc), encrypted app-layer via pgcrypto. Plaintext never stored.
+
+### Errors fixed
+- (none)
+
+### Needs human decision
+- [NEEDS DECISION] NMC registry integration: API endpoint/credentials or manual cross-check process for `nmc_checked` / `nmc_match`. Currently a manual field.
+- [NEEDS DECISION] Confirm specialty taxonomy list is complete for launch (12 seeded).
+
 ---
 
 *Kerala Health Portal · Universal Prompt Law · Claude Code Engineering Kit v1.0*
