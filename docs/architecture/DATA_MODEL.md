@@ -24,6 +24,10 @@
 | 0014 | `0014_hospital_services_slug.sql` | hospital_services: service_slug catalogue + available |
 | 0015 | `0015_healthcare_providers_reconcile.sql` | spec columns on doctors, `healthcare_providers` view, junction `provider_id` |
 | 0016 | `0016_facilities.sql` | clinics + diagnostic centres (`facilities`, publish-gated) |
+| 0017 | `0017_users.sql` | minimal users table (FK target for appointments) |
+| 0018 | `0018_availability_templates.sql` | weekly recurring provider availability |
+| 0019 | `0019_availability_overrides.sql` | date-specific block/extra availability |
+| 0020 | `0020_appointments.sql` | appointments + concurrency-safe unique confirmed-slot index |
 
 ## Spec reconciliation — `healthcare_providers`
 

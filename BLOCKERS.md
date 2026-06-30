@@ -175,4 +175,13 @@ Result: **6 PASS, 2 FAIL** (items 5, 6 — both data/indexing gaps, logged above
 
 ---
 
+## Session: 2026-06-30 — Phase 2 (Appointments & Patient Portal)
+
+### Task 2.1 — schema
+- [ASSUMPTION] Created a minimal `users` table (0017) as the FK target for `appointments.patient_id` (and `cancelled_by`). Full OTP/JWT auth is still Phase 2 work not yet built; patient identity uses a demo stand-in like Phase 1.
+- [ASSUMPTION] `appointments.provider_id` / availability tables FK `doctors(id)`, not `healthcare_providers` (which is a VIEW and cannot be an FK target). `doctors.id` == view id, so this matches the spec intent.
+- [ASSUMPTION] Double-booking prevented by a partial UNIQUE index on `(provider_id, slot_date, slot_start) WHERE status='confirmed'` (DB-level), per spec.
+
+---
+
 *Kerala Health Portal · Universal Prompt Law · Claude Code Engineering Kit v1.0*
