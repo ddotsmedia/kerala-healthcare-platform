@@ -142,4 +142,25 @@ async function addEducation(id, edu) {
   }
 }
 
-export { currentDoctorId, getMyProfile, updateProfile, addEducation };
+/** Soft-remove an education entry the doctor owns; qualifications change → re-verify. */
+async function deleteEducation(id, eduId) {
+  if (!id || !eduId) throw new Error('Missing id');
+  const client = await getPool().connect();
+  try {
+    await client.query('BEGIN');
+    await client.query(
+      `UPDATE provider_education SET deleted_at = now(), updated_at = now()
+        WHERE id = $1 AND doctor_id = $2 AND deleted_at IS NULL`,
+      [eduId, id]
+    );
+    await resetVerification(client, id);
+    await client.query('COMMIT');
+  } catch (err) {
+    await client.query('ROLLBACK');
+    throw err;
+  } finally {
+    client.release();
+  }
+}
+
+export { currentDoctorId, getMyProfile, updateProfile, addEducation, deleteEducation };
