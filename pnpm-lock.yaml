@@ -41,6 +41,9 @@ importers:
 
   apps/portal:
     dependencies:
+      '@khp/appointments':
+        specifier: workspace:*
+        version: link:../../services/appointments
       '@khp/db':
         specifier: workspace:*
         version: link:../../services/db
@@ -78,6 +81,9 @@ importers:
 
   apps/web:
     dependencies:
+      '@khp/appointments':
+        specifier: workspace:*
+        version: link:../../services/appointments
       '@khp/db':
         specifier: workspace:*
         version: link:../../services/db

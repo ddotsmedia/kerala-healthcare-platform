@@ -35,12 +35,24 @@ async function resolveSlot(client, providerId, date, startTime) {
   return null;
 }
 
+const APPT_COLS = 'id, booking_ref, slot_date, slot_start, slot_end, consultation_mode, consultation_room, status';
+
 /**
  * Book a slot atomically.
- * @returns {Promise<{ok:true, appointment:object} | {ok:false, error:string}>}
+ * @param {string} [idempotencyKey] when set, a repeat with the same key returns
+ *   the original appointment instead of booking again.
+ * @returns {Promise<{ok:true, appointment:object, replayed?:boolean} | {ok:false, error:string}>}
  */
-async function bookSlot(providerId, patientId, date, startTime, mode) {
+async function bookSlot(providerId, patientId, date, startTime, mode, idempotencyKey) {
   const pool = getPool();
+
+  if (idempotencyKey) {
+    const prior = await pool.query(
+      `SELECT ${APPT_COLS} FROM appointments WHERE idempotency_key = $1`, [idempotencyKey]
+    );
+    if (prior.rows.length) return { ok: true, appointment: prior.rows[0], replayed: true };
+  }
+
   const client = await pool.connect();
   try {
     await client.query('BEGIN');
@@ -59,12 +71,12 @@ async function bookSlot(providerId, patientId, date, startTime, mode) {
     const { rows } = await client.query(
       `INSERT INTO appointments
          (booking_ref, provider_id, patient_id, slot_date, slot_start, slot_end,
-          consultation_mode, status, consultation_room)
-       VALUES ($1,$2,$3,$4,$5,$6,$7,'confirmed',$8)
+          consultation_mode, status, consultation_room, idempotency_key)
+       VALUES ($1,$2,$3,$4,$5,$6,$7,'confirmed',$8,$9)
        ON CONFLICT (provider_id, slot_date, slot_start) WHERE status = 'confirmed'
        DO NOTHING
-       RETURNING id, booking_ref, slot_date, slot_start, slot_end, consultation_mode, consultation_room, status`,
-      [ref, providerId, patientId, date, startTime, slot.end, useMode, room]
+       RETURNING ${APPT_COLS}`,
+      [ref, providerId, patientId, date, startTime, slot.end, useMode, room, idempotencyKey || null]
     );
     if (rows.length === 0) {
       await client.query('ROLLBACK');

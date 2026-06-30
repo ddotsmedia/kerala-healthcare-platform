@@ -15,7 +15,8 @@
     "react-dom": "^18.3.0",
     "@khp/db": "workspace:*",
     "@khp/search": "workspace:*",
-    "@khp/ui": "workspace:*"
+    "@khp/ui": "workspace:*",
+    "@khp/appointments": "workspace:*"
   },
   "devDependencies": {
     "tailwindcss": "^3.4.0",
