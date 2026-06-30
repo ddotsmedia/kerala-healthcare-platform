@@ -216,10 +216,29 @@ truncation. The following was confirmed complete as of commit `a85902f`:
   Schema.org JSON-LD, non-dismissable disclaimer
 - apps/admin — verification queue with manual NMC cross-check
 
-**Still to verify against this spec before tagging v0.2.0-directory:**
-- [ ] TASK 1.5 — Directory components in packages/ui (DoctorCard,
-      HospitalCard, SpecialtyFilter, DistrictFilter, VerificationBadge,
-      ConsultationModeChip)
-- [ ] TASK 1.7 — Doctor portal profile management (apps/portal)
-- [ ] tsvector population wired into write path (not just initial seed)
-- [ ] Full smoke test checklist run end-to-end
+**Final completion state (2026-06-30) — tagged `v0.2.0-directory`:**
+- [x] TASK 1.5 — Directory components in `packages/ui` (DoctorCard,
+      HospitalCard, SpecialtyFilter, DistrictFilter, ConsultationModeFilter,
+      VerificationBadge, ConsultationModeChip, Pagination). `apps/web` refactored
+      to consume them.
+- [x] TASK 1.7 — Doctor portal profile management (`apps/portal`): profile,
+      education, hospital affiliations, REST routes, re-verification rule.
+- [x] tsvector population wired into the write path (portal save) — not just the
+      seed. District + specialty names also indexed.
+- [x] Full smoke checklist run end-to-end against a live Postgres 15:
+      **ALL 8 items PASS**; Lighthouse SEO **100/100** on a doctor profile.
+- [x] Migrations 0013–0016 added (hospitals type/icu/nicu/website,
+      `hospital_services.service_slug`, `healthcare_providers` view + junction
+      `provider_id`, `facilities` clinics/diagnostics).
+- [x] `pnpm build` + `pnpm lint` green across web/admin/portal.
+
+**Accepted as Phase 2 scope (not blockers for this tag):**
+- RBAC enforcement + real OTP/JWT login (admin/portal currently use an
+  `x-khp-role` header / `PORTAL_DEMO_DOCTOR_ID` stand-in).
+
+**Accepted as permanent (no rework):**
+- Hospital/doctor phone & email kept ENCRYPTED (`*_enc`) rather than the spec's
+  plaintext — per SECURITY.md.
+- Apps use `app/` (not `src/app/`), consistent with the existing tree.
+
+Full evidence: `docs/phases/PHASE_1_COMPLETION.md`.

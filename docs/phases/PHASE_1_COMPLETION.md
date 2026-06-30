@@ -1,7 +1,7 @@
 # Phase 1 — Healthcare Directory · Completion Report
 
 *Generated 2026-06-30. Reconciles the build against `PHASE_1_SPEC.md`.*
-*Status: build + smoke complete. NOT yet tagged `v0.2.0-directory` (awaiting confirmation).*
+*Status: build + smoke complete. Tagged `v0.2.0-directory`. Auth-dependent partials accepted as Phase 2 scope.*
 
 Verified against a local Postgres 15 (`khp-demo-pg`, port 5439), migrations 0001–0016 applied, `pnpm db:seed:demo` loaded (11 doctors, 5 hospitals, 10 departments, 3 facilities).
 
@@ -75,4 +75,4 @@ Verified against a local Postgres 15 (`khp-demo-pg`, port 5439), migrations 0001
 - Facility profile pages (listings only for now).
 - Full Malayalam text-search stemming.
 
-**Recommendation:** ready to tag `v0.2.0-directory` once the auth-dependent partials (1.6 RBAC, 1.7 login) are explicitly accepted as Phase 2 scope. Awaiting confirmation before tagging.
+**Tagged `v0.2.0-directory`** (2026-06-30). Auth-dependent partials (1.6 RBAC, 1.7 login) accepted as Phase 2 scope; encryption deviation and `app/` path accepted as permanent.
