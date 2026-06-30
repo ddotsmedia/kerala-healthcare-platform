@@ -8,6 +8,7 @@ export { default as DistrictFilter } from './components/directory/DistrictFilter
 export { default as ConsultationModeFilter } from './components/directory/ConsultationModeFilter.js';
 export { default as VerificationBadge } from './components/directory/VerificationBadge.js';
 export { default as ConsultationModeChip } from './components/directory/ConsultationModeChip.js';
+export { default as Pagination } from './components/directory/Pagination.js';
 
 // Generic helpers
 export { default as VerificationStatusBadge } from './components/directory/VerificationStatusBadge.js';
