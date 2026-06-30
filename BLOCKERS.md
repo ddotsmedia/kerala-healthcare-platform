@@ -169,4 +169,10 @@ Result: **6 PASS, 2 FAIL** (items 5, 6 — both data/indexing gaps, logged above
 
 ---
 
+### Item 3 — Lighthouse SEO (doctor profile)
+- [FIXED] Built `apps/web` (production) and served on :3000; ran Lighthouse SEO on `/ml/doctors/dr-anand-nair-cardiology-ernakulam`. **SEO score = 100/100.** All SEO audits PASS: document-title, meta-description, is-crawlable, http-status-code, link-text, crawlable-anchors, hreflang. Spec DoD (≥90) met.
+- [ASSUMPTION] Lighthouse run via `npx lighthouse` (transient, not added to project deps) against headless Chrome. It exited non-zero only on a Windows temp-dir cleanup error AFTER writing a complete report — score is valid.
+
+---
+
 *Kerala Health Portal · Universal Prompt Law · Claude Code Engineering Kit v1.0*
