@@ -131,4 +131,18 @@
 
 ---
 
+## Session: 2026-06-30 — Local DB stand-up + migrate + seed (executed)
+
+### Done
+- [FIXED] Started Docker Desktop (was not actually running) and a throwaway Postgres 15 container `khp-demo-pg` on host port **5439** (5433/5434 are taken by PROTECTED projects healthportal/ddotshop — NOT touched).
+- [FIXED] `.env` written with `DATABASE_URL=postgres://postgres:postgres@localhost:5439/khp` (git-ignored, confirmed).
+- [FIXED] Migrations 0001–0016 all applied cleanly. `pnpm db:seed:demo` populated 10 doctors / 5 hospitals / 10 departments / 3 facilities; `healthcare_providers` view resolves; all 10 doctors have `search_ml`.
+- [FIXED] Seed bug: referenced non-existent `hospitals.description_ml/en` → switched to `about_ml/en`.
+
+### Findings
+- [NEEDS DECISION] Manglish medical-term search can miss: dictionary maps e.g. `hridrogam → ഹൃദ്രോഗം` (trailing ം) but seeded Malayalam tokenises as `ഹൃദ്രോഗ`; the `simple` tsvector config does exact-token matching, so no hit. Fix options: store specialty name_ml in the search vector, normalise dictionary forms to match stored tokens, or add a Malayalam stemming/normalisation step. English ("cardiology"), mode/language filters, and hospital search all verified working.
+- [ASSUMPTION] Container `khp-demo-pg` left RUNNING for development (port 5439). Stop with `docker rm -f khp-demo-pg` when done.
+
+---
+
 *Kerala Health Portal · Universal Prompt Law · Claude Code Engineering Kit v1.0*
