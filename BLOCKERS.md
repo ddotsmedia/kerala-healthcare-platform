@@ -65,7 +65,7 @@
 
 ### Needs human decision
 - [FIXED] NMC verification (Phase 1): MANUAL cross-check. A `verification_agent` looks up the registration number on the NMC public search portal, then records `nmc_checked`/`nmc_match` + evidence in `provider_verifications`. Automated NMC API integration deferred to a future phase.
-- [NEEDS DECISION] Confirm specialty taxonomy list is complete for launch (12 seeded).
+- [FIXED] Specialty taxonomy: 12 seeded specialties accepted for Phase 1 launch. More can be added later via additive migration (new INSERT ... ON CONFLICT DO NOTHING) without disrupting existing data.
 
 ---
 
