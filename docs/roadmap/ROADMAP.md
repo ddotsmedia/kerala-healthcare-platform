@@ -11,8 +11,8 @@ Kerala-first, scalable later. Each phase ends with a clean build and a conventio
 | Phase | Name | Status | Git Tag |
 |---|---|---|---|
 | 0 | Foundation & Infrastructure | ✅ Complete | — |
-| 1 | Healthcare Directory | 🟡 In progress | — |
-| 2 | Appointments & Patient Portal | ⬜ Not started | — |
+| 1 | Healthcare Directory | ✅ Complete | v0.2.0-directory |
+| 2 | Appointments & Patient Portal | 🟢 Built (tag pending) | — |
 | 3 | Health Knowledge Centre | ⬜ Not started | — |
 | 4 | Healthcare Jobs Portal | ⬜ Not started | — |
 | 5 | AI Assistant & Platform Scale | ⬜ Not started | — |

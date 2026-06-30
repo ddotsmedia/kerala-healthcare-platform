@@ -190,4 +190,10 @@ Result: **6 PASS, 2 FAIL** (items 5, 6 — both data/indexing gaps, logged above
 
 ---
 
+### Phase 2 — complete (build + smoke)
+- [ASSUMPTION] All 7 tasks built, 8/8 smoke pass against local Postgres, lint+build green across web/admin/portal. NOT tagged — holding for confirmation (mirrors Phase 1). Proposed tag: `v0.3.0-appointments`. Full evidence: docs/phases/PHASE_2_COMPLETION.md.
+- [FIXED] Postgres container `khp-demo-pg` had exited (255) mid-session; restarted (data persisted), smoke re-run green.
+
+---
+
 *Kerala Health Portal · Universal Prompt Law · Claude Code Engineering Kit v1.0*
