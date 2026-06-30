@@ -91,6 +91,21 @@
 - [FIXED] NMC verification (Phase 1): MANUAL cross-check. A `verification_agent` looks up the registration number on the NMC public search portal, then records `nmc_checked`/`nmc_match` + evidence in `provider_verifications`. Automated NMC API integration deferred to a future phase.
 - [FIXED] Specialty taxonomy: 12 seeded specialties accepted for Phase 1 launch. More can be added later via additive migration (new INSERT ... ON CONFLICT DO NOTHING) without disrupting existing data.
 
+## Session: 2026-06-30 — Hospital editor + demo seed
+
+### Assumptions
+- [ASSUMPTION] `files.zip` in repo root contains the 6 phase spec docs + a README (project files, not junk) — LEFT in place, not deleted, not committed. The specs were never unzipped into `docs/phases/` (still missing).
+- [ASSUMPTION] Hospital editor mirrors the doctor editor: status fields read-only (no self-verify/self-publish), `hospitalVectorUpdate` wired into the same transaction as each save. `PORTAL_DEMO_HOSPITAL_ID` stand-in until Phase 2 auth.
+- [ASSUMPTION] Implemented a real demo seed (`services/db/seed-demo.js`, `pnpm db:seed:demo`): runs migrations, inserts 3 verified+published doctors and 2 hospitals with `ON CONFLICT (slug) DO NOTHING`, then populates search vectors. Replaces the Phase-0 echo placeholder.
+- [ASSUMPTION] Added `@khp/search` as a dependency of `services/db` (the seed imports it). Ran `pnpm install` — 35 packages linked, `pnpm-lock.yaml` committed.
+
+### Errors fixed
+- [FIXED] `db:seed:demo` was a no-op echo placeholder — replaced with a working additive seed.
+- [FIXED] Seed `ERR_MODULE_NOT_FOUND @khp/search` from `services/db` — added the workspace dep + reinstalled.
+
+### Needs human decision
+- [NEEDS DECISION] Could NOT confirm the demo seed POPULATES data in this environment: no PostgreSQL (`psql`/`pg_ctl` absent), Docker daemon not running, `DATABASE_URL` unset. The seed runs correctly up to the connection step. To verify: set `DATABASE_URL` to a running Postgres 15 and run `pnpm db:seed:demo`.
+
 ---
 
 *Kerala Health Portal · Universal Prompt Law · Claude Code Engineering Kit v1.0*

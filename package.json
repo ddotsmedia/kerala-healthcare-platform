@@ -21,6 +21,6 @@
     "lint": "echo \"[phase 0] no lintable packages yet — added in Phase 1\"",
     "test": "echo \"[phase 0] no tests yet — added in Phase 1\"",
     "db:migrate": "node services/db/migrate.js",
-    "db:seed:demo": "echo \"[phase 0] no demo seed yet — added in Phase 1\""
+    "db:seed:demo": "node services/db/seed-demo.js"
   }
 }

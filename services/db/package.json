@@ -6,9 +6,11 @@
   "main": "index.js",
   "description": "PostgreSQL pool and additive migration runner.",
   "scripts": {
-    "migrate": "node migrate.js"
+    "migrate": "node migrate.js",
+    "seed:demo": "node seed-demo.js"
   },
   "dependencies": {
-    "pg": "^8.11.0"
+    "pg": "^8.11.0",
+    "@khp/search": "workspace:*"
   }
 }
