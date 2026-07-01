@@ -115,6 +115,66 @@ async function seedFacilities(pool) {
   }
 }
 
+// [slug, title_ml, title_en] — content seed sets.
+const DISEASES = [
+  ['diabetes', 'പ്രമേഹം', 'Diabetes'], ['hypertension', 'രക്തസമ്മർദ്ദം', 'Hypertension'],
+  ['asthma', 'ആസ്ത്മ', 'Asthma'], ['dengue', 'ഡെങ്കിപ്പനി', 'Dengue'],
+  ['tuberculosis', 'ക്ഷയരോഗം', 'Tuberculosis'], ['malaria', 'മലേറിയ', 'Malaria'],
+  ['anemia', 'വിളർച്ച', 'Anemia'], ['migraine', 'കൊടിഞ്ഞി', 'Migraine'],
+  ['arthritis', 'സന്ധിവാതം', 'Arthritis'], ['thyroid-disorder', 'തൈറോയ്ഡ് തകരാറ്', 'Thyroid Disorder'],
+  ['jaundice', 'മഞ്ഞപ്പിത്തം', 'Jaundice'], ['typhoid', 'ടൈഫോയ്ഡ്', 'Typhoid'],
+  ['pneumonia', 'ന്യുമോണിയ', 'Pneumonia'], ['gastritis', 'ഗ്യാസ്ട്രൈറ്റിസ്', 'Gastritis'],
+  ['dermatitis', 'ത്വക്ക് വീക്കം', 'Dermatitis'], ['conjunctivitis', 'ചെങ്കണ്ണ്', 'Conjunctivitis'],
+  ['sinusitis', 'സൈനസൈറ്റിസ്', 'Sinusitis'], ['bronchitis', 'ബ്രോങ്കൈറ്റിസ്', 'Bronchitis'],
+  ['chickenpox', 'ചിക്കൻപോക്സ്', 'Chickenpox'], ['hepatitis', 'ഹെപ്പറ്റൈറ്റിസ്', 'Hepatitis']
+];
+const ARTICLES = [
+  ['healthy-eating-kerala', 'ആരോഗ്യകരമായ ഭക്ഷണം', 'Healthy Eating in Kerala'],
+  ['monsoon-health-tips', 'മഴക്കാല ആരോഗ്യ നുറുങ്ങുകൾ', 'Monsoon Health Tips'],
+  ['managing-diabetes-daily', 'പ്രമേഹ പരിചരണം', 'Managing Diabetes Daily'],
+  ['heart-health-basics', 'ഹൃദയാരോഗ്യം', 'Heart Health Basics'],
+  ['child-vaccination-guide', 'കുട്ടികളുടെ വാക്സിനേഷൻ', 'Child Vaccination Guide'],
+  ['mental-wellbeing', 'മാനസികാരോഗ്യം', 'Mental Wellbeing'],
+  ['womens-health', 'സ്ത്രീകളുടെ ആരോഗ്യം', "Women's Health"],
+  ['elderly-care', 'വയോജന പരിചരണം', 'Elderly Care'],
+  ['first-aid-basics', 'പ്രഥമശുശ്രൂഷ', 'First Aid Basics'],
+  ['staying-active', 'ശാരീരിക പ്രവർത്തനം', 'Staying Active']
+];
+const PROCEDURES = [
+  ['blood-test-guide', 'രക്തപരിശോധന', 'Blood Test Guide'],
+  ['x-ray-procedure', 'എക്സ്റേ', 'X-Ray Procedure'],
+  ['echocardiogram', 'എക്കോകാർഡിയോഗ്രാം', 'Echocardiogram'],
+  ['endoscopy', 'എൻഡോസ്കോപ്പി', 'Endoscopy'],
+  ['dialysis', 'ഡയാലിസിസ്', 'Dialysis']
+];
+
+async function seedContentSet(pool, rows, type) {
+  for (const [slug, ml, en] of rows) {
+    await pool.query(
+      `INSERT INTO content_items
+         (slug, type, title_ml, title_en, body_ml, body_en, excerpt_ml, excerpt_en,
+          status, published_at, meta_title_ml, meta_title_en, meta_desc_ml, meta_desc_en)
+       SELECT $1,$2,$3,$4,$5,$6,$7,$8,'published',now(),$3,$4,$7,$8
+        WHERE NOT EXISTS (SELECT 1 FROM content_items WHERE slug = $1)`,
+      [slug, type, ml, en,
+       `${ml} — വിദ്യാഭ്യാസ വിവരങ്ങൾ മാത്രം.`, `${en} — educational information only.`,
+       `${en} overview`, `${en} overview`]
+    );
+  }
+}
+
+async function seedContent(pool) {
+  await seedContentSet(pool, DISEASES, 'disease');
+  await seedContentSet(pool, ARTICLES, 'article');
+  await seedContentSet(pool, PROCEDURES, 'procedure');
+  // initial version rows
+  await pool.query(
+    `INSERT INTO content_versions (content_item_id, version_number, body_ml, body_en)
+     SELECT id, 1, body_ml, body_en FROM content_items c
+      WHERE NOT EXISTS (SELECT 1 FROM content_versions v WHERE v.content_item_id = c.id)`
+  );
+}
+
 async function seedAuthUsers(pool) {
   // Patient (Demo Patient) login mobile.
   await pool.query(
@@ -208,6 +268,7 @@ async function main() {
   await seedFacilities(pool);
   await seedPatientAndAvailability(pool);
   await seedAuthUsers(pool);
+  await seedContent(pool);
   const counts = await populateVectors(pool);
   console.log(`Demo seed complete. Doctors: ${counts.doctors}, Hospitals: ${counts.hospitals}, Departments: ${DEMO_HOSPITALS.length * DEPTS.length}, Facilities: ${DEMO_FACILITIES.length}.`);
 }
