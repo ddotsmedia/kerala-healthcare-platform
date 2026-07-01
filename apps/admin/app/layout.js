@@ -15,7 +15,10 @@ export default function RootLayout({ children }) {
         <div className="mx-auto max-w-4xl px-4 py-6">
           <header className="mb-6 flex items-center justify-between border-b border-gray-300 pb-3">
             <h1 className="text-lg font-bold text-brand">KHP Admin</h1>
-            <span className="text-xs text-gray-500">Verification queue</span>
+            <nav className="flex gap-4 text-sm">
+              <a href="/verification" className="hover:text-brand">Verification</a>
+              <a href="/cms" className="hover:text-brand">CMS</a>
+            </nav>
           </header>
           {children}
         </div>

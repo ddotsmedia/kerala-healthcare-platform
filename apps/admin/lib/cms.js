@@ -97,6 +97,7 @@ async function transition(session, id, from, to, needPublish) {
 const submit = (s, id) => transition(s, id, 'draft', 'in_review', false);
 const approve = (s, id) => transition(s, id, 'in_review', 'approved', true);
 const publish = (s, id) => transition(s, id, 'approved', 'published', true);
+const reject = (s, id) => transition(s, id, 'in_review', 'draft', true);
 
 async function archive(session, id) {
   if (!canPublish(session.role)) return { ok: false, error: 'forbidden' };
@@ -113,4 +114,4 @@ async function listVersions(id) {
   return rows;
 }
 
-export { listContent, getContent, createDraft, updateDraft, submit, approve, publish, archive, listVersions };
+export { listContent, getContent, createDraft, updateDraft, submit, approve, publish, reject, archive, listVersions };
