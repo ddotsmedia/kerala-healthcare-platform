@@ -1,7 +1,7 @@
 # Phase 2 — Appointments & Patient Portal · Completion Report
 
 *Reconciles the build against `PHASE_2_SPEC.md`. Verified against local Postgres 15 (`khp-demo-pg`, port 5439), migrations 0001–0022 applied, demo data seeded.*
-*Status: build + smoke complete. NOT tagged — awaiting confirmation (as with Phase 1).*
+*Status: build + smoke complete. Tagged `v0.3.0-appointments`. Auth/infra items accepted as later scope.*
 
 ---
 

@@ -240,7 +240,7 @@ Update this section at the end of each phase.
 |---|---|---|---|
 | 0 | Foundation & Infrastructure | ✅ Complete | — |
 | 1 | Healthcare Directory | ✅ Complete | v0.2.0-directory |
-| 2 | Appointments & Patient Portal | ⬜ Not started | — |
+| 2 | Appointments & Patient Portal | ✅ Complete | v0.3.0-appointments |
 | 3 | Health Knowledge Centre | ⬜ Not started | — |
 | 4 | Healthcare Jobs Portal | ⬜ Not started | — |
 | 5 | AI Assistant & Platform Scale | ⬜ Not started | — |
