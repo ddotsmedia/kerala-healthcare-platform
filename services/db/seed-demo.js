@@ -201,6 +201,37 @@ async function seedContent(pool) {
   await seedDiseaseDetails(pool);
 }
 
+// [slug, name_ml, name_en, icon, specialty_slug, urgency]
+const SYMPTOMS = [
+  ['fever', 'പനി', 'Fever', 'thermometer', 'general-physician', 'soon'],
+  ['chest-pain', 'നെഞ്ചുവേദന', 'Chest Pain', 'heart', 'cardiology', 'emergency'],
+  ['skin-rash', 'ത്വക്ക് തിണർപ്പ്', 'Skin Rash', 'sparkles', 'dermatology', 'routine'],
+  ['child-fever', 'കുട്ടികളിലെ പനി', 'Child Fever', 'baby', 'pediatrics', 'soon'],
+  ['headache', 'തലവേദന', 'Headache', 'brain', 'neurology', 'routine'],
+  ['joint-pain', 'സന്ധിവേദന', 'Joint Pain', 'bone', 'orthopedics', 'routine'],
+  ['eye-redness', 'കണ്ണ് ചുവപ്പ്', 'Eye Redness', 'eye', 'ophthalmology', 'soon'],
+  ['toothache', 'പല്ലുവേദന', 'Toothache', 'tooth', 'dentistry', 'routine'],
+  ['breathing-difficulty', 'ശ്വാസതടസ്സം', 'Breathing Difficulty', 'lungs', 'general-physician', 'emergency'],
+  ['anxiety', 'ഉത്കണ്ഠ', 'Anxiety', 'mind', 'psychiatry', 'routine']
+];
+
+async function seedSymptoms(pool) {
+  for (const [slug, ml, en, icon, spec, urgency] of SYMPTOMS) {
+    await pool.query(
+      `INSERT INTO symptoms (slug, name_ml, name_en, icon_name)
+       SELECT $1,$2,$3,$4 WHERE NOT EXISTS (SELECT 1 FROM symptoms WHERE slug = $1)`,
+      [slug, ml, en, icon]
+    );
+    await pool.query(
+      `INSERT INTO symptom_specialties (symptom_id, specialty_id, urgency_level)
+       SELECT s.id, sp.id, $3 FROM symptoms s, specialties sp
+        WHERE s.slug = $1 AND sp.slug = $2
+       ON CONFLICT (symptom_id, specialty_id) DO NOTHING`,
+      [slug, spec, urgency]
+    );
+  }
+}
+
 async function seedAuthUsers(pool) {
   // Patient (Demo Patient) login mobile.
   await pool.query(
@@ -302,6 +333,7 @@ async function main() {
   await seedPatientAndAvailability(pool);
   await seedAuthUsers(pool);
   await seedContent(pool);
+  await seedSymptoms(pool);
   const counts = await populateVectors(pool);
   console.log(`Demo seed complete. Doctors: ${counts.doctors}, Hospitals: ${counts.hospitals}, Departments: ${DEMO_HOSPITALS.length * DEPTS.length}, Facilities: ${DEMO_FACILITIES.length}.`);
 }

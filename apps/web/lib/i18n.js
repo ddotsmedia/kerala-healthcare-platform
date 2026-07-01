@@ -40,7 +40,20 @@ const DICT = {
     booking_ref: 'റഫറൻസ്',
     login_required: 'ലോഗിൻ ആവശ്യമാണ് (Phase 2 auth)',
     consultation_room: 'കൺസൾട്ടേഷൻ റൂം',
-    reschedule_note: 'പുനഃക്രമീകരണം ഡോക്ടർ കൈകാര്യം ചെയ്യുന്നു'
+    reschedule_note: 'പുനഃക്രമീകരണം ഡോക്ടർ കൈകാര്യം ചെയ്യുന്നു',
+    health: 'ആരോഗ്യ വിവരങ്ങൾ',
+    symptoms: 'ലക്ഷണങ്ങൾ',
+    symptom_navigator: 'ലക്ഷണ നാവിഗേറ്റർ',
+    diseases: 'രോഗങ്ങൾ',
+    tools: 'ആരോഗ്യ ഉപകരണങ്ങൾ',
+    find_a_doctor: 'ഡോക്ടറെ കണ്ടെത്തുക',
+    not_diagnosis: 'ഇത് രോഗനിർണയമല്ല. ഡോക്ടറെ കാണുക.',
+    related_specialists: 'ബന്ധപ്പെട്ട വിദഗ്ധർ',
+    when_to_seek: 'എപ്പോൾ ചികിത്സ തേടണം',
+    urgency_emergency: 'അടിയന്തരം — 112 / 108 വിളിക്കുക',
+    urgency_urgent: 'ഉടൻ ഡോക്ടറെ കാണുക',
+    urgency_soon: 'ഉടൻ ഡോക്ടറെ കാണുക',
+    urgency_routine: 'സാധാരണ പരിശോധന'
   },
   en: {
     site: 'Kerala Health Portal',
@@ -78,7 +91,20 @@ const DICT = {
     booking_ref: 'Ref',
     login_required: 'Login required (Phase 2 auth)',
     consultation_room: 'Consultation room',
-    reschedule_note: 'Rescheduling is handled by the doctor'
+    reschedule_note: 'Rescheduling is handled by the doctor',
+    health: 'Health information',
+    symptoms: 'Symptoms',
+    symptom_navigator: 'Symptom navigator',
+    diseases: 'Diseases',
+    tools: 'Health tools',
+    find_a_doctor: 'Find a doctor',
+    not_diagnosis: 'This is not a diagnosis. See a doctor.',
+    related_specialists: 'Related specialists',
+    when_to_seek: 'When to seek care',
+    urgency_emergency: 'Emergency — call 112 / 108',
+    urgency_urgent: 'See a doctor urgently',
+    urgency_soon: 'See a doctor soon',
+    urgency_routine: 'Routine check-up'
   }
 };
 
