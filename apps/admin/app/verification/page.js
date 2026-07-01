@@ -1,13 +1,16 @@
 // Verification queue list. Server component. Filter by status via ?status=.
 
 import Link from 'next/link';
+import { redirect } from 'next/navigation';
 import { listQueue, STATUSES } from '@/lib/verification';
+import { requireAdminRole } from '@/lib/auth';
 
 export const dynamic = 'force-dynamic';
 
 export const metadata = { title: 'Verification queue · KHP Admin' };
 
 export default async function VerificationQueue({ searchParams }) {
+  if (!requireAdminRole()) redirect('/login');
   const status = (searchParams && searchParams.status) || 'pending';
   const items = await listQueue(status);
 

@@ -15,7 +15,7 @@ const inp = 'rounded-lg border border-gray-300 px-2 py-1.5 text-sm';
 const fmtTime = (t) => (t ? String(t).slice(0, 5) : '');
 
 export default async function AvailabilityPage() {
-  const providerId = currentDoctorId();
+  const providerId = (await currentDoctorId());
   if (!providerId) return <EmptyState message="No provider loaded." />;
   const [templates, overrides] = await Promise.all([listTemplates(providerId), listOverrides(providerId)]);
 

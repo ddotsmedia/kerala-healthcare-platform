@@ -4,9 +4,17 @@
 // hospitals (10 doctors / 5 districts, 5 hospitals / 2 departments each per
 // PHASE_1_SPEC), then populates their search vectors via @khp/search.
 
+import { createHash } from 'node:crypto';
 import { getPool, closePool } from './pool.js';
 import { runMigrations } from './runner.js';
 import { doctorVectorUpdate, hospitalVectorUpdate } from '@khp/search';
+
+// Peppered mobile hash — MUST match @khp/auth crypto.pepperedHash.
+const AUTH_PEPPER = process.env.AUTH_PEPPER || process.env.JWT_SECRET || 'dev-pepper';
+const mobileHash = (m) => createHash('sha256').update(`${m}:${AUTH_PEPPER}`).digest('hex');
+
+// Demo login numbers (dev only).
+const DEMO_LOGINS = { patient: '9999000003', doctor: '9999000001', admin: '9999000002' };
 
 // first, last, display, slug, nmc, specialty_slug, district_code, languages,
 // bio_ml, bio_en, years, fee, modes
@@ -107,6 +115,34 @@ async function seedFacilities(pool) {
   }
 }
 
+async function seedAuthUsers(pool) {
+  // Patient (Demo Patient) login mobile.
+  await pool.query(
+    `UPDATE users SET mobile_hash = $1, updated_at = now()
+      WHERE full_name = 'Demo Patient' AND mobile_hash IS NULL`,
+    [mobileHash(DEMO_LOGINS.patient)]
+  );
+  // Doctor login → linked to dr-anand.
+  await pool.query(
+    `INSERT INTO users (role, full_name, mobile_hash)
+     SELECT 'doctor','Dr. Anand Nair', $1
+      WHERE NOT EXISTS (SELECT 1 FROM users WHERE mobile_hash = $1)`,
+    [mobileHash(DEMO_LOGINS.doctor)]
+  );
+  await pool.query(
+    `UPDATE doctors SET user_id = (SELECT id FROM users WHERE mobile_hash = $1)
+      WHERE slug = 'dr-anand-nair-cardiology-ernakulam' AND user_id IS NULL`,
+    [mobileHash(DEMO_LOGINS.doctor)]
+  );
+  // Platform admin login.
+  await pool.query(
+    `INSERT INTO users (role, full_name, mobile_hash)
+     SELECT 'platform_admin','Demo Admin', $1
+      WHERE NOT EXISTS (SELECT 1 FROM users WHERE mobile_hash = $1)`,
+    [mobileHash(DEMO_LOGINS.admin)]
+  );
+}
+
 async function seedPatientAndAvailability(pool) {
   // One demo patient (idempotent by name).
   await pool.query(
@@ -171,6 +207,7 @@ async function main() {
   await seedDepartments(pool);
   await seedFacilities(pool);
   await seedPatientAndAvailability(pool);
+  await seedAuthUsers(pool);
   const counts = await populateVectors(pool);
   console.log(`Demo seed complete. Doctors: ${counts.doctors}, Hospitals: ${counts.hospitals}, Departments: ${DEMO_HOSPITALS.length * DEPTS.length}, Facilities: ${DEMO_FACILITIES.length}.`);
 }

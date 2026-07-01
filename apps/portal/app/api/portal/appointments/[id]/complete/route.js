@@ -7,7 +7,7 @@ import { completeAppointment } from '@/lib/schedule';
 export const dynamic = 'force-dynamic';
 
 export async function PATCH(request, { params }) {
-  const providerId = currentDoctorId();
+  const providerId = (await currentDoctorId());
   if (!providerId) return NextResponse.json({ data: null, meta: null, errors: ['unauthenticated'] }, { status: 401 });
   const result = await completeAppointment(providerId, params.id);
   if (!result.ok) return NextResponse.json({ data: null, meta: null, errors: [result.error] }, { status: 400 });

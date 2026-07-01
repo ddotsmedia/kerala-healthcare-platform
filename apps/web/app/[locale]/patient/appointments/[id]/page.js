@@ -1,10 +1,10 @@
 // Patient appointment detail — info + cancel CTA (reschedule is doctor-managed).
 
-import { notFound } from 'next/navigation';
+import { notFound, redirect } from 'next/navigation';
 import { resolveLocale, t } from '@/lib/i18n';
 import { currentPatientId, getMyAppointment } from '@/lib/appointments';
 import { fmtDate, fmtTime } from '@/lib/format';
-import { ProfileField, EmptyState } from '@khp/ui';
+import { ProfileField } from '@khp/ui';
 import { cancelAppointmentAction } from './actions';
 
 export const dynamic = 'force-dynamic';
@@ -12,7 +12,7 @@ export const dynamic = 'force-dynamic';
 export default async function AppointmentDetail({ params }) {
   const locale = resolveLocale(params.locale);
   const pid = await currentPatientId();
-  if (!pid) return <EmptyState message={t(locale, 'login_required')} />;
+  if (!pid) redirect(`/${locale}/login`);
   const a = await getMyAppointment(pid, params.id);
   if (!a) notFound();
 

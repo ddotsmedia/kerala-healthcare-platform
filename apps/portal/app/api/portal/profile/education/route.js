@@ -6,7 +6,7 @@ import { currentDoctorId, addEducation } from '@/lib/profile';
 export const dynamic = 'force-dynamic';
 
 export async function POST(request) {
-  const id = currentDoctorId();
+  const id = (await currentDoctorId());
   if (!id) return NextResponse.json({ data: null, meta: null, errors: ['unauthenticated'] }, { status: 401 });
   const body = await request.json().catch(() => ({}));
   if (!body.degree) {

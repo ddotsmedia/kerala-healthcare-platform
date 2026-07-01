@@ -12,7 +12,7 @@ const STATUSES = ['confirmed', 'completed', 'cancelled', 'no_show'];
 const fmtTime = (t) => (t ? String(t).slice(0, 5) : '');
 
 export default async function PortalAppointments({ searchParams }) {
-  const providerId = currentDoctorId();
+  const providerId = (await currentDoctorId());
   if (!providerId) return <EmptyState message="No provider loaded." />;
   const status = (searchParams && searchParams.status) || '';
   const list = await listProviderAppointments(providerId, status || undefined);

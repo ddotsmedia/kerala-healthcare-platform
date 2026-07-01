@@ -8,7 +8,7 @@ import { notifyAppointmentEvent } from '@khp/notifications';
 export const dynamic = 'force-dynamic';
 
 export async function PATCH(request, { params }) {
-  const providerId = currentDoctorId();
+  const providerId = (await currentDoctorId());
   if (!providerId) return NextResponse.json({ data: null, meta: null, errors: ['unauthenticated'] }, { status: 401 });
   const body = await request.json().catch(() => ({}));
   const result = await cancelByDoctor(providerId, params.id, body.reason);

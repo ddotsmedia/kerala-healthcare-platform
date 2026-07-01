@@ -1,6 +1,7 @@
 // Patient appointment history with a status filter.
 
 import Link from 'next/link';
+import { redirect } from 'next/navigation';
 import { resolveLocale, t } from '@/lib/i18n';
 import { currentPatientId, listMyAppointments } from '@/lib/appointments';
 import { fmtDate, fmtTime } from '@/lib/format';
@@ -12,7 +13,7 @@ const STATUSES = ['confirmed', 'completed', 'cancelled', 'no_show'];
 export default async function PatientAppointments({ params, searchParams }) {
   const locale = resolveLocale(params.locale);
   const pid = await currentPatientId();
-  if (!pid) return <EmptyState message={t(locale, 'login_required')} />;
+  if (!pid) redirect(`/${locale}/login`);
 
   const status = (searchParams && searchParams.status) || '';
   const all = await listMyAppointments(pid);

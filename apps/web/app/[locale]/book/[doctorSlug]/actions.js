@@ -10,7 +10,7 @@ import { onAppointmentBooked } from '@/lib/appointmentNotify';
 export async function bookAction(formData) {
   const locale = formData.get('locale') || 'ml';
   const pid = await currentPatientId();
-  if (!pid) redirect(`/${locale}/patient`);
+  if (!pid) redirect(`/${locale}/login`);
   const result = await bookSlot(
     formData.get('providerId'), pid, formData.get('slotDate'),
     formData.get('slotStart'), formData.get('mode')

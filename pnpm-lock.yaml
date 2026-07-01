@@ -10,6 +10,9 @@ importers:
 
   apps/admin:
     dependencies:
+      '@khp/auth':
+        specifier: workspace:*
+        version: link:../../services/auth
       '@khp/db':
         specifier: workspace:*
         version: link:../../services/db
@@ -44,6 +47,9 @@ importers:
       '@khp/appointments':
         specifier: workspace:*
         version: link:../../services/appointments
+      '@khp/auth':
+        specifier: workspace:*
+        version: link:../../services/auth
       '@khp/db':
         specifier: workspace:*
         version: link:../../services/db
@@ -87,6 +93,9 @@ importers:
       '@khp/appointments':
         specifier: workspace:*
         version: link:../../services/appointments
+      '@khp/auth':
+        specifier: workspace:*
+        version: link:../../services/auth
       '@khp/db':
         specifier: workspace:*
         version: link:../../services/db
@@ -136,6 +145,15 @@ importers:
       '@khp/db':
         specifier: workspace:*
         version: link:../db
+
+  services/auth:
+    dependencies:
+      '@khp/db':
+        specifier: workspace:*
+        version: link:../db
+      '@khp/notifications':
+        specifier: workspace:*
+        version: link:../notifications
 
   services/db:
     dependencies:

@@ -1,6 +1,7 @@
 // Patient dashboard — upcoming + past appointments, quick book CTA.
 
 import Link from 'next/link';
+import { redirect } from 'next/navigation';
 import { resolveLocale, t } from '@/lib/i18n';
 import { currentPatientId, listMyAppointments } from '@/lib/appointments';
 import { fmtDate, fmtTime, today } from '@/lib/format';
@@ -28,7 +29,7 @@ function Row({ locale, a }) {
 export default async function PatientDashboard({ params }) {
   const locale = resolveLocale(params.locale);
   const pid = await currentPatientId();
-  if (!pid) return <EmptyState message={t(locale, 'login_required')} />;
+  if (!pid) redirect(`/${locale}/login`);
 
   const all = await listMyAppointments(pid);
   const td = today();

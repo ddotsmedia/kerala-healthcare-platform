@@ -12,7 +12,7 @@ function noAuth() {
 }
 
 export async function GET() {
-  const id = currentDoctorId();
+  const id = (await currentDoctorId());
   if (!id) return noAuth();
   const profile = await getMyProfile(id);
   if (!profile) return NextResponse.json({ data: null, meta: null, errors: ['not_found'] }, { status: 404 });
@@ -20,7 +20,7 @@ export async function GET() {
 }
 
 export async function PATCH(request) {
-  const id = currentDoctorId();
+  const id = (await currentDoctorId());
   if (!id) return noAuth();
   const body = await request.json().catch(() => ({}));
   const result = await updateProfile(id, {

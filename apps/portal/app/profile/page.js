@@ -9,6 +9,7 @@ import {
   LanguagePills,
   EmptyState
 } from '@khp/ui';
+import { redirect } from 'next/navigation';
 import { currentDoctorId, getMyProfile } from '@/lib/profile';
 import { saveProfileAction, addEducationAction } from './actions';
 
@@ -18,12 +19,10 @@ export const metadata = { title: 'My profile · KHP Portal' };
 const inputCls = 'w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-brand focus:outline-none';
 
 export default async function ProfilePage() {
-  const id = currentDoctorId();
+  const id = (await currentDoctorId());
+  if (!id) redirect('/login');
   const doctor = await getMyProfile(id);
-
-  if (!doctor) {
-    return <EmptyState message="No doctor profile loaded. Set PORTAL_DEMO_DOCTOR_ID (auth arrives in Phase 2)." />;
-  }
+  if (!doctor) redirect('/login');
 
   return (
     <div className="space-y-6">

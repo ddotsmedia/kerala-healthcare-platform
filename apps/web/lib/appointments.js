@@ -3,18 +3,12 @@
 // PATIENT_DEMO_USER_ID env, falling back to the seeded 'Demo Patient'.
 
 import { getPool } from '@khp/db';
+import { getSession } from './session.js';
 
-/** @returns {Promise<string|null>} current patient id (demo stand-in for now). */
+/** @returns {Promise<string|null>} authenticated user id (patient), or null. */
 async function currentPatientId() {
-  if (process.env.PATIENT_DEMO_USER_ID) return process.env.PATIENT_DEMO_USER_ID;
-  try {
-    const { rows } = await getPool().query(
-      `SELECT id FROM users WHERE full_name = 'Demo Patient' AND deleted_at IS NULL LIMIT 1`
-    );
-    return rows[0] ? rows[0].id : null;
-  } catch {
-    return null;
-  }
+  const s = getSession();
+  return s ? s.userId : null;
 }
 
 /** Patient's appointments (upcoming first), with provider display. */

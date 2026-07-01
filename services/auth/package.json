@@ -1,0 +1,12 @@
+{
+  "name": "@khp/auth",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "main": "index.js",
+  "description": "OTP generation/verification, HS256 JWT, and refresh-token rotation.",
+  "dependencies": {
+    "@khp/db": "workspace:*",
+    "@khp/notifications": "workspace:*"
+  }
+}

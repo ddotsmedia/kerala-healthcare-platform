@@ -3,8 +3,9 @@
 // public portal, then records the result here.
 
 import Link from 'next/link';
-import { notFound } from 'next/navigation';
+import { notFound, redirect } from 'next/navigation';
 import { getItem, STATUSES } from '@/lib/verification';
+import { requireAdminRole } from '@/lib/auth';
 import { decideAction } from './actions';
 
 export const dynamic = 'force-dynamic';
@@ -12,6 +13,7 @@ export const dynamic = 'force-dynamic';
 const NMC_PORTAL = 'https://www.nmc.org.in/information-desk/indian-medical-register/';
 
 export default async function VerificationDetail({ params }) {
+  if (!requireAdminRole()) redirect('/login');
   const item = await getItem(params.id);
   if (!item) notFound();
 

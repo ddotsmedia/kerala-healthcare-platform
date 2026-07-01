@@ -6,7 +6,7 @@ import { currentDoctorId, deleteEducation } from '@/lib/profile';
 export const dynamic = 'force-dynamic';
 
 export async function DELETE(request, { params }) {
-  const doctorId = currentDoctorId();
+  const doctorId = (await currentDoctorId());
   if (!doctorId) return NextResponse.json({ data: null, meta: null, errors: ['unauthenticated'] }, { status: 401 });
   await deleteEducation(doctorId, params.id);
   return NextResponse.json({ data: { ok: true }, meta: null, errors: null });

@@ -23,7 +23,7 @@ function csvToArray(v) {
 }
 
 export async function saveProfileAction(formData) {
-  const id = currentDoctorId();
+  const id = (await currentDoctorId());
   await updateProfile(id, {
     about_ml: formData.get('about_ml'),
     about_en: formData.get('about_en'),
@@ -39,7 +39,7 @@ export async function saveProfileAction(formData) {
 }
 
 export async function addEducationAction(formData) {
-  const id = currentDoctorId();
+  const id = (await currentDoctorId());
   await addEducation(id, {
     degree: formData.get('degree'),
     institution_ml: formData.get('institution_ml'),

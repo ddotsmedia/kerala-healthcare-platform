@@ -2,15 +2,22 @@
 // On every profile write, the search_ml / search_manglish tsvectors are
 // repopulated via @khp/search, in the same transaction. Parameterised SQL only.
 //
-// Auth: the authenticated doctor id comes from the session in Phase 2. For now
-// it is read from PORTAL_DEMO_DOCTOR_ID. A doctor may only edit their own row.
+// Auth: the authenticated doctor is resolved from the JWT session (@khp/auth);
+// their doctors.id is looked up via doctors.user_id. A doctor may only act on
+// their own row.
 
 import { getPool } from '@khp/db';
 import { doctorVectorUpdate } from '@khp/search';
+import { getSession } from './session.js';
 
-/** @returns {string|null} the current doctor's id (Phase 2: from session). */
-function currentDoctorId() {
-  return process.env.PORTAL_DEMO_DOCTOR_ID || null;
+/** @returns {Promise<string|null>} the current doctor's id, or null if not a doctor. */
+async function currentDoctorId() {
+  const s = getSession();
+  if (!s || s.role !== 'doctor') return null;
+  const { rows } = await getPool().query(
+    `SELECT id FROM doctors WHERE user_id = $1 AND deleted_at IS NULL LIMIT 1`, [s.userId]
+  );
+  return rows[0] ? rows[0].id : null;
 }
 
 /** Load the doctor's own profile + education. */

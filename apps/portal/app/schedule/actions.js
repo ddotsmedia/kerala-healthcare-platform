@@ -8,13 +8,13 @@ import { completeAppointment, cancelByDoctor } from '@/lib/schedule';
 import { notifyAppointmentEvent } from '@khp/notifications';
 
 export async function completeAction(formData) {
-  const providerId = currentDoctorId();
+  const providerId = (await currentDoctorId());
   await completeAppointment(providerId, formData.get('id'));
   revalidatePath('/schedule');
 }
 
 export async function cancelAction(formData) {
-  const providerId = currentDoctorId();
+  const providerId = (await currentDoctorId());
   const id = formData.get('id');
   const r = await cancelByDoctor(providerId, id, formData.get('reason'));
   if (r.ok) { try { await notifyAppointmentEvent('cancelled', id, { byRole: 'doctor' }); } catch (e) { console.error(e.message); } }

@@ -1,16 +1,18 @@
-// auth.js — role guard for admin API routes.
-// PLACEHOLDER until Phase 2 session auth: the caller's role is read from the
-// `x-khp-role` header. Replace with real session/JWT role resolution in Phase 2.
+// auth.js — role guard for admin routes/pages, backed by the JWT session.
+// Only platform_admin and verification_agent may access admin surfaces.
+
+import { getSession } from './session.js';
 
 const ALLOWED = ['platform_admin', 'verification_agent'];
 
 /**
- * @param {Request} request
- * @returns {string|null} the role if allowed, else null (caller returns 403).
+ * @returns {string|null} the role if the session is an allowed admin role, else null.
+ * (Signature keeps an optional request arg for call-site compatibility; the
+ * session is read from the cookie.)
  */
-function requireAdminRole(request) {
-  const role = request.headers.get('x-khp-role');
-  return ALLOWED.includes(role) ? role : null;
+function requireAdminRole() {
+  const s = getSession();
+  return s && ALLOWED.includes(s.role) ? s.role : null;
 }
 
 export { requireAdminRole, ALLOWED };

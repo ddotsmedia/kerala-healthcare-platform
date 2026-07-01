@@ -11,7 +11,7 @@ export const metadata = { title: 'Hospital affiliations · KHP Portal' };
 const inputCls = 'w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-brand focus:outline-none';
 
 export default async function AffiliationsPage() {
-  const id = currentDoctorId();
+  const id = (await currentDoctorId());
   const [affiliations, hospitals] = await Promise.all([
     listAffiliations(id),
     listAffiliableHospitals()

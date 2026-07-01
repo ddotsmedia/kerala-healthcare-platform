@@ -5,11 +5,15 @@
 import { redirect } from 'next/navigation';
 import { revalidatePath } from 'next/cache';
 import { recordDecision } from '@/lib/verification';
+import { getSession } from '@/lib/session';
+import { requireAdminRole } from '@/lib/auth';
 
 /**
  * @param {FormData} formData
  */
 export async function decideAction(formData) {
+  if (!requireAdminRole()) redirect('/login');
+  const session = getSession();
   const nmcMatchRaw = formData.get('nmc_match');
   const nmcMatch = nmcMatchRaw === 'yes' ? true : nmcMatchRaw === 'no' ? false : null;
 
@@ -21,8 +25,7 @@ export async function decideAction(formData) {
     nmcChecked: formData.get('nmc_checked') === 'on',
     nmcMatch,
     notes: formData.get('notes'),
-    // verifiedBy comes from the authenticated agent session (Phase 2 auth). Null for now.
-    verifiedBy: null
+    verifiedBy: session ? session.userId : null
   });
 
   revalidatePath('/verification');

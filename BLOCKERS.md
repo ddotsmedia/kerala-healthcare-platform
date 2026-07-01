@@ -196,4 +196,16 @@ Result: **6 PASS, 2 FAIL** (items 5, 6 — both data/indexing gaps, logged above
 
 ---
 
+## Session: 2026-07-01 — Phase 3
+
+### Task 3.0 — real OTP/JWT auth (replaces all demo stubs)
+- [FIXED] Built `@khp/auth` (services/auth): OTP generate/verify (hashed, 5-min TTL, DB-backed), HS256 JWT sign/verify (15-min access, node crypto — no new package), opaque refresh tokens with rotation (30-day, DB-backed), session extraction from the access cookie. Migration 0023: `users.mobile_hash`, `otp_codes`, `refresh_tokens`.
+- [FIXED] Replaced `PATIENT_DEMO_USER_ID` (web) and `PORTAL_DEMO_DOCTOR_ID` (portal) with real session reads. Web `currentPatientId` = session user; portal `currentDoctorId` resolves `doctors.id` via `doctors.user_id` from the JWT session (role doctor). Admin role guard now reads the JWT session role instead of the `x-khp-role` header.
+- [FIXED] Login flows (`/login` + `/api/auth/{request-otp,verify-otp,refresh,logout}`) added to web/portal/admin; httpOnly cookies (Secure in production). Protected pages redirect to `/login`; protected APIs return 401.
+- Verified against Postgres + HTTP: OTP→JWT→session, refresh rotation (old token revoked), doctor/admin role mapping, wrong-code rejected; **unauth → 401, login → 200, logout → 401**. All three apps build + lint clean.
+- [ASSUMPTION] Spec wanted Redis-backed OTP/refresh; Redis is not running, so both are persisted in Postgres (swappable later). Demo logins seeded: patient `9999000003`, doctor `9999000001` (→ dr-anand), admin `9999000002`. `AUTH_OTP_DEBUG=1` surfaces codes in dev (never prod).
+- [ASSUMPTION] Cross-app SSO not implemented — each app (ports 3000/3001/3002) has its own login + cookie (different origins). Acceptable for now; a shared auth domain is a later infra concern.
+
+---
+
 *Kerala Health Portal · Universal Prompt Law · Claude Code Engineering Kit v1.0*

@@ -13,7 +13,8 @@
     "next": "^14.2.0",
     "react": "^18.3.0",
     "react-dom": "^18.3.0",
-    "@khp/db": "workspace:*"
+    "@khp/db": "workspace:*",
+    "@khp/auth": "workspace:*"
   },
   "devDependencies": {
     "tailwindcss": "^3.4.0",
