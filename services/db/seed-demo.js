@@ -14,7 +14,7 @@ const AUTH_PEPPER = process.env.AUTH_PEPPER || process.env.JWT_SECRET || 'dev-pe
 const mobileHash = (m) => createHash('sha256').update(`${m}:${AUTH_PEPPER}`).digest('hex');
 
 // Demo login numbers (dev only).
-const DEMO_LOGINS = { patient: '9999000003', doctor: '9999000001', admin: '9999000002' };
+const DEMO_LOGINS = { patient: '9999000003', doctor: '9999000001', admin: '9999000002', editor: '9999000004' };
 
 // first, last, display, slug, nmc, specialty_slug, district_code, languages,
 // bio_ml, bio_en, years, fee, modes
@@ -200,6 +200,13 @@ async function seedAuthUsers(pool) {
      SELECT 'platform_admin','Demo Admin', $1
       WHERE NOT EXISTS (SELECT 1 FROM users WHERE mobile_hash = $1)`,
     [mobileHash(DEMO_LOGINS.admin)]
+  );
+  // Content editor login (editorial workflow — cannot publish).
+  await pool.query(
+    `INSERT INTO users (role, full_name, mobile_hash)
+     SELECT 'content_editor','Demo Editor', $1
+      WHERE NOT EXISTS (SELECT 1 FROM users WHERE mobile_hash = $1)`,
+    [mobileHash(DEMO_LOGINS.editor)]
   );
 }
 
