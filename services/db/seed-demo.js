@@ -163,6 +163,31 @@ async function seedContentSet(pool, rows, type) {
   }
 }
 
+async function seedDiseaseDetails(pool) {
+  // Generic educational placeholders (bilingual). Same structure for all demo
+  // diseases; real content is authored via the CMS.
+  const sym_ml = ['പനി', 'ക്ഷീണം'], sym_en = ['Fever', 'Fatigue'];
+  const cau_ml = ['അണുബാധ'], cau_en = ['Infection'];
+  const risk_ml = ['പ്രായം', 'ജീവിതശൈലി'], risk_en = ['Age', 'Lifestyle'];
+  const emer_ml = ['ശ്വാസതടസ്സം', 'കടുത്ത വേദന'], emer_en = ['Difficulty breathing', 'Severe pain'];
+  for (const [slug] of DISEASES) {
+    await pool.query(
+      `INSERT INTO disease_details
+         (content_item_id, symptoms_ml, symptoms_en, causes_ml, causes_en,
+          risk_factors_ml, risk_factors_en, diagnosis_ml, diagnosis_en,
+          treatment_ml, treatment_en, prevention_ml, prevention_en,
+          emergency_signs_ml, emergency_signs_en)
+       SELECT c.id, $2,$3,$4,$5,$6,$7,
+              'ഡോക്ടറുടെ പരിശോധന', 'Clinical examination',
+              'യോഗ്യതയുള്ള ഡോക്ടറെ സമീപിക്കുക', 'Consult a qualified doctor',
+              'ആരോഗ്യകരമായ ജീവിതശൈലി', 'Healthy lifestyle', $8,$9
+         FROM content_items c WHERE c.slug = $1 AND c.type = 'disease'
+          AND NOT EXISTS (SELECT 1 FROM disease_details d WHERE d.content_item_id = c.id)`,
+      [slug, sym_ml, sym_en, cau_ml, cau_en, risk_ml, risk_en, emer_ml, emer_en]
+    );
+  }
+}
+
 async function seedContent(pool) {
   await seedContentSet(pool, DISEASES, 'disease');
   await seedContentSet(pool, ARTICLES, 'article');
@@ -173,6 +198,7 @@ async function seedContent(pool) {
      SELECT id, 1, body_ml, body_en FROM content_items c
       WHERE NOT EXISTS (SELECT 1 FROM content_versions v WHERE v.content_item_id = c.id)`
   );
+  await seedDiseaseDetails(pool);
 }
 
 async function seedAuthUsers(pool) {
