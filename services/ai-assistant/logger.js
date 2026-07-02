@@ -26,4 +26,16 @@ async function recentInteractions(sessionId, limit = 10) {
   } catch { return []; }
 }
 
-export { logInteraction, recentInteractions };
+/** Count a session's interactions in the last N minutes (rate limiting). */
+async function interactionCount(sessionId, minutes = 60) {
+  if (!sessionId) return 0;
+  try {
+    const { rows } = await getPool().query(
+      `SELECT count(*)::int AS n FROM ai_interaction_log
+        WHERE session_id = $1 AND created_at > now() - ($2 || ' minutes')::interval`,
+      [sessionId, String(minutes)]);
+    return rows[0].n;
+  } catch { return 0; }
+}
+
+export { logInteraction, recentInteractions, interactionCount };

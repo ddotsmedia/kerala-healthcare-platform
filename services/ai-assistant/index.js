@@ -80,6 +80,7 @@ async function ask(message, locale = 'ml', sessionId = null) {
   return { response: text, sources: sources.map((s) => ({ title: s.title, url: s.url, type: s.type })), disclaimer: DISCLAIMER[l], flags };
 }
 
-export { ask, buildPrompt, SYSTEM_PROMPT, MODEL, DISCLAIMER, recentInteractions };
+export { ask, buildPrompt, SYSTEM_PROMPT, MODEL, DISCLAIMER };
+export { recentInteractions, interactionCount } from './logger.js';
 export { sanitiseInput } from './safety.js';
 export { findRelevantContent } from './rag.js';

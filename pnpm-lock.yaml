@@ -90,6 +90,9 @@ importers:
 
   apps/web:
     dependencies:
+      '@khp/ai-assistant':
+        specifier: workspace:*
+        version: link:../../services/ai-assistant
       '@khp/appointments':
         specifier: workspace:*
         version: link:../../services/appointments

@@ -18,7 +18,8 @@
     "@khp/ui": "workspace:*",
     "@khp/appointments": "workspace:*",
     "@khp/notifications": "workspace:*",
-    "@khp/auth": "workspace:*"
+    "@khp/auth": "workspace:*",
+    "@khp/ai-assistant": "workspace:*"
   },
   "devDependencies": {
     "tailwindcss": "^3.4.0",

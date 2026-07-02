@@ -26,6 +26,7 @@ export default function LocaleLayout({ children, params }) {
             <Link href={`/${locale}/symptoms`} className="hover:text-brand">{t(locale, 'symptoms')}</Link>
             <Link href={`/${locale}/tools`} className="hover:text-brand">{t(locale, 'tools')}</Link>
             <Link href={`/${locale}/jobs`} className="hover:text-brand">{t(locale, 'jobs')}</Link>
+            <Link href={`/${locale}/assistant`} className="hover:text-brand">{t(locale, 'assistant')}</Link>
             <Link href={`/${locale}/patient`} className="hover:text-brand">{t(locale, 'my_appointments')}</Link>
             <Link href={`/${locale === 'ml' ? 'en' : 'ml'}`} className="text-gray-500 hover:text-brand">
               {locale === 'ml' ? 'EN' : 'ML'}

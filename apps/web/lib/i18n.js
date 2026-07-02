@@ -68,7 +68,11 @@ const DICT = {
     my_applications: 'എന്റെ അപേക്ഷകൾ', saved_jobs: 'സേവ് ചെയ്ത ജോലികൾ',
     post_job: 'ജോലി പോസ്റ്റ് ചെയ്യുക', applications: 'അപേക്ഷകൾ',
     full_time: 'ഫുൾ ടൈം', part_time: 'പാർട്ട് ടൈം', contract: 'കരാർ', locum: 'ലോക്കം',
-    open_to_work: 'ജോലിക്ക് തയ്യാർ'
+    open_to_work: 'ജോലിക്ക് തയ്യാർ',
+    assistant: 'ആരോഗ്യ സഹായി', ask_health: 'ആരോഗ്യ ചോദ്യം ചോദിക്കുക…', send: 'അയയ്ക്കുക',
+    ai_disclaimer: 'ഇത് ആരോഗ്യ വിവരമാണ്, വൈദ്യ ഉപദേശമല്ല.',
+    emergency_banner: 'അടിയന്തരാവസ്ഥ? 112 അല്ലെങ്കിൽ 108 വിളിക്കുക', sources: 'ഉറവിടങ്ങൾ',
+    smart_search: 'സ്മാർട്ട് തിരയൽ'
   },
   en: {
     site: 'Kerala Health Portal',
@@ -134,7 +138,11 @@ const DICT = {
     my_applications: 'My applications', saved_jobs: 'Saved jobs',
     post_job: 'Post a job', applications: 'Applications',
     full_time: 'Full-time', part_time: 'Part-time', contract: 'Contract', locum: 'Locum',
-    open_to_work: 'Open to work'
+    open_to_work: 'Open to work',
+    assistant: 'Health assistant', ask_health: 'Ask a health question…', send: 'Send',
+    ai_disclaimer: 'This is health information, not medical advice.',
+    emergency_banner: 'Emergency? Call 112 or 108', sources: 'Sources',
+    smart_search: 'Smart search'
   }
 };
 
