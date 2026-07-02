@@ -22,7 +22,8 @@ export default function LocaleLayout({ children, params }) {
           <nav className="flex gap-4 text-sm">
             <Link href={`/${locale}/doctors`} className="hover:text-brand">{t(locale, 'doctors')}</Link>
             <Link href={`/${locale}/hospitals`} className="hover:text-brand">{t(locale, 'hospitals')}</Link>
-            <Link href={`/${locale}/facilities`} className="hover:text-brand">{t(locale, 'facilities')}</Link>
+            <Link href={`/${locale}/health`} className="hover:text-brand">{t(locale, 'health')}</Link>
+            <Link href={`/${locale}/symptoms`} className="hover:text-brand">{t(locale, 'symptoms')}</Link>
             <Link href={`/${locale}/patient`} className="hover:text-brand">{t(locale, 'my_appointments')}</Link>
             <Link href={`/${locale === 'ml' ? 'en' : 'ml'}`} className="text-gray-500 hover:text-brand">
               {locale === 'ml' ? 'EN' : 'ML'}
