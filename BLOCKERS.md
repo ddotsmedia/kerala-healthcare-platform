@@ -217,6 +217,14 @@ Result: **6 PASS, 2 FAIL** (items 5, 6 — both data/indexing gaps, logged above
 
 ---
 
+## Session: 2026-07-03 — Phase 4 (Healthcare Jobs Portal)
+
+- [ASSUMPTION] Employer/candidate capability by profile-row existence (employer_profiles / candidate_profiles), NOT a `users.role` enum change — avoids altering the CHECK constraint (additive-only). Demo logins: employer `9999000005`, candidate `9999000006`.
+- [ASSUMPTION] Contact protection: candidate resume/linkedin revealed to the employer at `shortlisted+`. Real encrypted mobile/email decrypt-on-shortlist deferred (candidates carry no plaintext contact).
+- [FIXED] Seed jobs failed "inconsistent types deduced for parameter $1" — bare params in INSERT...SELECT lists need explicit casts. Added `::varchar/::text/::int`.
+- [ASSUMPTION] Phase 4 complete: all 5 tasks built, 7/7 smoke pass, lint+build green. NOT tagged — holding for confirmation. Proposed tag: `v0.5.0-jobs`. Evidence: docs/phases/PHASE_4_COMPLETION.md.
+- Migrations added: 0027 jobs, 0028 in-app notifications, 0029 saved_jobs.
+
 ## Open decisions index (as of 2026-07-02)
 
 Quick status of every `[NEEDS DECISION]` ever logged (this section is additive; original entries above are unchanged):
