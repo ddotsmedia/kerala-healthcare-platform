@@ -53,7 +53,14 @@ const DICT = {
     urgency_emergency: 'അടിയന്തരം — 112 / 108 വിളിക്കുക',
     urgency_urgent: 'ഉടൻ ഡോക്ടറെ കാണുക',
     urgency_soon: 'ഉടൻ ഡോക്ടറെ കാണുക',
-    urgency_routine: 'സാധാരണ പരിശോധന'
+    urgency_routine: 'സാധാരണ പരിശോധന',
+    consult_advice: 'വ്യക്തിഗത ഉപദേശത്തിന് നിങ്ങളുടെ ഡോക്ടറെ സമീപിക്കുക.',
+    bmi: 'ബി.എം.ഐ', height: 'ഉയരം', weight: 'ഭാരം', calculate: 'കണക്കാക്കുക',
+    result: 'ഫലം', category: 'വിഭാഗം', metric: 'മെട്രിക്', imperial: 'ഇംപീരിയൽ',
+    bmi_note: 'ബി.എം.ഐ ഒരു ഏകദേശ അളവാണ്; പേശി, പ്രായം എന്നിവ പരിഗണിക്കുന്നില്ല.',
+    underweight: 'കുറഞ്ഞ ഭാരം', normal_weight: 'സാധാരണ', overweight: 'അമിതഭാരം', obese: 'പൊണ്ണത്തടി',
+    due_date: 'പ്രസവ തീയതി', lmp: 'അവസാന ആർത്തവ തീയതി', estimated_due: 'കണക്കാക്കിയ പ്രസവ തീയതി',
+    trimester: 'ത്രിമാസം', water_intake: 'ജല ഉപഭോഗം', daily_water: 'ദിവസേനയുള്ള ജലം'
   },
   en: {
     site: 'Kerala Health Portal',
@@ -104,7 +111,14 @@ const DICT = {
     urgency_emergency: 'Emergency — call 112 / 108',
     urgency_urgent: 'See a doctor urgently',
     urgency_soon: 'See a doctor soon',
-    urgency_routine: 'Routine check-up'
+    urgency_routine: 'Routine check-up',
+    consult_advice: 'Consult your doctor for personalised advice.',
+    bmi: 'BMI', height: 'Height', weight: 'Weight', calculate: 'Calculate',
+    result: 'Result', category: 'Category', metric: 'Metric', imperial: 'Imperial',
+    bmi_note: 'BMI is an approximate measure; it does not account for muscle or age.',
+    underweight: 'Underweight', normal_weight: 'Normal', overweight: 'Overweight', obese: 'Obese',
+    due_date: 'Due date', lmp: 'Last menstrual period', estimated_due: 'Estimated due date',
+    trimester: 'Trimester', water_intake: 'Water intake', daily_water: 'Daily water'
   }
 };
 
