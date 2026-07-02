@@ -208,4 +208,10 @@ Result: **6 PASS, 2 FAIL** (items 5, 6 — both data/indexing gaps, logged above
 
 ---
 
+### Phase 3 — complete (build + smoke)
+- [ASSUMPTION] Task 3.0 (real OTP/JWT auth) + all 7 Phase-3 tasks built. Migrations 0023–0026. Smoke 7/7 pass; lint+build green across web/admin/portal. NOT tagged — holding for confirmation. Proposed tag: `v0.4.0-knowledge`. Full evidence: docs/phases/PHASE_3_COMPLETION.md.
+- [ASSUMPTION] Rich-text editing uses a plain textarea (Markdown-style), per spec's "no new npm packages" — no WYSIWYG library added.
+
+---
+
 *Kerala Health Portal · Universal Prompt Law · Claude Code Engineering Kit v1.0*
