@@ -1,0 +1,11 @@
+{
+  "name": "@khp/ai-assistant",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "main": "index.js",
+  "description": "Health information assistant: RAG, hardcoded safety rails, interaction logging.",
+  "dependencies": {
+    "@khp/db": "workspace:*"
+  }
+}
