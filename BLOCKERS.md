@@ -105,6 +105,7 @@
 
 ### Needs human decision
 - [NEEDS DECISION] Could NOT confirm the demo seed POPULATES data in this environment: no PostgreSQL (`psql`/`pg_ctl` absent), Docker daemon not running, `DATABASE_URL` unset. The seed runs correctly up to the connection step. To verify: set `DATABASE_URL` to a running Postgres 15 and run `pnpm db:seed:demo`.
+  - ✅ RESOLVED (2026-06-30): Postgres 15 stood up (`khp-demo-pg`, port 5439); `pnpm db:seed:demo` populates successfully (11 doctors, 5 hospitals, 10 departments, 3 facilities, + auth/CMS/symptom data).
 
 ---
 
@@ -128,6 +129,7 @@
 
 ### Still blocked (no DB / build environment)
 - [NEEDS DECISION] SMOKE TESTS (8-item checklist in PHASE_1_SPEC) and Lighthouse SEO ≥90 are NOT run — requires a running Postgres + a built/served app. Migrations 0001–0016 and `pnpm db:seed:demo` are authored and syntax-clean but unexecuted here (no `DATABASE_URL`, Docker daemon down). Run once an environment exists before tagging v0.2.0-directory.
+  - ✅ RESOLVED (2026-06-30): all 8 Phase 1 smoke items PASS; Lighthouse SEO 100/100 on a doctor profile. Tagged `v0.2.0-directory`.
 
 ---
 
@@ -141,6 +143,7 @@
 
 ### Findings
 - [NEEDS DECISION] Manglish medical-term search can miss: dictionary maps e.g. `hridrogam → ഹൃദ്രോഗം` (trailing ം) but seeded Malayalam tokenises as `ഹൃദ്രോഗ`; the `simple` tsvector config does exact-token matching, so no hit. Fix options: store specialty name_ml in the search vector, normalise dictionary forms to match stored tokens, or add a Malayalam stemming/normalisation step. English ("cardiology"), mode/language filters, and hospital search all verified working.
+  - ✅ RESOLVED (2026-06-30, commit af6ce19): dictionary forms normalised (strip trailing anusvara/visarga) AND district + specialty names indexed into the search vectors. Verified `hridrogam`→4, `thrissur`→2, `vaidyan`/`kaliveedu`→1. Full Malayalam stemming remains a future improvement (not blocking).
 - [ASSUMPTION] Container `khp-demo-pg` left RUNNING for development (port 5439). Stop with `docker rm -f khp-demo-pg` when done.
 
 ---
@@ -211,6 +214,26 @@ Result: **6 PASS, 2 FAIL** (items 5, 6 — both data/indexing gaps, logged above
 ### Phase 3 — complete (build + smoke)
 - [ASSUMPTION] Task 3.0 (real OTP/JWT auth) + all 7 Phase-3 tasks built. Migrations 0023–0026. Smoke 7/7 pass; lint+build green across web/admin/portal. NOT tagged — holding for confirmation. Proposed tag: `v0.4.0-knowledge`. Full evidence: docs/phases/PHASE_3_COMPLETION.md.
 - [ASSUMPTION] Rich-text editing uses a plain textarea (Markdown-style), per spec's "no new npm packages" — no WYSIWYG library added.
+
+---
+
+## Open decisions index (as of 2026-07-02)
+
+Quick status of every `[NEEDS DECISION]` ever logged (this section is additive; original entries above are unchanged):
+
+| Item | Status |
+|---|---|
+| GitHub repo slug for CI badge | ✅ FIXED (`ddotsmedia/kerala-healthcare-platform`) |
+| NMC verification approach | ✅ FIXED (manual cross-check, Phase 1) |
+| Specialty taxonomy completeness | ✅ FIXED (12 accepted; extend via additive migration) |
+| tsvector write-path wiring | ✅ FIXED (portal save repopulates vectors) |
+| Demo seed populates | ✅ RESOLVED (Postgres 5439; seed runs) |
+| Phase 1 smoke + Lighthouse ≥90 | ✅ RESOLVED (8/8 + SEO 100/100) |
+| Manglish token match | ✅ RESOLVED (commit af6ce19) |
+| Phases 1/2/3 tags | ✅ DONE (v0.2.0-directory, v0.3.0-appointments, v0.4.0-knowledge) |
+| **Legal review of COMPLIANCE.md (DPDP timelines, DPO, data-residency)** | 🔴 **OPEN** — required before public launch |
+
+**Only genuinely open item: legal review of COMPLIANCE.md before launch.**
 
 ---
 
