@@ -6,3 +6,4 @@ export { MEDICAL_TERMS, expandManglish, lookupTerm } from './manglish.js';
 export { doctorVectorUpdate, hospitalVectorUpdate, buildVectorUpdate } from './vectors.js';
 export { buildDoctorSearch, buildHospitalSearch, searchAll, resolveTerm, paginate } from './queryBuilder.js';
 export { buildJobQuery, jobPaginate } from './jobs.js';
+export { rankResults } from './unified.js';
