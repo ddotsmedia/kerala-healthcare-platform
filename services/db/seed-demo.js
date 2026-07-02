@@ -14,7 +14,77 @@ const AUTH_PEPPER = process.env.AUTH_PEPPER || process.env.JWT_SECRET || 'dev-pe
 const mobileHash = (m) => createHash('sha256').update(`${m}:${AUTH_PEPPER}`).digest('hex');
 
 // Demo login numbers (dev only).
-const DEMO_LOGINS = { patient: '9999000003', doctor: '9999000001', admin: '9999000002', editor: '9999000004' };
+const DEMO_LOGINS = { patient: '9999000003', doctor: '9999000001', admin: '9999000002', editor: '9999000004', employer: '9999000005', candidate: '9999000006' };
+
+// [org_name, org_type, district_code]
+const EMPLOYERS = [
+  ['Lakeshore Hospital', 'hospital', 'EKM'],
+  ['Medical Trust Hospital', 'hospital', 'TVM'],
+  ['Amala Hospital', 'hospital', 'TSR']
+];
+// [slug, employer_org, title, role_category, district_code, employment_type, exp_min]
+const JOBS = [
+  ['staff-nurse-ekm-lakeshore', 'Lakeshore Hospital', 'Staff Nurse', 'nurse', 'EKM', 'full_time', 1],
+  ['icu-nurse-ekm-lakeshore', 'Lakeshore Hospital', 'ICU Nurse', 'nurse', 'EKM', 'full_time', 3],
+  ['physician-ekm-lakeshore', 'Lakeshore Hospital', 'Consultant Physician', 'doctor', 'EKM', 'full_time', 5],
+  ['lab-technician-tvm-medtrust', 'Medical Trust Hospital', 'Lab Technician', 'technician', 'TVM', 'full_time', 2],
+  ['pharmacist-tvm-medtrust', 'Medical Trust Hospital', 'Pharmacist', 'pharmacist', 'TVM', 'part_time', 1],
+  ['radiographer-tvm-medtrust', 'Medical Trust Hospital', 'Radiographer', 'technician', 'TVM', 'contract', 2],
+  ['physiotherapist-tsr-amala', 'Amala Hospital', 'Physiotherapist', 'physiotherapist', 'TSR', 'full_time', 2],
+  ['pediatric-nurse-tsr-amala', 'Amala Hospital', 'Pediatric Nurse', 'nurse', 'TSR', 'full_time', 2],
+  ['locum-doctor-tsr-amala', 'Amala Hospital', 'Locum Doctor', 'doctor', 'TSR', 'locum', 4],
+  ['receptionist-ekm-lakeshore', 'Lakeshore Hospital', 'Front Desk Receptionist', 'admin', 'EKM', 'part_time', 0]
+];
+// [slug, role_category, district_code, exp, headline]
+const CANDIDATES = [
+  ['nurse-arya-ekm', 'nurse', 'EKM', 4, 'Experienced staff nurse'],
+  ['doctor-bijoy-tvm', 'doctor', 'TVM', 8, 'General physician'],
+  ['technician-chithra-tsr', 'technician', 'TSR', 3, 'Lab technician'],
+  ['pharmacist-deepa-ekm', 'pharmacist', 'EKM', 5, 'Registered pharmacist'],
+  ['physio-eldho-ktm', 'physiotherapist', 'KTM', 2, 'Physiotherapist']
+];
+
+async function seedJobs(pool) {
+  for (const [org, type, dist] of EMPLOYERS) {
+    await pool.query(
+      `INSERT INTO employer_profiles (org_name, org_type, district_id, verified)
+       SELECT $1::text,$2::text,di.id,true FROM districts di WHERE di.code=$3
+        AND NOT EXISTS (SELECT 1 FROM employer_profiles WHERE org_name=$1)`,
+      [org, type, dist]);
+  }
+  // Link demo employer login to the first employer.
+  await pool.query(
+    `UPDATE employer_profiles SET user_id = (SELECT id FROM users WHERE mobile_hash=$1)
+      WHERE org_name='Lakeshore Hospital' AND user_id IS NULL`,
+    [mobileHash(DEMO_LOGINS.employer)]);
+
+  for (const [slug, org, title, role, dist, etype, exp] of JOBS) {
+    await pool.query(
+      `INSERT INTO job_listings
+         (slug, employer_id, title, role_category, description, requirements,
+          district_id, employment_type, experience_years_min, status)
+       SELECT $1::varchar, e.id, $3::text, $4::varchar, $3::text || ' at ' || e.org_name, 'See job description',
+              di.id, $5::varchar, $6::int, 'active'
+         FROM employer_profiles e, districts di
+        WHERE e.org_name=$2 AND di.code=$7
+        AND NOT EXISTS (SELECT 1 FROM job_listings WHERE slug=$1)`,
+      [slug, org, title, role, etype, exp, dist]);
+  }
+
+  for (const [slug, role, dist, exp, headline] of CANDIDATES) {
+    await pool.query(
+      `INSERT INTO candidate_profiles
+         (slug, role_category, district_id, experience_years, headline, summary)
+       SELECT $1::varchar,$2::varchar,di.id,$3::int,$4::text,$4::text FROM districts di WHERE di.code=$5
+        AND NOT EXISTS (SELECT 1 FROM candidate_profiles WHERE slug=$1)`,
+      [slug, role, exp, headline, dist]);
+  }
+  // Link demo candidate login to the first candidate.
+  await pool.query(
+    `UPDATE candidate_profiles SET user_id = (SELECT id FROM users WHERE mobile_hash=$1)
+      WHERE slug='nurse-arya-ekm' AND user_id IS NULL`,
+    [mobileHash(DEMO_LOGINS.candidate)]);
+}
 
 // first, last, display, slug, nmc, specialty_slug, district_code, languages,
 // bio_ml, bio_en, years, fee, modes
@@ -265,6 +335,19 @@ async function seedAuthUsers(pool) {
       WHERE NOT EXISTS (SELECT 1 FROM users WHERE mobile_hash = $1)`,
     [mobileHash(DEMO_LOGINS.editor)]
   );
+  // Jobs: employer login (hospital_admin) + candidate login (patient).
+  await pool.query(
+    `INSERT INTO users (role, full_name, mobile_hash)
+     SELECT 'hospital_admin','Demo Employer', $1
+      WHERE NOT EXISTS (SELECT 1 FROM users WHERE mobile_hash = $1)`,
+    [mobileHash(DEMO_LOGINS.employer)]
+  );
+  await pool.query(
+    `INSERT INTO users (role, full_name, mobile_hash)
+     SELECT 'patient','Demo Candidate', $1
+      WHERE NOT EXISTS (SELECT 1 FROM users WHERE mobile_hash = $1)`,
+    [mobileHash(DEMO_LOGINS.candidate)]
+  );
 }
 
 async function seedPatientAndAvailability(pool) {
@@ -334,6 +417,7 @@ async function main() {
   await seedAuthUsers(pool);
   await seedContent(pool);
   await seedSymptoms(pool);
+  await seedJobs(pool);
   const counts = await populateVectors(pool);
   console.log(`Demo seed complete. Doctors: ${counts.doctors}, Hospitals: ${counts.hospitals}, Departments: ${DEMO_HOSPITALS.length * DEPTS.length}, Facilities: ${DEMO_FACILITIES.length}.`);
 }
