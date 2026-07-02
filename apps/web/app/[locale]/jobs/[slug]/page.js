@@ -6,6 +6,7 @@ import { getJobBySlug, currentCandidateProfile } from '@/lib/jobs';
 import { getSession } from '@/lib/session';
 import { jobPostingSchema } from '@/lib/schema';
 import ApplyBox from '@/components/ApplyBox';
+import { saveJobAction } from '../../candidate/actions';
 
 export const dynamic = 'force-dynamic';
 
@@ -44,7 +45,14 @@ export default async function JobDetail({ params }) {
       )}
 
       <ApplyBox jobId={j.id} authed={authed} loginHref={`/${locale}/login`}
-        labels={{ login: t(locale, 'apply_login'), apply: t(locale, 'apply'), cover: '...', applied: t(locale, 'applied') || 'Applied', error: 'Error' }} />
+        labels={{ login: t(locale, 'apply_login'), apply: t(locale, 'apply'), cover: '...', applied: 'Applied', error: 'Error' }} />
+
+      {authed && (
+        <form action={saveJobAction}>
+          <input type="hidden" name="job_id" value={j.id} /><input type="hidden" name="locale" value={locale} />
+          <button className="text-sm text-brand underline">☆ {t(locale, 'saved_jobs')}</button>
+        </form>
+      )}
     </article>
   );
 }
