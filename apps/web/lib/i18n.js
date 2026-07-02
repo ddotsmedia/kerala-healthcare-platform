@@ -60,7 +60,15 @@ const DICT = {
     bmi_note: 'ബി.എം.ഐ ഒരു ഏകദേശ അളവാണ്; പേശി, പ്രായം എന്നിവ പരിഗണിക്കുന്നില്ല.',
     underweight: 'കുറഞ്ഞ ഭാരം', normal_weight: 'സാധാരണ', overweight: 'അമിതഭാരം', obese: 'പൊണ്ണത്തടി',
     due_date: 'പ്രസവ തീയതി', lmp: 'അവസാന ആർത്തവ തീയതി', estimated_due: 'കണക്കാക്കിയ പ്രസവ തീയതി',
-    trimester: 'ത്രിമാസം', water_intake: 'ജല ഉപഭോഗം', daily_water: 'ദിവസേനയുള്ള ജലം'
+    trimester: 'ത്രിമാസം', water_intake: 'ജല ഉപഭോഗം', daily_water: 'ദിവസേനയുള്ള ജലം',
+    jobs: 'ജോലികൾ', job_search: 'ജോലി തിരയൽ', apply: 'അപേക്ഷിക്കുക',
+    apply_login: 'അപേക്ഷിക്കാൻ ലോഗിൻ ചെയ്യുക', requirements: 'യോഗ്യതകൾ',
+    employment_type: 'തൊഴിൽ തരം', experience: 'പരിചയം', years: 'വർഷം',
+    role: 'റോൾ', employer: 'തൊഴിലുടമ', candidate: 'ഉദ്യോഗാർത്ഥി',
+    my_applications: 'എന്റെ അപേക്ഷകൾ', saved_jobs: 'സേവ് ചെയ്ത ജോലികൾ',
+    post_job: 'ജോലി പോസ്റ്റ് ചെയ്യുക', applications: 'അപേക്ഷകൾ',
+    full_time: 'ഫുൾ ടൈം', part_time: 'പാർട്ട് ടൈം', contract: 'കരാർ', locum: 'ലോക്കം',
+    open_to_work: 'ജോലിക്ക് തയ്യാർ'
   },
   en: {
     site: 'Kerala Health Portal',
@@ -118,7 +126,15 @@ const DICT = {
     bmi_note: 'BMI is an approximate measure; it does not account for muscle or age.',
     underweight: 'Underweight', normal_weight: 'Normal', overweight: 'Overweight', obese: 'Obese',
     due_date: 'Due date', lmp: 'Last menstrual period', estimated_due: 'Estimated due date',
-    trimester: 'Trimester', water_intake: 'Water intake', daily_water: 'Daily water'
+    trimester: 'Trimester', water_intake: 'Water intake', daily_water: 'Daily water',
+    jobs: 'Jobs', job_search: 'Job search', apply: 'Apply',
+    apply_login: 'Login to apply', requirements: 'Requirements',
+    employment_type: 'Employment type', experience: 'Experience', years: 'yrs',
+    role: 'Role', employer: 'Employer', candidate: 'Candidate',
+    my_applications: 'My applications', saved_jobs: 'Saved jobs',
+    post_job: 'Post a job', applications: 'Applications',
+    full_time: 'Full-time', part_time: 'Part-time', contract: 'Contract', locum: 'Locum',
+    open_to_work: 'Open to work'
   }
 };
 

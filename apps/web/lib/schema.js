@@ -41,4 +41,23 @@ function medicalWebPageSchema(title, description, url) {
   };
 }
 
-export { physicianSchema, hospitalSchema, medicalWebPageSchema, SITE };
+/** JobPosting structured data for a job listing. */
+function jobPostingSchema(job, locale) {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'JobPosting',
+    title: job.title,
+    description: job.description || job.title,
+    datePosted: job.created_at ? new Date(job.created_at).toISOString().slice(0, 10) : undefined,
+    validThrough: job.application_deadline || undefined,
+    employmentType: (job.employment_type || '').toUpperCase(),
+    hiringOrganization: { '@type': 'Organization', name: job.org_name },
+    jobLocation: {
+      '@type': 'Place',
+      address: { '@type': 'PostalAddress', addressRegion: job.district_en || 'Kerala', addressCountry: 'IN' }
+    },
+    url: `${SITE}/${locale}/jobs/${job.slug}`
+  };
+}
+
+export { physicianSchema, hospitalSchema, medicalWebPageSchema, jobPostingSchema, SITE };
