@@ -242,7 +242,7 @@ Update this section at the end of each phase.
 | 1 | Healthcare Directory | ✅ Complete | v0.2.0-directory |
 | 2 | Appointments & Patient Portal | ✅ Complete | v0.3.0-appointments |
 | 3 | Health Knowledge Centre | ✅ Complete | v0.4.0-knowledge |
-| 4 | Healthcare Jobs Portal | ⬜ Not started | — |
+| 4 | Healthcare Jobs Portal | ✅ Complete | v0.5.0-jobs |
 | 5 | AI Assistant & Platform Scale | ⬜ Not started | — |
 
 ---
