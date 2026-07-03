@@ -17,3 +17,10 @@ export { default as ProfileField } from './components/directory/ProfileField.js'
 export { default as FormRow } from './components/directory/FormRow.js';
 export { default as LanguagePills } from './components/directory/LanguagePills.js';
 export { default as EmptyState } from './components/directory/EmptyState.js';
+
+// Reviews & ratings
+export { default as StarRating } from './components/reviews/StarRating.js';
+export { default as RatingSummary } from './components/reviews/RatingSummary.js';
+export { default as ReviewCard } from './components/reviews/ReviewCard.js';
+export { default as WriteReviewForm } from './components/reviews/WriteReviewForm.js';
+export { default as ReviewsSection } from './components/reviews/ReviewsSection.js';

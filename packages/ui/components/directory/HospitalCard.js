@@ -31,6 +31,7 @@ export default function HospitalCard({ hospital, locale = 'ml' }) {
           <div className="mt-1 flex flex-wrap gap-x-3 gap-y-0.5 text-xs text-gray-600">
             {type && <span>{type[locale] || type.en}</span>}
             {district && <span>{district}</span>}
+            {hospital.rating_count > 0 && <span className="font-medium text-amber-600">⭐ {Number(hospital.rating_avg).toFixed(1)} ({hospital.rating_count})</span>}
             {hospital.emergency_24x7 && <span className="font-medium text-red-600">{EMERGENCY[locale] || EMERGENCY.en}</span>}
           </div>
         </div>

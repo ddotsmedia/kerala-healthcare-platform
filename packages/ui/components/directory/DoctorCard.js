@@ -31,6 +31,7 @@ export default function DoctorCard({ doctor, locale = 'ml' }) {
             {district && <span>{district}</span>}
             {doctor.years_experience != null && <span>{doctor.years_experience} {tr('experience', locale)}</span>}
             {doctor.consultation_fee != null && <span>{tr('fee', locale)}: ₹{doctor.consultation_fee}</span>}
+            {doctor.rating_count > 0 && <span className="font-medium text-amber-600">⭐ {Number(doctor.rating_avg).toFixed(1)} ({doctor.rating_count})</span>}
           </div>
           {modes.length > 0 && (
             <div className="mt-2 flex flex-wrap gap-1.5">

@@ -5,12 +5,13 @@ import { notFound } from 'next/navigation';
 import { resolveLocale, t } from '@/lib/i18n';
 import { getDoctorBySlug, searchDoctors } from '@/lib/providers';
 import { doctorHospitals, doctorAvailability } from '@/lib/profile';
+import { reviewSummary, listApprovedReviews } from '@/lib/reviews';
 import { physicianSchema, medicalWebPageSchema, SITE } from '@/lib/schema';
 import { Avatar, ModeIcons, Chip, StatusBadge, ProfileBreadcrumb, SectionCard, MODE_META } from '@/components/profile/ProfileParts';
 import Tabs from '@/components/profile/Tabs';
 import ShareButton from '@/components/profile/ShareButton';
 import BookingWidget from '@/components/profile/BookingWidget';
-import { DoctorCard, LanguagePills } from '@khp/ui';
+import { DoctorCard, LanguagePills, ReviewsSection } from '@khp/ui';
 
 export const dynamic = 'force-dynamic';
 
@@ -40,10 +41,12 @@ export default async function DoctorProfile(props) {
   const d = await getDoctorBySlug(params.slug);
   if (!d) notFound();
 
-  const [hospitals, availability, similarRaw] = await Promise.all([
+  const [hospitals, availability, similarRaw, revSummary, revInitial] = await Promise.all([
     doctorHospitals(d.id),
     doctorAvailability(d.id),
-    searchDoctors({ specialtyId: d.specialty_id, districtId: d.district_id, page: 1, limit: 4 })
+    searchDoctors({ specialtyId: d.specialty_id, districtId: d.district_id, page: 1, limit: 4 }),
+    reviewSummary('doctor', d.id),
+    listApprovedReviews('doctor', d.id, 1)
   ]);
   const similar = similarRaw.filter((x) => x.id !== d.id).slice(0, 3);
 
@@ -176,7 +179,14 @@ export default async function DoctorProfile(props) {
         </p>
       </SectionCard>
 
-      {/* SECTION 5 — similar doctors */}
+      {/* SECTION 5 — reviews */}
+      <section className="space-y-3">
+        <h2 className="text-lg font-bold text-gray-900">{ml ? 'റിവ്യൂകളും റേറ്റിംഗുകളും' : 'Reviews & ratings'}</h2>
+        <ReviewsSection entityType="doctor" entityId={d.id} locale={locale}
+          initialReviews={revInitial} summary={revSummary} loginPath={`/${locale}/login`} />
+      </section>
+
+      {/* SECTION 6 — similar doctors */}
       {similar.length > 0 && (
         <section className="space-y-3">
           <h2 className="text-lg font-bold text-gray-900">{ml ? 'ഇതേ സ്പെഷ്യാലിറ്റിയിലെ മറ്റ് ഡോക്ടർമാർ' : 'Similar doctors'}</h2>

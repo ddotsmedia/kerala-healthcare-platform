@@ -5,11 +5,12 @@ import { notFound } from 'next/navigation';
 import { resolveLocale, t } from '@/lib/i18n';
 import { getHospitalBySlug, searchHospitals } from '@/lib/providers';
 import { hospitalDoctors } from '@/lib/profile';
+import { reviewSummary, listApprovedReviews } from '@/lib/reviews';
 import { hospitalSchema, medicalWebPageSchema, SITE } from '@/lib/schema';
 import { StatusBadge, Chip, ProfileBreadcrumb, SectionCard } from '@/components/profile/ProfileParts';
 import Tabs from '@/components/profile/Tabs';
 import ShareButton, { CopyButton } from '@/components/profile/ShareButton';
-import { DoctorCard, HospitalCard } from '@khp/ui';
+import { DoctorCard, HospitalCard, ReviewsSection } from '@khp/ui';
 
 export const dynamic = 'force-dynamic';
 
@@ -50,9 +51,11 @@ export default async function HospitalProfile(props) {
   const h = await getHospitalBySlug(params.slug);
   if (!h) notFound();
 
-  const [docs, nearbyRaw] = await Promise.all([
+  const [docs, nearbyRaw, revSummary, revInitial] = await Promise.all([
     hospitalDoctors(h.id, 12),
-    searchHospitals({ districtId: h.district_id, page: 1, limit: 4 })
+    searchHospitals({ districtId: h.district_id, page: 1, limit: 4 }),
+    reviewSummary('hospital', h.id),
+    listApprovedReviews('hospital', h.id, 1)
   ]);
   const nearby = nearbyRaw.filter((x) => x.id !== h.id).slice(0, 3);
 
@@ -203,6 +206,13 @@ export default async function HospitalProfile(props) {
           </div>
         </SectionCard>
       )}
+
+      {/* SECTION 5 — reviews */}
+      <section className="space-y-3">
+        <h2 className="text-lg font-bold text-gray-900">{ml ? 'റിവ്യൂകളും റേറ്റിംഗുകളും' : 'Reviews & ratings'}</h2>
+        <ReviewsSection entityType="hospital" entityId={h.id} locale={locale}
+          initialReviews={revInitial} summary={revSummary} loginPath={`/${locale}/login`} />
+      </section>
 
       {/* disclaimer */}
       <div role="note" aria-label="medical-disclaimer" className="rounded-xl border border-amber-300 bg-amber-50 px-4 py-3 text-xs leading-relaxed text-amber-900">

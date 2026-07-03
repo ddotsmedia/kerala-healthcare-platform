@@ -74,6 +74,7 @@ function buildDoctorSearch(o = {}) {
   const text = `
     SELECT d.id, d.display_name, d.slug, d.photo_url, d.years_experience,
            d.consultation_fee, d.consultation_modes, d.languages,
+           d.rating_avg, d.rating_count,
            s.name_ml AS specialty_ml, s.name_en AS specialty_en,
            di.name_ml AS district_ml, di.name_en AS district_en
       FROM doctors d
@@ -116,7 +117,7 @@ function buildHospitalSearch(o = {}) {
 
   const text = `
     SELECT h.id, h.name_ml, h.name_en, h.slug, h.logo_url, h.type,
-           h.emergency_24x7, h.bed_count,
+           h.emergency_24x7, h.bed_count, h.rating_avg, h.rating_count,
            di.name_ml AS district_ml, di.name_en AS district_en
       FROM hospitals h
       LEFT JOIN districts di ON di.id = h.district_id

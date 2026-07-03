@@ -40,6 +40,7 @@ export function hospitalDoctors(hospitalId, limit = 12) {
   return cached(`profile:hd:${hospitalId}:${lim}`, TTL.providers, () =>
     run(`SELECT d.id, d.display_name, d.slug, d.photo_url, d.years_experience,
                 d.consultation_fee, d.consultation_modes, d.languages,
+                d.rating_avg, d.rating_count,
                 s.name_ml AS specialty_ml, s.name_en AS specialty_en,
                 di.name_ml AS district_ml, di.name_en AS district_en
            FROM hospital_providers hp
