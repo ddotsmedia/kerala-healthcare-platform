@@ -1,0 +1,99 @@
+# Kerala Health Portal — production stack (VPS 194.164.151.202).
+# Host ports chosen to avoid collisions with existing VPS services.
+# Secrets come from .env.production (never committed).
+
+name: khp
+
+services:
+  khp-postgres:
+    image: postgres:15-alpine
+    restart: unless-stopped
+    env_file: ../../.env.production
+    environment:
+      POSTGRES_USER: khp
+      POSTGRES_DB: khp
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - khp-postgres-data:/var/lib/postgresql/data
+    ports:
+      - "127.0.0.1:5440:5432"
+    networks:
+      - khp-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U khp -d khp"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  khp-redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    env_file: ../../.env.production
+    command: ["sh", "-c", "redis-server --requirepass \"$REDIS_PASSWORD\" --appendonly yes"]
+    volumes:
+      - khp-redis-data:/data
+    ports:
+      - "127.0.0.1:6380:6379"
+    networks:
+      - khp-network
+    healthcheck:
+      test: ["CMD-SHELL", "redis-cli -a \"$REDIS_PASSWORD\" ping | grep -q PONG"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  khp-web:
+    build:
+      context: ../..
+      dockerfile: infra/docker/Dockerfile.web
+    restart: unless-stopped
+    env_file: ../../.env.production
+    ports:
+      - "127.0.0.1:3001:3000"
+    depends_on:
+      khp-postgres:
+        condition: service_healthy
+      khp-redis:
+        condition: service_healthy
+    networks:
+      - khp-network
+
+  khp-portal:
+    build:
+      context: ../..
+      dockerfile: infra/docker/Dockerfile.portal
+    restart: unless-stopped
+    env_file: ../../.env.production
+    ports:
+      - "127.0.0.1:3002:3000"
+    depends_on:
+      khp-postgres:
+        condition: service_healthy
+      khp-redis:
+        condition: service_healthy
+    networks:
+      - khp-network
+
+  khp-admin:
+    build:
+      context: ../..
+      dockerfile: infra/docker/Dockerfile.admin
+    restart: unless-stopped
+    env_file: ../../.env.production
+    ports:
+      - "127.0.0.1:8081:3000"
+    depends_on:
+      khp-postgres:
+        condition: service_healthy
+      khp-redis:
+        condition: service_healthy
+    networks:
+      - khp-network
+
+networks:
+  khp-network:
+    driver: bridge
+
+volumes:
+  khp-postgres-data:
+  khp-redis-data:

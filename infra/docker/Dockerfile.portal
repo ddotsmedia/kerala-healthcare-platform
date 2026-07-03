@@ -1,0 +1,24 @@
+# Multi-stage build for apps/portal (Next.js 15, standalone output). Monorepo-aware.
+FROM node:20-alpine AS base
+RUN corepack enable && corepack prepare pnpm@9.0.0 --activate
+WORKDIR /app
+
+FROM base AS deps
+COPY . .
+RUN pnpm install --frozen-lockfile
+
+FROM base AS builder
+COPY --from=deps /app /app
+RUN pnpm --filter @khp/portal build
+
+FROM node:20-alpine AS runner
+WORKDIR /app
+ENV NODE_ENV=production
+ENV PORT=3000
+ENV HOSTNAME=0.0.0.0
+RUN addgroup -S nodejs && adduser -S nextjs -G nodejs
+COPY --from=builder /app/apps/portal/.next/standalone ./
+COPY --from=builder /app/apps/portal/.next/static ./apps/portal/.next/static
+USER nextjs
+EXPOSE 3000
+CMD ["node", "apps/portal/server.js"]

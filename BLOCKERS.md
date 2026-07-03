@@ -235,6 +235,14 @@ Result: **6 PASS, 2 FAIL** (items 5, 6 — both data/indexing gaps, logged above
 - [NEEDS DECISION] Load test (1k concurrent, p95<500ms) deferred — requires load-test tooling/infra.
 - [ASSUMPTION] Phase 5 complete: 7 tasks built, 8/9 smoke pass (audit item partial per above), lint+build green. NOT tagged — holding for confirmation. Proposed tag: `v1.0.0-launch`. Migration 0030. Evidence: docs/phases/PHASE_5_COMPLETION.md.
 
+## Session: 2026-07-03 — VPS deployment infra
+
+- [ASSUMPTION] Production secrets (JWT/refresh/AUTH_PEPPER/POSTGRES/REDIS) generated via node crypto and written to `.env.production` (git-ignored, NEVER committed). `.env.production.example` is the committed template.
+- [ASSUMPTION] Host ports on VPS chosen from the free set found in the audit: web 3001, portal 3002, admin 8081, postgres 5440, redis 6380 — all bound to 127.0.0.1 (nginx fronts them). Dedicated bridge net `khp-network`, named volumes for pg+redis, healthchecks on datastores.
+- [ASSUMPTION] Next.js `output: 'standalone'` + `outputFileTracingRoot` (repo root) enabled for Docker. Standalone packaging FAILS on Windows (EPERM symlink) but BUILDS CLEAN in Docker/Linux — verified by a successful `docker build` of Dockerfile.web (khp-web image). Local `pnpm build` on Windows now stops at the standalone symlink step; use Docker or a Linux/WSL host for production builds.
+- [ASSUMPTION] `.dockerignore` excludes all `.env*` — secrets never enter the build context; runtime secrets injected via compose `env_file`. NOTE: `NEXT_PUBLIC_*` vars are inlined at BUILD time and are not present during `docker build` (no build args) — public URLs fall back to code defaults. Wire them as Docker build args before go-live if exact absolute URLs matter in SSR/SEO output.
+- [ASSUMPTION] nginx `infra/nginx/malayalidoctor.com.conf` has SSL placeholder comments; `certbot --nginx` fills real cert paths at deploy. Not yet installed on the VPS (no server block deployed).
+
 ## Open decisions index (as of 2026-07-02)
 
 Quick status of every `[NEEDS DECISION]` ever logged (this section is additive; original entries above are unchanged):

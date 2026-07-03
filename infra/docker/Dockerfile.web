@@ -1,0 +1,27 @@
+# Multi-stage build for apps/web (Next.js 15, standalone output). Monorepo-aware.
+FROM node:20-alpine AS base
+RUN corepack enable && corepack prepare pnpm@9.0.0 --activate
+WORKDIR /app
+
+# Stage 1 — deps: install the full workspace (dev deps needed to build).
+FROM base AS deps
+COPY . .
+RUN pnpm install --frozen-lockfile
+
+# Stage 2 — builder: build the web app into a standalone bundle.
+FROM base AS builder
+COPY --from=deps /app /app
+RUN pnpm --filter @khp/web build
+
+# Stage 3 — runner: minimal image with only the standalone output.
+FROM node:20-alpine AS runner
+WORKDIR /app
+ENV NODE_ENV=production
+ENV PORT=3000
+ENV HOSTNAME=0.0.0.0
+RUN addgroup -S nodejs && adduser -S nextjs -G nodejs
+COPY --from=builder /app/apps/web/.next/standalone ./
+COPY --from=builder /app/apps/web/.next/static ./apps/web/.next/static
+USER nextjs
+EXPOSE 3000
+CMD ["node", "apps/web/server.js"]

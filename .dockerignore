@@ -1,0 +1,12 @@
+# Keep the Docker build context small + never ship secrets.
+**/node_modules
+**/.next
+**/.turbo
+.git
+.claude
+*.log
+.env
+.env.*
+docs
+infra/scripts
+**/_*.mjs

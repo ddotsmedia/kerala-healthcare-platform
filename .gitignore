@@ -6,7 +6,9 @@ node_modules/
 # Environment & secrets — NEVER commit
 .env
 .env.*
+.env.production
 !.env.example
+!.env.production.example
 *.pem
 *.key
 
