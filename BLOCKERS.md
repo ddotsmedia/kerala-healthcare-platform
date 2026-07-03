@@ -323,3 +323,11 @@ Quick status of every `[NEEDS DECISION]` ever logged (this section is additive; 
 - [DATA] Sitemap has 62 URLs (2 locales x [5 static + 12 specialties + 14 districts]). Combo + doctor + hospital URLs are added automatically once verified+published providers exist (currently 0). Run `pnpm db:seed:demo` to populate.
 - [ACTION] Submit https://malayalidoctor.com/sitemap.xml in Google Search Console (needs the owner's GSC account — cannot be done autonomously).
 - [ASSUMPTION] District slug derived from lower(name_en) (no slug column on districts): /districts/ernakulam, /districts/thrissur, etc.
+
+## Session: 2026-07-03 — Doctor + Hospital profile upgrades
+### Assumptions
+- [ASSUMPTION] Navbar/emergency chrome already sticky (in layout); profile header kept as a prominent card, not separately sticky, to avoid z-index overlap with the sticky navbar.
+- [ASSUMPTION] Hospital phone/website not shown: phone_enc is column-encrypted (no plaintext) and hospitals has no website column. "Call Hospital" CTA replaced with Google-Maps "Directions". Doctor/hospital <img> avatars use plain <img> (arbitrary URLs; avoids next/image remote-domain config) — one lint warning, accepted.
+- [ASSUMPTION] Ran `pnpm db:seed:demo` on VPS (Law-sanctioned) so profiles/landing/homepage have real content: 11 doctors, 5 hospitals, 10 departments, 3 facilities published. This also populates the previously-empty featured/landing sections.
+### Verified
+- [OK] /ml/doctors/<slug> 200 — Physician + BreadcrumbList JSON-LD, availableService/priceRange, booking widget. /ml/hospitals/<slug> 200 — Hospital + BreadcrumbList JSON-LD, PostalAddress, department.
