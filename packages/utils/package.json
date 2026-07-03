@@ -1,0 +1,8 @@
+{
+  "name": "@khp/utils",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "main": "index.js",
+  "description": "Shared pure utilities (validation, etc.). Zero dependencies."
+}
