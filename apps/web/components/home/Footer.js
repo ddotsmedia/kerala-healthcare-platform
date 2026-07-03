@@ -13,11 +13,11 @@ const DISCLAIMER =
   'ഈ വെബ്സൈറ്റിലെ വിവരങ്ങൾ വിദ്യാഭ്യാസ ആവശ്യങ്ങൾക്ക് മാത്രമുള്ളതാണ്. വൈദ്യോപദേശത്തിന് ഡോക്ടറെ സമീപിക്കുക.';
 
 const QUICK = [
-  { href: 'doctors', ml: 'ഡോക്ടർമാർ', en: 'Doctors' },
-  { href: 'hospitals', ml: 'ആശുപത്രികൾ', en: 'Hospitals' },
-  { href: 'health', ml: 'ആരോഗ്യ വിവരം', en: 'Health Info' },
-  { href: 'jobs', ml: 'ജോലികൾ', en: 'Jobs' },
-  { href: 'assistant', ml: 'AI അസിസ്റ്റന്റ്', en: 'AI Assistant' }
+  { href: 'about', ml: 'ഞങ്ങളെ കുറിച്ച്', en: 'About' },
+  { href: 'how-it-works', ml: 'എങ്ങനെ ഉപയോഗിക്കാം', en: 'How It Works' },
+  { href: 'for-doctors', ml: 'ഡോക്ടർമാർക്കായി', en: 'For Doctors' },
+  { href: 'for-hospitals', ml: 'ആശുപത്രികൾക്കായി', en: 'For Hospitals' },
+  { href: 'contact', ml: 'ബന്ധപ്പെടുക', en: 'Contact' }
 ];
 const SOCIAL = ['📘', '𝕏', '📸', '▶️'];
 
@@ -85,9 +85,9 @@ export default async function Footer({ locale = 'ml' }) {
         <div className="mt-6 flex flex-col items-center justify-between gap-2 border-t border-white/10 pt-6 text-xs text-gray-500 sm:flex-row">
           <span>© 2025 MalayaliDoctor.com</span>
           <div className="flex gap-4">
-            <Link href={`/${locale}/health`} className="hover:text-teal-400">{ml ? 'സ്വകാര്യത' : 'Privacy Policy'}</Link>
-            <Link href={`/${locale}/health`} className="hover:text-teal-400">{ml ? 'നിബന്ധനകൾ' : 'Terms'}</Link>
-            <Link href={`/${locale}/health`} className="hover:text-teal-400">{ml ? 'മെഡിക്കൽ നിരാകരണം' : 'Medical Disclaimer'}</Link>
+            <Link href={`/${locale}/privacy`} className="hover:text-teal-400">{ml ? 'സ്വകാര്യത' : 'Privacy Policy'}</Link>
+            <Link href={`/${locale}/terms`} className="hover:text-teal-400">{ml ? 'നിബന്ധനകൾ' : 'Terms'}</Link>
+            <Link href={`/${locale}/disclaimer`} className="hover:text-teal-400">{ml ? 'മെഡിക്കൽ നിരാകരണം' : 'Medical Disclaimer'}</Link>
           </div>
         </div>
       </div>

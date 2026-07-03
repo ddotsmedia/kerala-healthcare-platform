@@ -24,6 +24,9 @@ export default async function sitemap() {
     add(`/${locale}/hospitals`, 0.8, 'daily');
     add(`/${locale}/specialties`, 0.8);
     add(`/${locale}/districts`, 0.8);
+    for (const p of ['about', 'how-it-works', 'for-doctors', 'for-hospitals', 'contact', 'privacy', 'terms', 'disclaimer']) {
+      add(`/${locale}/${p}`, 0.5, 'monthly');
+    }
 
     for (const s of specialties) add(`/${locale}/specialties/${s.slug}`, 0.8);
     for (const d of districts) add(`/${locale}/districts/${districtSlug(d.name_en)}`, 0.8);
