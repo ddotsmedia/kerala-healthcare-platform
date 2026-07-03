@@ -26,3 +26,19 @@ body {
 @media (prefers-reduced-motion: reduce) {
   .trust-fade { animation: none; opacity: 1; }
 }
+
+/* Reading progress bar — CSS scroll-driven animation, no JS. */
+@keyframes reading-progress-grow { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+.reading-progress {
+  position: fixed; top: 0; left: 0; right: 0; height: 3px; z-index: 60;
+  background: #0d9488; transform: scaleX(0); transform-origin: 0 50%;
+  animation: reading-progress-grow linear;
+  animation-timeline: scroll(root block);
+}
+/* Article body prose (manual — no typography plugin). */
+.article-body h2 { @apply mb-2 mt-6 text-xl font-bold text-gray-900; }
+.article-body h3 { @apply mb-1 mt-4 text-lg font-semibold text-gray-900; }
+.article-body p  { @apply mb-3 text-sm leading-relaxed text-gray-800; }
+.article-body ul { @apply mb-3 ml-5 list-disc space-y-1 text-sm text-gray-800; }
+.article-body ol { @apply mb-3 ml-5 list-decimal space-y-1 text-sm text-gray-800; }
+.article-body a  { @apply text-brand underline; }

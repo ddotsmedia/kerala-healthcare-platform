@@ -1,14 +1,27 @@
-// Health knowledge feed — latest published content with type tabs.
+// Health articles index — hero, category tabs, featured, searchable grid.
 
 import Link from 'next/link';
 import { resolveLocale, t } from '@/lib/i18n';
 import { listPublishedContent } from '@/lib/knowledge';
+import { FullBleed } from '@/components/home/HomeSections';
+import ArticleCard from '@/components/health/ArticleCard';
+import ArticleList from '@/components/health/ArticleList';
 import KnowledgeDisclaimer from '@/components/KnowledgeDisclaimer';
 import { EmptyState, Pagination } from '@khp/ui';
 
 export const dynamic = 'force-dynamic';
-const LIMIT = 20;
-const TYPES = ['article', 'disease', 'procedure', 'news'];
+const LIMIT = 12;
+
+const CATS = [
+  { key: '', ml: 'എല്ലാം', en: 'All' },
+  { key: 'disease', ml: 'രോഗം', en: 'Disease' },
+  { key: 'nutrition', ml: 'പോഷകാഹാരം', en: 'Nutrition' },
+  { key: 'mental-health', ml: 'മാനസികാരോഗ്യം', en: 'Mental Health' },
+  { key: 'womens-health', ml: 'സ്ത്രീ ആരോഗ്യം', en: "Women's Health" },
+  { key: 'child-health', ml: 'ശിശു ആരോഗ്യം', en: 'Child Health' },
+  { key: 'ayurveda', ml: 'ആയുർവേദം', en: 'Ayurveda' },
+  { key: 'news', ml: 'വാർത്ത', en: 'News' }
+];
 
 export async function generateMetadata(props) {
   const params = await props.params;
@@ -17,40 +30,47 @@ export async function generateMetadata(props) {
 }
 
 export default async function HealthFeed(props) {
-  const searchParams = await props.searchParams;
+  const searchParams = (await props.searchParams) || {};
   const params = await props.params;
   const locale = resolveLocale(params.locale);
-  const type = (searchParams && searchParams.type) || '';
-  const page = Math.max(1, parseInt(searchParams && searchParams.page, 10) || 1);
-  const items = await listPublishedContent({ type: type || undefined, page, limit: LIMIT });
+  const ml = locale === 'ml';
+  const category = searchParams.category || '';
+  const page = Math.max(1, parseInt(searchParams.page, 10) || 1);
+  const items = await listPublishedContent({ category: category || undefined, page, limit: LIMIT });
   const basePath = `/${locale}/health`;
+  const featured = page === 1 && !category && items.length > 0 ? items[0] : null;
+  const rest = featured ? items.slice(1) : items;
 
   return (
-    <div className="space-y-5">
-      <h1 className="text-xl font-bold">{t(locale, 'health')}</h1>
-      <KnowledgeDisclaimer locale={locale} />
-      <nav className="flex flex-wrap gap-2">
-        <Link href={basePath} className={`rounded-full px-3 py-1 text-xs font-medium ${!type ? 'bg-brand text-white' : 'border border-gray-300 bg-white'}`}>All</Link>
-        {TYPES.map((ty) => (
-          <Link key={ty} href={`${basePath}?type=${ty}`} className={`rounded-full px-3 py-1 text-xs font-medium ${type === ty ? 'bg-brand text-white' : 'border border-gray-300 bg-white'}`}>{ty}</Link>
-        ))}
-      </nav>
+    <div className="-my-6">
+      <FullBleed className="bg-gradient-to-br from-[#0d9488] to-[#0f766e] py-12 text-white">
+        <div className="mx-auto max-w-2xl text-center">
+          <h1 className="text-3xl font-extrabold">{ml ? 'ആരോഗ്യ വിവരങ്ങൾ' : 'Health Information'}</h1>
+          <p className="mt-2 text-sm text-white/90">{ml ? 'മലയാളത്തിൽ വിശ്വസനീയമായ ആരോഗ്യ വിജ്ഞാനം' : 'Trusted health knowledge in Malayalam'}</p>
+        </div>
+      </FullBleed>
 
-      {items.length === 0 ? <EmptyState message={t(locale, 'no_results')} /> : (
-        <>
-          <div className="grid gap-3">
-            {items.map((c) => (
-              <Link key={c.id} href={`/${locale}/health/${c.slug}`}
-                className="block rounded-xl border border-gray-200 bg-white p-4 shadow-sm hover:shadow-md">
-                <h3 className="font-semibold">{locale === 'ml' ? (c.title_ml || c.title_en) : c.title_en}</h3>
-                <p className="mt-1 text-sm text-gray-600">{locale === 'ml' ? (c.excerpt_ml || c.excerpt_en) : c.excerpt_en}</p>
-                <span className="mt-1 inline-block text-xs text-gray-400">{c.type}</span>
-              </Link>
-            ))}
+      <FullBleed className="bg-white py-8">
+        <KnowledgeDisclaimer locale={locale} />
+        <nav className="mt-4 flex flex-wrap gap-2">
+          {CATS.map((c) => (
+            <Link key={c.key} href={c.key ? `${basePath}?category=${c.key}` : basePath}
+              className={`rounded-full px-3 py-1 text-xs font-medium ${category === c.key ? 'bg-brand text-white' : 'border border-gray-300 bg-white text-gray-700'}`}>
+              {ml ? c.ml : c.en}
+            </Link>
+          ))}
+        </nav>
+
+        {items.length === 0 ? (
+          <div className="mt-6"><EmptyState message={t(locale, 'no_results')} /></div>
+        ) : (
+          <div className="mt-6 space-y-6">
+            {featured && <ArticleCard item={featured} locale={locale} featured />}
+            <ArticleList items={rest} locale={locale} />
+            <Pagination basePath={basePath} query={{ category }} page={page} hasNext={items.length === LIMIT} locale={locale} />
           </div>
-          <Pagination basePath={basePath} query={{ type }} page={page} hasNext={items.length === LIMIT} locale={locale} />
-        </>
-      )}
+        )}
+      </FullBleed>
     </div>
   );
 }
