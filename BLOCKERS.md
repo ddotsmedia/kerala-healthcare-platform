@@ -304,3 +304,13 @@ Quick status of every `[NEEDS DECISION]` ever logged (this section is additive; 
     TXT  send               = v=spf1 include:amazonses.com ~all
   Feature verified working end-to-end otherwise: OTP row persists, route graceful, delivery reaches Resend (only the domain gate remains).
 - [NOTE] Project moved /var/www/kerala-healthcare-platform -> /opt/kerala-healthcare-platform (matches other VPS projects). Migration count now 31 (0031_email_otp).
+
+## Session: 2026-07-03 — Professional homepage redesign
+### Assumptions
+- [ASSUMPTION] Navbar (§1), emergency banner (§11), footer (§12) placed in the locale layout (apps/web/app/[locale]/layout.js) so all pages get the pro chrome — not duplicated inside page.js. Homepage (page.js) holds §2–10.
+- [ASSUMPTION] Specialty/district links use DB row **id** (?specialty=<id>, ?district=<id>) not slug — doctor/hospital search filters match by specialty_id/district_id (queryBuilder.js), so id is required for filtering to work.
+- [ASSUMPTION] No next/image used: no image columns exist for articles/specialties; hero/thumbs use CSS gradients + emoji -> better LCP, fewer requests (helps Lighthouse mobile ≥90).
+- [ASSUMPTION] Homepage is force-dynamic (live DB at request, providers cached 300s) — Docker build has no DB, so ISR would have shipped an empty page.
+- [ASSUMPTION] Full-bleed sections (relative left-1/2 -mx-[50vw] w-screen) let coloured bands span viewport inside the layout's narrow column; overflow-x-hidden on layout root prevents horizontal scroll.
+### Notes
+- [DATA] Demo DB has 12 specialties + 14 districts but 0 published+verified doctors/hospitals and 0 published articles -> Featured Doctors/Hospitals/Articles sections hide gracefully. Run `pnpm db:seed:demo` to populate them for a full showcase (not run autonomously on prod).
