@@ -18,9 +18,10 @@ export default async function LocaleLayout(props) {
   if (!LOCALES.includes(locale)) notFound();
   return (
     <div className="flex min-h-screen flex-col overflow-x-hidden">
+      <a href="#main" className="skip-link">{locale === 'ml' ? 'ഉള്ളടക്കത്തിലേക്ക് പോകുക' : 'Skip to content'}</a>
       <EmergencyBanner locale={locale} />
       <Navbar locale={locale} />
-      <main className="mx-auto w-full max-w-3xl flex-1 px-4 py-6">{children}</main>
+      <main id="main" className="mx-auto w-full max-w-3xl flex-1 px-4 py-6">{children}</main>
       <WhatsAppShare locale={locale} />
       <Footer locale={locale} />
     </div>

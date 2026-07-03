@@ -50,8 +50,8 @@ export default async function EmergencyPage(props) {
       <section className="relative left-1/2 right-1/2 -mx-[50vw] w-screen bg-white py-10">
         <div className="mx-auto grid max-w-3xl grid-cols-1 gap-3 px-4 sm:grid-cols-2">
           {NUMBERS.map((x) => (
-            <a key={x.n} href={`tel:${x.n}`}
-              className="flex items-center justify-between rounded-2xl border-2 border-red-200 bg-red-50 px-5 py-4 hover:border-red-400">
+            <a key={x.n} href={`tel:${x.n}`} aria-label={`Call ${x.n} ${ml ? x.ml : x.en}`}
+              className="flex min-h-16 items-center justify-between rounded-2xl border-2 border-red-200 bg-red-50 px-5 py-4 hover:border-red-400">
               <span className="flex items-center gap-3">
                 <span className="text-2xl" aria-hidden="true">{x.icon}</span>
                 <span className="text-sm font-semibold text-gray-800">{ml ? x.ml : x.en}</span>

@@ -42,3 +42,19 @@ body {
 .article-body ul { @apply mb-3 ml-5 list-disc space-y-1 text-sm text-gray-800; }
 .article-body ol { @apply mb-3 ml-5 list-decimal space-y-1 text-sm text-gray-800; }
 .article-body a  { @apply text-brand underline; }
+
+/* iOS: 16px inputs prevent zoom-on-focus. */
+@media (max-width: 640px) {
+  input, select, textarea { font-size: 16px; }
+}
+
+/* Skip-to-content link (visible on focus). */
+.skip-link { position: absolute; left: -9999px; top: 0; z-index: 100; }
+.skip-link:focus {
+  left: 8px; top: 8px; padding: 8px 12px;
+  background: #0d9488; color: #fff; border-radius: 8px; font-size: 14px;
+}
+
+/* Skeleton pulse. */
+@keyframes skeleton-pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.5; } }
+.skeleton { background: #e5e7eb; border-radius: 8px; animation: skeleton-pulse 1.5s ease-in-out infinite; }
