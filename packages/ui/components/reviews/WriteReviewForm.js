@@ -50,10 +50,18 @@ export default function WriteReviewForm({ entityType, entityId, locale = 'ml', l
 
   return (
     <form onSubmit={submit} className="space-y-3 rounded-xl border border-gray-200 bg-white p-4">
-      <div className="flex items-center gap-1" onMouseLeave={() => setHover(0)}>
+      <div className="flex items-center gap-1" role="radiogroup" aria-label={ml ? 'റേറ്റിംഗ്' : 'Rating'}
+        onMouseLeave={() => setHover(0)}
+        onKeyDown={(e) => {
+          if (e.key === 'ArrowRight' || e.key === 'ArrowUp') { e.preventDefault(); setRating((r) => Math.min(5, r + 1)); }
+          if (e.key === 'ArrowLeft' || e.key === 'ArrowDown') { e.preventDefault(); setRating((r) => Math.max(1, r - 1)); }
+        }}>
         {[1, 2, 3, 4, 5].map((i) => (
-          <button key={i} type="button" onClick={() => setRating(i)} onMouseEnter={() => setHover(i)}
-            aria-label={`${i} star`} className={`text-2xl leading-none ${(hover || rating) >= i ? 'text-brand' : 'text-gray-300'}`}>★</button>
+          <button key={i} type="button" role="radio" aria-checked={rating === i}
+            tabIndex={rating === i || (rating === 0 && i === 1) ? 0 : -1}
+            onClick={() => setRating(i)} onMouseEnter={() => setHover(i)}
+            aria-label={`${i} ${ml ? 'നക്ഷത്രം' : 'star'}`}
+            className={`text-2xl leading-none ${(hover || rating) >= i ? 'text-brand' : 'text-gray-300'}`}>★</button>
         ))}
       </div>
       <input type="text" maxLength={100} value={title} onChange={(e) => setTitle(e.target.value)}
