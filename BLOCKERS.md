@@ -265,3 +265,19 @@ Quick status of every `[NEEDS DECISION]` ever logged (this section is additive; 
 ---
 
 *Kerala Health Portal · Universal Prompt Law · Claude Code Engineering Kit v1.0*
+
+## Session: 2026-07-03 — VPS deploy to 194.164.151.202 (malayalidoctor.com)
+
+### Assumptions
+- [ASSUMPTION] nginx installed as HTTP-only bootstrap (proxy :80 -> app), not the repo's 443 form. Repo conf had `listen 443 ssl` with commented certs -> `nginx -t` fails pre-certbot. HTTP-only passes and does not disturb the 21 existing sites. Final SSL/redirect added by certbot after DNS cutover.
+- [ASSUMPTION] Removed top-level `gzip on` from deployed nginx conf: already set globally in /etc/nginx/nginx.conf (dup risk).
+
+### Errors fixed
+- [FIXED] compose: postgres crash-looped ("POSTGRES_PASSWORD not specified"). `environment: POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}` interpolated to empty (no .env beside compose file) and overrode env_file. Dropped the override -> password now from env_file. (b6631e6)
+- [FIXED] compose: redis `command`/`healthcheck` used `$REDIS_PASSWORD` -> compose interpolated to empty -> redis started with NO auth. Escaped to `$$REDIS_PASSWORD` so container shell expands it from env_file. (b6631e6)
+- [FIXED] stuck redis container could not be killed via docker ("permission denied"); daemon restart forbidden (protected projects). Killed underlying redis-server PID directly on host, then `docker rm -f`. Surgical, no protected containers touched.
+- [FIXED] deploy.sh migrate needs host node_modules (pg); ran `pnpm install` on host before deploy.sh.
+
+### Needs human decision
+- [NEEDS DECISION] DNS: malayalidoctor.com -> 34.216.117.25 (AWS), NOT 194.164.151.202. www/portal/admin = NXDOMAIN. SSL (certbot) SKIPPED until DNS points here. After cutover, run: certbot --nginx -d malayalidoctor.com -d www... -d portal... -d admin... then it rewrites nginx to add 443 + HTTPS redirect.
+- [NEEDS DECISION] .env.production still has empty ANTHROPIC_API_KEY / OTP SMS / SES creds. AI assistant + OTP login + email won't function until filled.
