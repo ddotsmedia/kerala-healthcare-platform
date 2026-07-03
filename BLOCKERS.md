@@ -339,3 +339,12 @@ Quick status of every `[NEEDS DECISION]` ever logged (this section is additive; 
 ### Verified
 - [OK] Migrations 33 (0032 reviews, 0033 rating_cache+trigger). Seed: 8 approved reviews; trigger populated rating_avg/count on 3 doctors + 2 hospitals.
 - [OK] Doctor profile 200 with reviews section (avg 4.5, distribution {5:1,4:1}, review cards, Write-a-Review). GET /api/reviews returns reviews + summary. Admin /reviews guarded (redirects to /login). DoctorCard/HospitalCard show star rating.
+
+## Session: 2026-07-03 — Trust/info pages (About, Contact, How It Works, For Doctors/Hospitals, Privacy, Terms, Disclaimer)
+### Errors fixed
+- [FIXED] Local `next build` crashed with a webpack RangeError (stack-overflow dump) after adding trust files. Root cause: corrupted/stale apps/web/.next cache from earlier interrupted builds — NOT a code defect. `rm -rf apps/web/.next` then rebuild compiled cleanly. Docker builds are clean-slate so unaffected. Takeaway: clear .next when a Windows build crashes oddly.
+### Notes
+- [ASSUMPTION] Stats "count-up" done as a CSS entrance animation (.trust-fade in globals.css) with static final numbers — true count-up needs JS; task said CSS-only/no library. respects prefers-reduced-motion.
+- [ASSUMPTION] Contact form emails admin@malayalidoctor.com via Resend; delivery depends on Resend domain verification (pending DNS, logged earlier). API always returns success and logs failures, per spec.
+### Verified
+- [OK] All 8 pages 200 (/ml/about,contact,how-it-works,for-doctors,for-hospitals,privacy,terms,disclaimer). FAQPage JSON-LD on how-it-works. POST /api/contact -> 201. Footer + sitemap link all trust pages.
