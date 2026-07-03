@@ -2,8 +2,9 @@
 
 const SITE = process.env.NEXT_PUBLIC_APP_URL || 'https://keralahealthportal.in';
 
-/** Physician structured data for a doctor profile. */
+/** Physician structured data for a doctor profile (enhanced). */
 function physicianSchema(doctor, locale) {
+  const region = doctor.district_en || doctor.district_ml || 'Kerala';
   return {
     '@context': 'https://schema.org',
     '@type': 'Physician',
@@ -11,21 +12,40 @@ function physicianSchema(doctor, locale) {
     url: `${SITE}/${locale}/doctors/${doctor.slug}`,
     image: doctor.photo_url || undefined,
     medicalSpecialty: doctor.specialty_en || doctor.specialty_ml || undefined,
-    areaServed: doctor.district_en || doctor.district_ml || 'Kerala'
+    areaServed: region,
+    address: { '@type': 'PostalAddress', addressRegion: region, addressCountry: 'IN' },
+    availableService: {
+      '@type': 'MedicalProcedure',
+      name: doctor.specialty_en ? `${doctor.specialty_en} consultation` : 'Medical consultation'
+    },
+    ...(doctor.consultation_fee != null ? { priceRange: `₹${doctor.consultation_fee}` } : {}),
+    ...(Array.isArray(doctor.languages) && doctor.languages.length ? { knowsLanguage: doctor.languages } : {})
   };
 }
 
-/** Hospital structured data for a hospital profile. */
-function hospitalSchema(hospital, locale) {
+/** Hospital structured data for a hospital profile (enhanced). */
+function hospitalSchema(hospital, locale, extra = {}) {
+  const region = hospital.district_en || hospital.district_ml || 'Kerala';
+  const departments = (extra.departments || hospital.departments || []).map((d) => d.name_en || d.name_ml).filter(Boolean);
+  const services = (extra.services || hospital.services || []).map((s) => s.name_en || s.name_ml).filter(Boolean);
+  if (hospital.emergency_24x7) services.push('Emergency 24x7');
   return {
     '@context': 'https://schema.org',
     '@type': 'Hospital',
     name: hospital.name_en || hospital.name_ml,
     url: `${SITE}/${locale}/hospitals/${hospital.slug}`,
     image: hospital.logo_url || undefined,
-    address: hospital.address_en || hospital.address_ml || undefined,
-    areaServed: hospital.district_en || hospital.district_ml || 'Kerala',
-    availableService: hospital.emergency_24x7 ? 'Emergency 24x7' : undefined
+    address: {
+      '@type': 'PostalAddress',
+      streetAddress: hospital.address_en || hospital.address_ml || undefined,
+      addressRegion: region, addressCountry: 'IN'
+    },
+    areaServed: region,
+    ...(hospital.latitude != null && hospital.longitude != null
+      ? { geo: { '@type': 'GeoCoordinates', latitude: hospital.latitude, longitude: hospital.longitude } }
+      : {}),
+    ...(departments.length ? { department: departments.map((name) => ({ '@type': 'MedicalClinic', name })) } : {}),
+    ...(services.length ? { availableService: services.map((name) => ({ '@type': 'MedicalProcedure', name })) } : {})
   };
 }
 

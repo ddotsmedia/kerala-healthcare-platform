@@ -81,7 +81,7 @@ function listFacilities({ kind, districtId, page = 1, limit = 20 } = {}) {
 /** Public doctor profile by permanent slug (verified + published only). */
 async function getDoctorBySlug(slug) {
   const doctor = await runOne(
-    `SELECT d.*, s.name_ml AS specialty_ml, s.name_en AS specialty_en,
+    `SELECT d.*, s.name_ml AS specialty_ml, s.name_en AS specialty_en, s.slug AS specialty_slug,
             di.name_ml AS district_ml, di.name_en AS district_en
        FROM doctors d
        LEFT JOIN specialties s ON s.id = d.specialty_id
