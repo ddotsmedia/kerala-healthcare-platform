@@ -7,12 +7,14 @@ import KnowledgeDisclaimer from '@/components/KnowledgeDisclaimer';
 import { EmptyState } from '@khp/ui';
 
 export const dynamic = 'force-dynamic';
-export function generateMetadata({ params }) {
+export async function generateMetadata(props) {
+  const params = await props.params;
   const locale = resolveLocale(params.locale);
   return { title: `${t(locale, 'symptom_navigator')} · ${t(locale, 'site')}` };
 }
 
-export default async function SymptomsPage({ params }) {
+export default async function SymptomsPage(props) {
+  const params = await props.params;
   const locale = resolveLocale(params.locale);
   const symptoms = await listSymptoms();
 

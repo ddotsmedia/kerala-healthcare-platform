@@ -12,8 +12,9 @@ export const dynamic = 'force-dynamic';
 
 const NMC_PORTAL = 'https://www.nmc.org.in/information-desk/indian-medical-register/';
 
-export default async function VerificationDetail({ params }) {
-  if (!requireAdminRole()) redirect('/login');
+export default async function VerificationDetail(props) {
+  const params = await props.params;
+  if (!(await requireAdminRole())) redirect('/login');
   const item = await getItem(params.id);
   if (!item) notFound();
 

@@ -13,7 +13,7 @@ import { getSession } from './session.js';
 
 /** @returns {Promise<string|null>} the current doctor's id, or null if not a doctor. */
 async function currentDoctorId() {
-  const s = getSession();
+  const s = (await getSession());
   if (!s || s.role !== 'doctor') return null;
   const { rows } = await getPool().query(
     `SELECT id FROM doctors WHERE user_id = $1 AND deleted_at IS NULL LIMIT 1`, [s.userId]

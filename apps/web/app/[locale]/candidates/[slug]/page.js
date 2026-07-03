@@ -8,13 +8,15 @@ import { getCandidateBySlug } from '@/lib/jobs';
 
 export const dynamic = 'force-dynamic';
 
-export async function generateMetadata({ params }) {
+export async function generateMetadata(props) {
+  const params = await props.params;
   const locale = resolveLocale(params.locale);
   const c = await getCandidateBySlug(params.slug);
   return { title: c ? `${c.headline || c.role_category} · ${t(locale, 'candidate')}` : t(locale, 'candidate') };
 }
 
-export default async function CandidateProfile({ params }) {
+export default async function CandidateProfile(props) {
+  const params = await props.params;
   const locale = resolveLocale(params.locale);
   const c = await getCandidateBySlug(params.slug);
   if (!c) notFound();

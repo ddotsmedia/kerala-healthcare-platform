@@ -10,19 +10,21 @@ import { saveJobAction } from '../../candidate/actions';
 
 export const dynamic = 'force-dynamic';
 
-export async function generateMetadata({ params }) {
+export async function generateMetadata(props) {
+  const params = await props.params;
   const locale = resolveLocale(params.locale);
   const j = await getJobBySlug(params.slug);
   if (!j) return { title: t(locale, 'jobs') };
   return { title: `${j.title} · ${j.org_name}`.slice(0, 60), description: `${j.title} — ${j.org_name}, ${j.district_en || 'Kerala'}`.slice(0, 160) };
 }
 
-export default async function JobDetail({ params }) {
+export default async function JobDetail(props) {
+  const params = await props.params;
   const locale = resolveLocale(params.locale);
   const j = await getJobBySlug(params.slug);
   if (!j) notFound();
   const ld = jobPostingSchema(j, locale);
-  const authed = !!getSession();
+  const authed = !!(await getSession());
 
   return (
     <article className="space-y-5">

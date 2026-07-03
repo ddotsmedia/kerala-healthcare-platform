@@ -1,11 +1,12 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, use } from 'react';
 import { resolveLocale, t } from '@/lib/i18n';
 
 const CM_PER_IN = 2.54, KG_PER_LB = 0.453592;
 
-export default function BmiCalculator({ params }) {
+export default function BmiCalculator(props) {
+  const params = use(props.params);
   const locale = resolveLocale(params.locale);
   const [unit, setUnit] = useState('metric');
   const [h, setH] = useState('');

@@ -12,8 +12,8 @@ import { requireAdminRole } from '@/lib/auth';
  * @param {FormData} formData
  */
 export async function decideAction(formData) {
-  if (!requireAdminRole()) redirect('/login');
-  const session = getSession();
+  if (!(await requireAdminRole())) redirect('/login');
+  const session = (await getSession());
   const nmcMatchRaw = formData.get('nmc_match');
   const nmcMatch = nmcMatchRaw === 'yes' ? true : nmcMatchRaw === 'no' ? false : null;
 

@@ -12,9 +12,10 @@ import { createProfileAction } from './actions';
 export const dynamic = 'force-dynamic';
 const inp = 'w-full rounded-lg border border-gray-300 px-3 py-2 text-sm';
 
-export default async function EmployerHome({ params }) {
+export default async function EmployerHome(props) {
+  const params = await props.params;
   const locale = resolveLocale(params.locale);
-  if (!getSession()) redirect(`/${locale}/login`);
+  if (!(await getSession())) redirect(`/${locale}/login`);
   const emp = await currentEmployerProfile();
 
   if (!emp) {

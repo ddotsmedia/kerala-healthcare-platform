@@ -6,8 +6,9 @@ import { updateDraft } from '@/lib/cms';
 
 export const dynamic = 'force-dynamic';
 
-export async function PATCH(request, { params }) {
-  const s = getSession();
+export async function PATCH(request, props) {
+  const params = await props.params;
+  const s = (await getSession());
   if (!s) return NextResponse.json({ data: null, meta: null, errors: ['unauthenticated'] }, { status: 401 });
   const body = await request.json().catch(() => ({}));
   const r = await updateDraft(s, params.id, body);

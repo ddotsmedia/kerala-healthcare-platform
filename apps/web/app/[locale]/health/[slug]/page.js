@@ -10,7 +10,8 @@ import KnowledgeDisclaimer from '@/components/KnowledgeDisclaimer';
 
 export const dynamic = 'force-dynamic';
 
-export async function generateMetadata({ params }) {
+export async function generateMetadata(props) {
+  const params = await props.params;
   const locale = resolveLocale(params.locale);
   const c = await getPublishedContent(params.slug);
   if (!c) return { title: t(locale, 'health') };
@@ -19,7 +20,8 @@ export async function generateMetadata({ params }) {
   return { title: String(title).slice(0, 60), description: String(desc).slice(0, 160) };
 }
 
-export default async function ContentPage({ params }) {
+export default async function ContentPage(props) {
+  const params = await props.params;
   const locale = resolveLocale(params.locale);
   const c = await getPublishedContent(params.slug);
   if (!c) notFound();

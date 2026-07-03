@@ -10,9 +10,10 @@ import { setAppStatusAction } from '../../../actions';
 export const dynamic = 'force-dynamic';
 const NEXT = ['shortlisted', 'interview', 'offered', 'rejected'];
 
-export default async function JobApplications({ params }) {
+export default async function JobApplications(props) {
+  const params = await props.params;
   const locale = resolveLocale(params.locale);
-  if (!getSession()) redirect(`/${locale}/login`);
+  if (!(await getSession())) redirect(`/${locale}/login`);
   const r = await listApplicationsForJob(params.id);
   if (!r.ok) redirect(`/${locale}/employer/listings`);
 

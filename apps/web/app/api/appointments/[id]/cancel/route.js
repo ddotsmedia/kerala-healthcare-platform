@@ -6,7 +6,8 @@ import { onAppointmentCancelled } from '@/lib/appointmentNotify';
 
 export const dynamic = 'force-dynamic';
 
-export async function PATCH(request, { params }) {
+export async function PATCH(request, props) {
+  const params = await props.params;
   const patientId = await currentPatientId();
   if (!patientId) return NextResponse.json({ data: null, meta: null, errors: ['unauthenticated'] }, { status: 401 });
   const body = await request.json().catch(() => ({}));

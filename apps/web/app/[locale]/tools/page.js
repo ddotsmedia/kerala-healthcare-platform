@@ -3,12 +3,14 @@
 import Link from 'next/link';
 import { resolveLocale, t } from '@/lib/i18n';
 
-export function generateMetadata({ params }) {
+export async function generateMetadata(props) {
+  const params = await props.params;
   const locale = resolveLocale(params.locale);
   return { title: `${t(locale, 'tools')} · ${t(locale, 'site')}` };
 }
 
-export default function ToolsIndex({ params }) {
+export default async function ToolsIndex(props) {
+  const params = await props.params;
   const locale = resolveLocale(params.locale);
   const tools = [
     { slug: 'bmi', label: t(locale, 'bmi') },

@@ -8,7 +8,8 @@ import VerifiedBadge from '@/components/VerifiedBadge';
 
 export const dynamic = 'force-dynamic';
 
-export async function generateMetadata({ params }) {
+export async function generateMetadata(props) {
+  const params = await props.params;
   const h = await getHospitalBySlug(params.slug);
   if (!h) return { title: t(resolveLocale(params.locale), 'hospitals') };
   const name = h.name_en || h.name_ml;
@@ -22,7 +23,8 @@ function nameOf(item, locale) {
   return locale === 'ml' ? (item.name_ml || item.name_en) : (item.name_en || item.name_ml);
 }
 
-export default async function HospitalProfile({ params }) {
+export default async function HospitalProfile(props) {
+  const params = await props.params;
   const locale = resolveLocale(params.locale);
   const hospital = await getHospitalBySlug(params.slug);
   if (!hospital) notFound();

@@ -10,7 +10,8 @@ import KnowledgeDisclaimer from '@/components/KnowledgeDisclaimer';
 
 export const dynamic = 'force-dynamic';
 
-export async function generateMetadata({ params }) {
+export async function generateMetadata(props) {
+  const params = await props.params;
   const locale = resolveLocale(params.locale);
   const c = await getPublishedContent(params.slug);
   return { title: c ? `${locale === 'ml' ? (c.title_ml || c.title_en) : c.title_en} · ${t(locale, 'diseases')}` : t(locale, 'diseases') };
@@ -26,7 +27,8 @@ function List({ label, items }) {
   );
 }
 
-export default async function DiseaseDetail({ params }) {
+export default async function DiseaseDetail(props) {
+  const params = await props.params;
   const locale = resolveLocale(params.locale);
   const c = await getPublishedContent(params.slug);
   if (!c || c.type !== 'disease') notFound();

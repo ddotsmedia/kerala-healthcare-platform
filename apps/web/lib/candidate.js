@@ -11,7 +11,7 @@ function slugify(s) {
 }
 
 async function upsertCandidateProfile(data) {
-  const s = getSession();
+  const s = (await getSession());
   if (!s) return { ok: false, error: 'unauthenticated' };
   const existing = await currentCandidateProfile();
   if (existing) {

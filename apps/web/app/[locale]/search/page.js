@@ -1,11 +1,12 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, use } from 'react';
 import { resolveLocale, t } from '@/lib/i18n';
 
 const TYPES = ['doctor', 'hospital', 'article', 'disease', 'job'];
 
-export default function SmartSearch({ params }) {
+export default function SmartSearch(props) {
+  const params = use(props.params);
   const locale = resolveLocale(params.locale);
   const [q, setQ] = useState('');
   const [type, setType] = useState('');

@@ -1,11 +1,12 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, use } from 'react';
 import { resolveLocale, t } from '@/lib/i18n';
 
 const ML_PER_KG = 35;
 
-export default function WaterIntakeCalculator({ params }) {
+export default function WaterIntakeCalculator(props) {
+  const params = use(props.params);
   const locale = resolveLocale(params.locale);
   const [w, setW] = useState('');
   const [litres, setLitres] = useState(null);

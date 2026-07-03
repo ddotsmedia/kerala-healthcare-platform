@@ -44,14 +44,14 @@ async function getCandidateBySlug(slug) {
 
 /** Employer profile owned by the current session user (or null). */
 async function currentEmployerProfile() {
-  const s = getSession();
+  const s = (await getSession());
   if (!s) return null;
   return (await run(`SELECT * FROM employer_profiles WHERE user_id=$1 AND deleted_at IS NULL LIMIT 1`, [s.userId]))[0] || null;
 }
 
 /** Candidate profile owned by the current session user (or null). */
 async function currentCandidateProfile() {
-  const s = getSession();
+  const s = (await getSession());
   if (!s) return null;
   return (await run(`SELECT * FROM candidate_profiles WHERE user_id=$1 AND deleted_at IS NULL LIMIT 1`, [s.userId]))[0] || null;
 }

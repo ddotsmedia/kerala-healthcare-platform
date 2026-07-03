@@ -5,7 +5,8 @@ import { recentInteractions } from '@khp/ai-assistant';
 
 export const dynamic = 'force-dynamic';
 
-export async function GET(request, { params }) {
+export async function GET(request, props) {
+  const params = await props.params;
   const items = await recentInteractions(params.sessionId, 10);
   return NextResponse.json({ data: items, meta: { count: items.length }, errors: null });
 }

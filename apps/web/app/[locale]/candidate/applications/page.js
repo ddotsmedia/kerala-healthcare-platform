@@ -10,9 +10,10 @@ import { withdrawAction } from '../actions';
 
 export const dynamic = 'force-dynamic';
 
-export default async function CandidateApplications({ params }) {
+export default async function CandidateApplications(props) {
+  const params = await props.params;
   const locale = resolveLocale(params.locale);
-  if (!getSession()) redirect(`/${locale}/login`);
+  if (!(await getSession())) redirect(`/${locale}/login`);
   const apps = await listMyApplications();
 
   return (

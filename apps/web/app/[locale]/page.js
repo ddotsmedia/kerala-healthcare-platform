@@ -4,7 +4,8 @@ import Link from 'next/link';
 import { resolveLocale, t } from '@/lib/i18n';
 import SearchBar from '@/components/SearchBar';
 
-export default function HomePage({ params }) {
+export default async function HomePage(props) {
+  const params = await props.params;
   const locale = resolveLocale(params.locale);
   return (
     <div className="space-y-8">

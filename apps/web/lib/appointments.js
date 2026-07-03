@@ -7,7 +7,7 @@ import { getSession } from './session.js';
 
 /** @returns {Promise<string|null>} authenticated user id (patient), or null. */
 async function currentPatientId() {
-  const s = getSession();
+  const s = (await getSession());
   return s ? s.userId : null;
 }
 

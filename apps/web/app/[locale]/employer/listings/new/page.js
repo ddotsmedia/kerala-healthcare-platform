@@ -11,9 +11,10 @@ export const dynamic = 'force-dynamic';
 const inp = 'w-full rounded-lg border border-gray-300 px-3 py-2 text-sm';
 const TYPES = ['full_time', 'part_time', 'contract', 'locum'];
 
-export default async function NewJob({ params }) {
+export default async function NewJob(props) {
+  const params = await props.params;
   const locale = resolveLocale(params.locale);
-  if (!getSession()) redirect(`/${locale}/login`);
+  if (!(await getSession())) redirect(`/${locale}/login`);
   if (!(await currentEmployerProfile())) redirect(`/${locale}/employer`);
   const districts = await listDistricts();
 

@@ -10,7 +10,8 @@ export const metadata = { title: "Today's schedule · KHP Portal" };
 
 const fmtTime = (t) => (t ? String(t).slice(0, 5) : '');
 
-export default async function SchedulePage({ searchParams }) {
+export default async function SchedulePage(props) {
+  const searchParams = await props.searchParams;
   const providerId = (await currentDoctorId());
   if (!providerId) return <EmptyState message="No provider loaded (PORTAL_DEMO_DOCTOR_ID)." />;
   const date = (searchParams && searchParams.date) || undefined;

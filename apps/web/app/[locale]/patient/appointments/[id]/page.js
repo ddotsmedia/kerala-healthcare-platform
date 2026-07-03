@@ -9,7 +9,8 @@ import { cancelAppointmentAction } from './actions';
 
 export const dynamic = 'force-dynamic';
 
-export default async function AppointmentDetail({ params }) {
+export default async function AppointmentDetail(props) {
+  const params = await props.params;
   const locale = resolveLocale(params.locale);
   const pid = await currentPatientId();
   if (!pid) redirect(`/${locale}/login`);

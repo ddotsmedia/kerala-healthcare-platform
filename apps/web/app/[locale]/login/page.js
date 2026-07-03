@@ -1,8 +1,9 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, use } from 'react';
 
-export default function LoginPage({ params }) {
+export default function LoginPage(props) {
+  const params = use(props.params);
   const locale = params.locale === 'en' ? 'en' : 'ml';
   const [mobile, setMobile] = useState('');
   const [code, setCode] = useState('');

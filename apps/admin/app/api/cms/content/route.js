@@ -8,7 +8,7 @@ import { listContent, createDraft } from '@/lib/cms';
 export const dynamic = 'force-dynamic';
 
 export async function GET(request) {
-  const s = getSession();
+  const s = (await getSession());
   if (!s) return NextResponse.json({ data: null, meta: null, errors: ['unauthenticated'] }, { status: 401 });
   const u = new URL(request.url).searchParams;
   const items = await listContent({ type: u.get('type') || undefined, status: u.get('status') || undefined });
@@ -16,7 +16,7 @@ export async function GET(request) {
 }
 
 export async function POST(request) {
-  const s = getSession();
+  const s = (await getSession());
   if (!s) return NextResponse.json({ data: null, meta: null, errors: ['unauthenticated'] }, { status: 401 });
   const body = await request.json().catch(() => ({}));
   const r = await createDraft(s, body);

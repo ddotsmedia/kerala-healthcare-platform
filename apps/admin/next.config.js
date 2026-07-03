@@ -11,9 +11,7 @@ const SECURITY_HEADERS = [
 const nextConfig = {
   reactStrictMode: true,
   transpilePackages: ['@khp/db', '@khp/auth', '@khp/cache'],
-  experimental: {
-    serverComponentsExternalPackages: ['pg']
-  },
+  serverExternalPackages: ['pg'],
   async headers() {
     return [{ source: '/(.*)', headers: SECURITY_HEADERS }];
   }

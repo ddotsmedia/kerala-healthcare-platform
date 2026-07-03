@@ -10,13 +10,16 @@ import { bookAction } from './actions';
 
 export const dynamic = 'force-dynamic';
 
-export async function generateMetadata({ params }) {
+export async function generateMetadata(props) {
+  const params = await props.params;
   const locale = resolveLocale(params.locale);
   const d = await getDoctorBySlug(params.doctorSlug);
   return { title: `${t(locale, 'book_appointment')}${d ? ' — ' + d.display_name : ''}` };
 }
 
-export default async function BookPage({ params, searchParams }) {
+export default async function BookPage(props) {
+  const searchParams = await props.searchParams;
+  const params = await props.params;
   const locale = resolveLocale(params.locale);
   const doctor = await getDoctorBySlug(params.doctorSlug);
   if (!doctor) notFound();

@@ -16,13 +16,15 @@ const URGENCY_STYLE = {
   routine: 'border-gray-300 bg-gray-50 text-gray-700'
 };
 
-export async function generateMetadata({ params }) {
+export async function generateMetadata(props) {
+  const params = await props.params;
   const locale = resolveLocale(params.locale);
   const s = await getSymptom(params.slug);
   return { title: s ? `${locale === 'ml' ? s.name_ml : s.name_en} · ${t(locale, 'symptoms')}` : t(locale, 'symptoms') };
 }
 
-export default async function SymptomDetail({ params }) {
+export default async function SymptomDetail(props) {
+  const params = await props.params;
   const locale = resolveLocale(params.locale);
   const s = await getSymptom(params.slug);
   if (!s) notFound();

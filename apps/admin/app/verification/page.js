@@ -9,8 +9,9 @@ export const dynamic = 'force-dynamic';
 
 export const metadata = { title: 'Verification queue · KHP Admin' };
 
-export default async function VerificationQueue({ searchParams }) {
-  if (!requireAdminRole()) redirect('/login');
+export default async function VerificationQueue(props) {
+  const searchParams = await props.searchParams;
+  if (!(await requireAdminRole())) redirect('/login');
   const status = (searchParams && searchParams.status) || 'pending';
   const items = await listQueue(status);
 

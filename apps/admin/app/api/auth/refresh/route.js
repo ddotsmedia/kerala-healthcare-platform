@@ -8,7 +8,7 @@ import { setAuthCookies, clearAuthCookies } from '@/lib/authCookies';
 export const dynamic = 'force-dynamic';
 
 export async function POST() {
-  const token = cookies().get(REFRESH_COOKIE)?.value;
+  const token = (await cookies()).get(REFRESH_COOKIE)?.value;
   const r = await rotateRefresh(token);
   if (!r.ok) {
     return clearAuthCookies(NextResponse.json({ data: null, meta: null, errors: [r.error] }, { status: 401 }));

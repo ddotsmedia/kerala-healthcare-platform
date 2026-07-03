@@ -18,7 +18,7 @@ function Card({ label, value, sub }) {
 }
 
 export default async function Analytics() {
-  if (!requireAdminRole()) redirect('/login');
+  if (!(await requireAdminRole())) redirect('/login');
   const m = await getMetrics();
 
   return (

@@ -17,8 +17,9 @@ function Btn({ action, id, label, cls }) {
   );
 }
 
-export default async function CmsEdit({ params }) {
-  if (!requireAdminRole()) redirect('/login');
+export default async function CmsEdit(props) {
+  const params = await props.params;
+  if (!(await requireAdminRole())) redirect('/login');
   const c = await getContent(params.id);
   if (!c) notFound();
 

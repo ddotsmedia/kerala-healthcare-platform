@@ -8,6 +8,6 @@ import { clearAuthCookies } from '@/lib/authCookies';
 export const dynamic = 'force-dynamic';
 
 export async function POST() {
-  await revokeRefresh(cookies().get(REFRESH_COOKIE)?.value);
+  await revokeRefresh((await cookies()).get(REFRESH_COOKIE)?.value);
   return clearAuthCookies(NextResponse.json({ data: { ok: true }, meta: null, errors: null }));
 }

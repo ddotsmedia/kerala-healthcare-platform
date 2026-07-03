@@ -10,12 +10,15 @@ export const dynamic = 'force-dynamic';
 const LIMIT = 20;
 const TYPES = ['article', 'disease', 'procedure', 'news'];
 
-export function generateMetadata({ params }) {
+export async function generateMetadata(props) {
+  const params = await props.params;
   const locale = resolveLocale(params.locale);
   return { title: `${t(locale, 'health')} · ${t(locale, 'site')}`, description: t(locale, 'health') };
 }
 
-export default async function HealthFeed({ params, searchParams }) {
+export default async function HealthFeed(props) {
+  const searchParams = await props.searchParams;
+  const params = await props.params;
   const locale = resolveLocale(params.locale);
   const type = (searchParams && searchParams.type) || '';
   const page = Math.max(1, parseInt(searchParams && searchParams.page, 10) || 1);

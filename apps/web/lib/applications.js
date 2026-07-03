@@ -104,7 +104,7 @@ async function listMyApplications() {
 
 /** Unread in-app notifications for the session user. */
 async function myNotifications() {
-  const s = getSession();
+  const s = (await getSession());
   if (!s) return [];
   const { rows } = await getPool().query(
     `SELECT id, type, title, body, read_at, created_at FROM notifications

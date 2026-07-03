@@ -5,11 +5,13 @@
 
 export const dynamic = 'force-dynamic';
 
-export async function generateMetadata({ params }) {
+export async function generateMetadata(props) {
+  const params = await props.params;
   return { title: `Consultation room ${String(params.roomId).slice(0, 8)}` };
 }
 
-export default function ConsultRoom({ params }) {
+export default async function ConsultRoom(props) {
+  const params = await props.params;
   const room = params.roomId;
   return (
     <div className="mx-auto flex min-h-screen max-w-lg flex-col items-center justify-center gap-5 px-4 text-center">

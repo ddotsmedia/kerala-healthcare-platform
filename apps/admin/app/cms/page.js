@@ -12,8 +12,9 @@ export const metadata = { title: 'CMS · KHP Admin' };
 const STATUSES = ['draft', 'in_review', 'approved', 'published', 'archived'];
 const inp = 'rounded-lg border border-gray-300 px-2 py-1.5 text-sm';
 
-export default async function CmsList({ searchParams }) {
-  if (!requireAdminRole()) redirect('/login');
+export default async function CmsList(props) {
+  const searchParams = await props.searchParams;
+  if (!(await requireAdminRole())) redirect('/login');
   const status = (searchParams && searchParams.status) || '';
   const items = await listContent({ status: status || undefined });
 

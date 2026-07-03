@@ -1,9 +1,10 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, use } from 'react';
 import { resolveLocale, t } from '@/lib/i18n';
 
-export default function DueDateCalculator({ params }) {
+export default function DueDateCalculator(props) {
+  const params = use(props.params);
   const locale = resolveLocale(params.locale);
   const [lmp, setLmp] = useState('');
   const [res, setRes] = useState(null);

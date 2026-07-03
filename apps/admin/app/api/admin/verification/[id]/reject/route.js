@@ -7,7 +7,8 @@ import { requireAdminRole } from '@/lib/auth';
 
 export const dynamic = 'force-dynamic';
 
-export async function POST(request, { params }) {
+export async function POST(request, props) {
+  const params = await props.params;
   const role = requireAdminRole(request);
   if (!role) return NextResponse.json({ data: null, meta: null, errors: ['forbidden'] }, { status: 403 });
 

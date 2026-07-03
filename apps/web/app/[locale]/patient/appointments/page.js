@@ -10,7 +10,9 @@ import { EmptyState } from '@khp/ui';
 export const dynamic = 'force-dynamic';
 const STATUSES = ['confirmed', 'completed', 'cancelled', 'no_show'];
 
-export default async function PatientAppointments({ params, searchParams }) {
+export default async function PatientAppointments(props) {
+  const searchParams = await props.searchParams;
+  const params = await props.params;
   const locale = resolveLocale(params.locale);
   const pid = await currentPatientId();
   if (!pid) redirect(`/${locale}/login`);

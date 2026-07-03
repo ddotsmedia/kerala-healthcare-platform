@@ -11,7 +11,8 @@ export const metadata = { title: 'Appointments · KHP Portal' };
 const STATUSES = ['confirmed', 'completed', 'cancelled', 'no_show'];
 const fmtTime = (t) => (t ? String(t).slice(0, 5) : '');
 
-export default async function PortalAppointments({ searchParams }) {
+export default async function PortalAppointments(props) {
+  const searchParams = await props.searchParams;
   const providerId = (await currentDoctorId());
   if (!providerId) return <EmptyState message="No provider loaded." />;
   const status = (searchParams && searchParams.status) || '';

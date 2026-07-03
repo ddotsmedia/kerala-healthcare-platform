@@ -9,7 +9,13 @@ export function generateStaticParams() {
   return LOCALES.map((locale) => ({ locale }));
 }
 
-export default function LocaleLayout({ children, params }) {
+export default async function LocaleLayout(props) {
+  const params = await props.params;
+
+  const {
+    children
+  } = props;
+
   const { locale } = params;
   if (!LOCALES.includes(locale)) notFound();
   return (

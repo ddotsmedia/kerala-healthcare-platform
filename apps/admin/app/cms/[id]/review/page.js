@@ -8,8 +8,9 @@ import { approveAction, rejectAction } from '../../actions';
 
 export const dynamic = 'force-dynamic';
 
-export default async function CmsReview({ params }) {
-  if (!requireAdminRole()) redirect('/login');
+export default async function CmsReview(props) {
+  const params = await props.params;
+  if (!(await requireAdminRole())) redirect('/login');
   const c = await getContent(params.id);
   if (!c) notFound();
 

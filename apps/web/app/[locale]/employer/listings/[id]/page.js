@@ -11,9 +11,10 @@ export const dynamic = 'force-dynamic';
 const inp = 'w-full rounded-lg border border-gray-300 px-3 py-2 text-sm';
 const TYPES = ['full_time', 'part_time', 'contract', 'locum'];
 
-export default async function EditJob({ params }) {
+export default async function EditJob(props) {
+  const params = await props.params;
   const locale = resolveLocale(params.locale);
-  if (!getSession()) redirect(`/${locale}/login`);
+  if (!(await getSession())) redirect(`/${locale}/login`);
   const j = await getMyJob(params.id);
   if (!j) notFound();
 

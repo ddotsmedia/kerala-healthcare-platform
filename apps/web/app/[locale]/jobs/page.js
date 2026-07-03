@@ -10,12 +10,15 @@ export const dynamic = 'force-dynamic';
 const LIMIT = 20;
 const TYPES = ['full_time', 'part_time', 'contract', 'locum'];
 
-export function generateMetadata({ params }) {
+export async function generateMetadata(props) {
+  const params = await props.params;
   const locale = resolveLocale(params.locale);
   return { title: `${t(locale, 'jobs')} · ${t(locale, 'site')}`, description: t(locale, 'job_search') };
 }
 
-export default async function JobsFeed({ params, searchParams }) {
+export default async function JobsFeed(props) {
+  const searchParams = await props.searchParams;
+  const params = await props.params;
   const locale = resolveLocale(params.locale);
   const sp = searchParams || {};
   const page = Math.max(1, parseInt(sp.page, 10) || 1);

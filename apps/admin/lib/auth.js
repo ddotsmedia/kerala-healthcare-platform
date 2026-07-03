@@ -10,8 +10,8 @@ const ALLOWED = ['platform_admin', 'verification_agent'];
  * (Signature keeps an optional request arg for call-site compatibility; the
  * session is read from the cookie.)
  */
-function requireAdminRole() {
-  const s = getSession();
+async function requireAdminRole() {
+  const s = await getSession();
   return s && ALLOWED.includes(s.role) ? s.role : null;
 }
 

@@ -5,14 +5,14 @@ import { redirect } from 'next/navigation';
 import { getSession } from '@/lib/session';
 import { createDraft, updateDraft, submit, approve, publish, reject, archive } from '@/lib/cms';
 
-function need() {
-  const s = getSession();
+async function need() {
+  const s = (await getSession());
   if (!s) redirect('/login');
   return s;
 }
 
 export async function createAction(formData) {
-  const s = need();
+  const s = await need();
   const r = await createDraft(s, {
     slug: formData.get('slug'), type: formData.get('type') || 'article',
     title_en: formData.get('title_en'), title_ml: formData.get('title_ml'),
@@ -23,7 +23,7 @@ export async function createAction(formData) {
 }
 
 export async function updateAction(formData) {
-  const s = need();
+  const s = await need();
   await updateDraft(s, formData.get('id'), {
     title_en: formData.get('title_en'), title_ml: formData.get('title_ml'),
     body_en: formData.get('body_en'), body_ml: formData.get('body_ml'),
@@ -33,13 +33,13 @@ export async function updateAction(formData) {
 }
 
 async function move(fn, formData) {
-  const s = need();
+  const s = await need();
   await fn(s, formData.get('id'));
   revalidatePath(`/cms/${formData.get('id')}`);
   revalidatePath('/cms');
 }
-export const submitAction = (fd) => move(submit, fd);
-export const approveAction = (fd) => move(approve, fd);
-export const publishAction = (fd) => move(publish, fd);
-export const rejectAction = (fd) => move(reject, fd);
-export const archiveAction = (fd) => move(archive, fd);
+export const submitAction = async (fd) => move(submit, fd);
+export const approveAction = async (fd) => move(approve, fd);
+export const publishAction = async (fd) => move(publish, fd);
+export const rejectAction = async (fd) => move(reject, fd);
+export const archiveAction = async (fd) => move(archive, fd);

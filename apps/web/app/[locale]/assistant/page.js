@@ -1,9 +1,10 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import { useState, useRef, use } from 'react';
 import { resolveLocale, t } from '@/lib/i18n';
 
-export default function Assistant({ params }) {
+export default function Assistant(props) {
+  const params = use(props.params);
   const locale = resolveLocale(params.locale);
   const [msgs, setMsgs] = useState([]);
   const [input, setInput] = useState('');

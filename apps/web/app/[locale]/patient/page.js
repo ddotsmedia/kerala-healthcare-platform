@@ -8,7 +8,8 @@ import { fmtDate, fmtTime, today } from '@/lib/format';
 import { EmptyState } from '@khp/ui';
 
 export const dynamic = 'force-dynamic';
-export function generateMetadata({ params }) {
+export async function generateMetadata(props) {
+  const params = await props.params;
   const locale = resolveLocale(params.locale);
   return { title: `${t(locale, 'my_appointments')} · ${t(locale, 'site')}` };
 }
@@ -26,7 +27,8 @@ function Row({ locale, a }) {
   );
 }
 
-export default async function PatientDashboard({ params }) {
+export default async function PatientDashboard(props) {
+  const params = await props.params;
   const locale = resolveLocale(params.locale);
   const pid = await currentPatientId();
   if (!pid) redirect(`/${locale}/login`);

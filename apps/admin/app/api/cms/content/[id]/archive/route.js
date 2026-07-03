@@ -4,8 +4,9 @@ import { archive } from '@/lib/cms';
 
 export const dynamic = 'force-dynamic';
 
-export async function POST(request, { params }) {
-  const s = getSession();
+export async function POST(request, props) {
+  const params = await props.params;
+  const s = (await getSession());
   if (!s) return NextResponse.json({ data: null, meta: null, errors: ['unauthenticated'] }, { status: 401 });
   const r = await archive(s, params.id);
   if (!r.ok) return NextResponse.json({ data: null, meta: null, errors: [r.error] }, { status: r.error === 'forbidden' ? 403 : 400 });

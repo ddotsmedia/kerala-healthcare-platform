@@ -10,9 +10,10 @@ import { unsaveJobAction } from '../actions';
 
 export const dynamic = 'force-dynamic';
 
-export default async function SavedJobs({ params }) {
+export default async function SavedJobs(props) {
+  const params = await props.params;
   const locale = resolveLocale(params.locale);
-  if (!getSession()) redirect(`/${locale}/login`);
+  if (!(await getSession())) redirect(`/${locale}/login`);
   const saved = await listSavedJobs();
 
   return (

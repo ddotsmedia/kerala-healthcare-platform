@@ -6,14 +6,17 @@ import { EmptyState } from '@khp/ui';
 
 export const dynamic = 'force-dynamic';
 
-export function generateMetadata({ params }) {
+export async function generateMetadata(props) {
+  const params = await props.params;
   const locale = resolveLocale(params.locale);
   return { title: `${t(locale, 'facilities')} · ${t(locale, 'site')}` };
 }
 
 const KINDS = ['clinic', 'diagnostic_centre'];
 
-export default async function FacilitiesPage({ params, searchParams }) {
+export default async function FacilitiesPage(props) {
+  const searchParams = await props.searchParams;
+  const params = await props.params;
   const locale = resolveLocale(params.locale);
   const kind = (searchParams && searchParams.kind) || '';
   const facilities = await listFacilities({ kind });

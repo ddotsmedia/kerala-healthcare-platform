@@ -8,7 +8,8 @@ import VerifiedBadge from '@/components/VerifiedBadge';
 
 export const dynamic = 'force-dynamic';
 
-export async function generateMetadata({ params }) {
+export async function generateMetadata(props) {
+  const params = await props.params;
   const doctor = await getDoctorBySlug(params.slug);
   if (!doctor) return { title: t(resolveLocale(params.locale), 'doctors') };
   const sp = doctor.specialty_en || doctor.specialty_ml || '';
@@ -18,7 +19,8 @@ export async function generateMetadata({ params }) {
   };
 }
 
-export default async function DoctorProfile({ params }) {
+export default async function DoctorProfile(props) {
+  const params = await props.params;
   const locale = resolveLocale(params.locale);
   const doctor = await getDoctorBySlug(params.slug);
   if (!doctor) notFound();
