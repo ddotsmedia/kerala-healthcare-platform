@@ -1,5 +1,7 @@
 // Specialty + district combination page — highest-value SEO.
 // "[Specialty] in [District]" e.g. Cardiologist in Thrissur.
+// First segment is [slug] to match the sibling /doctors/[slug] profile route
+// (Next requires one dynamic-param name per path position); here it is the district.
 
 import { notFound } from 'next/navigation';
 import { resolveLocale } from '@/lib/i18n';
@@ -16,7 +18,7 @@ const LIMIT = 12;
 export async function generateMetadata(props) {
   const params = await props.params;
   const locale = resolveLocale(params.locale);
-  const [di, sp] = await Promise.all([getDistrictBySlug(params.district), getSpecialtyBySlug(params.specialty)]);
+  const [di, sp] = await Promise.all([getDistrictBySlug(params.slug), getSpecialtyBySlug(params.specialty)]);
   if (!di || !sp) return { title: 'Not found' };
   return {
     title: `${sp.name_en} in ${di.name_en} | MalayaliDoctor`,
@@ -30,7 +32,7 @@ export default async function ComboLanding(props) {
   const searchParams = (await props.searchParams) || {};
   const locale = resolveLocale(params.locale);
   const ml = locale === 'ml';
-  const [di, sp] = await Promise.all([getDistrictBySlug(params.district), getSpecialtyBySlug(params.specialty)]);
+  const [di, sp] = await Promise.all([getDistrictBySlug(params.slug), getSpecialtyBySlug(params.specialty)]);
   if (!di || !sp) notFound();
 
   const page = Math.max(1, parseInt(searchParams.page, 10) || 1);
