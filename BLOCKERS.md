@@ -285,3 +285,22 @@ Quick status of every `[NEEDS DECISION]` ever logged (this section is additive; 
 ## Session: 2026-07-03 — SSL issued (DNS propagated)
 ### Resolved
 - [RESOLVED] DNS now points malayalidoctor.com + www/portal/admin -> 194.164.151.202. certbot --nginx issued single SAN cert (all 4 domains), expires 2026-10-01, auto-renew scheduled. nginx now serves HTTPS + 301 HTTP->HTTPS redirect. Prior [NEEDS DECISION] on DNS/SSL closed.
+
+## Session: 2026-07-03 — Email OTP + move to /opt
+
+### Assumptions
+- [ASSUMPTION] Email OTP TTL set to 10 min (spec) via services/auth/otp.js OTP_TTL_MINUTES; mobile path now shares it (was 5). Send throttle 5/10min per identity, in-process Map (single web container).
+- [ASSUMPTION] Real email via Resend HTTP API (fetch, no new npm package) using the re_ key already in SES_SMTP_PASS. sendEmail was a simulated stub before — now actually sends.
+
+### Errors fixed
+- [FIXED] VPS .env.production DATABASE_URL user was 'postgres' (hand-edited) but the DB role is 'khp' -> "password authentication failed for user postgres" on every dynamic route (SSG pages masked it). Corrected user to khp (password preserved). Backup saved as .env.production.bak.*.
+- [FIXED] snap-packaged Docker (AppArmor snap.docker confinement) denies `docker stop`/`kill`/`rm -f` on running containers ("permission denied"). Redeploy procedure: `docker update --restart=no <c>` then `kill -9 <container PID>` then `docker rm -f`, then `docker compose up -d` fresh (create-only; no stop). Named volumes persist across this so no data loss.
+
+### Needs human decision
+- [NEEDS DECISION] SMS OTP deferred — OTP_SMS_API_KEY empty, Indian SIM required. Email OTP is the active primary login method. Wire SMS when Fast2SMS key available (sms.js already posts to OTP_SMS_GATEWAY_URL with Bearer OTP_SMS_API_KEY).
+- [NEEDS DECISION] Email OTP delivery blocked until malayalidoctor.com is verified in Resend (403 domain_not_verified). Domain registered (id 76560ff4-9d24-4a29-a13e-9f1cda191a29). Add these DNS records at the malayalidoctor.com DNS provider, then verify in Resend dashboard:
+    TXT  resend._domainkey  = p=MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQC5h0Ui0DwOC4kzZn6A2bGDJE5gj2yzAmGifbJNPfQAcHzntPjULFuzIb3f+hF5ZIOesOqWR3Nbam7aUsit7VfeJnXwNpWnVBFaQ7JwpZRRhSIq7eVaKw9kBViyJE3K2BybtHGtXYi8OP+cPXGDq+SI/1iUOwvGtkx9ENEmbVqP0wIDAQAB
+    MX   send               = feedback-smtp.us-east-1.amazonses.com (priority 10)
+    TXT  send               = v=spf1 include:amazonses.com ~all
+  Feature verified working end-to-end otherwise: OTP row persists, route graceful, delivery reaches Resend (only the domain gate remains).
+- [NOTE] Project moved /var/www/kerala-healthcare-platform -> /opt/kerala-healthcare-platform (matches other VPS projects). Migration count now 31 (0031_email_otp).
