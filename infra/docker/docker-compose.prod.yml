@@ -9,10 +9,12 @@ services:
     image: postgres:15-alpine
     restart: unless-stopped
     env_file: ../../.env.production
+    # POSTGRES_PASSWORD comes from env_file — do NOT redeclare it here with
+    # ${...} interpolation; compose would resolve it to empty (no .env beside
+    # this file) and override env_file, leaving postgres without a password.
     environment:
       POSTGRES_USER: khp
       POSTGRES_DB: khp
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     volumes:
       - khp-postgres-data:/var/lib/postgresql/data
     ports:
@@ -29,7 +31,7 @@ services:
     image: redis:7-alpine
     restart: unless-stopped
     env_file: ../../.env.production
-    command: ["sh", "-c", "redis-server --requirepass \"$REDIS_PASSWORD\" --appendonly yes"]
+    command: ["sh", "-c", "redis-server --requirepass \"$$REDIS_PASSWORD\" --appendonly yes"]
     volumes:
       - khp-redis-data:/data
     ports:
@@ -37,7 +39,7 @@ services:
     networks:
       - khp-network
     healthcheck:
-      test: ["CMD-SHELL", "redis-cli -a \"$REDIS_PASSWORD\" ping | grep -q PONG"]
+      test: ["CMD-SHELL", "redis-cli -a \"$$REDIS_PASSWORD\" ping | grep -q PONG"]
       interval: 10s
       timeout: 5s
       retries: 5
