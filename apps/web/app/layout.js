@@ -12,7 +12,16 @@ const malayalam = Noto_Sans_Malayalam({
 
 export const metadata = {
   title: 'Kerala Health Portal',
-  description: 'Find verified doctors and hospitals in Kerala. Malayalam-first.'
+  description: 'Find verified doctors and hospitals in Kerala. Malayalam-first.',
+  applicationName: 'MalayaliDoctor',
+  appleWebApp: { capable: true, statusBarStyle: 'default', title: 'MalayaliDoctor' },
+  icons: { apple: '/icons/icon-192.png' }
+};
+
+export const viewport = {
+  themeColor: '#0d9488',
+  width: 'device-width',
+  initialScale: 1
 };
 
 export default function RootLayout({ children }) {
