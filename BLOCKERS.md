@@ -281,3 +281,7 @@ Quick status of every `[NEEDS DECISION]` ever logged (this section is additive; 
 ### Needs human decision
 - [NEEDS DECISION] DNS: malayalidoctor.com -> 34.216.117.25 (AWS), NOT 194.164.151.202. www/portal/admin = NXDOMAIN. SSL (certbot) SKIPPED until DNS points here. After cutover, run: certbot --nginx -d malayalidoctor.com -d www... -d portal... -d admin... then it rewrites nginx to add 443 + HTTPS redirect.
 - [NEEDS DECISION] .env.production still has empty ANTHROPIC_API_KEY / OTP SMS / SES creds. AI assistant + OTP login + email won't function until filled.
+
+## Session: 2026-07-03 — SSL issued (DNS propagated)
+### Resolved
+- [RESOLVED] DNS now points malayalidoctor.com + www/portal/admin -> 194.164.151.202. certbot --nginx issued single SAN cert (all 4 domains), expires 2026-10-01, auto-renew scheduled. nginx now serves HTTPS + 301 HTTP->HTTPS redirect. Prior [NEEDS DECISION] on DNS/SSL closed.
