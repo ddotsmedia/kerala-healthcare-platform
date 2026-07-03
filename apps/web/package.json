@@ -20,7 +20,8 @@
     "@khp/notifications": "workspace:*",
     "@khp/auth": "workspace:*",
     "@khp/ai-assistant": "workspace:*",
-    "@khp/cache": "workspace:*"
+    "@khp/cache": "workspace:*",
+    "@khp/ratelimit": "workspace:*"
   },
   "devDependencies": {
     "tailwindcss": "^3.4.0",

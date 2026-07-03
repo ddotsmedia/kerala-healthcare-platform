@@ -114,6 +114,9 @@ importers:
       '@khp/notifications':
         specifier: workspace:*
         version: link:../../services/notifications
+      '@khp/ratelimit':
+        specifier: workspace:*
+        version: link:../../services/ratelimit
       '@khp/search':
         specifier: workspace:*
         version: link:../../services/search
@@ -192,6 +195,8 @@ importers:
       '@khp/db':
         specifier: workspace:*
         version: link:../db
+
+  services/ratelimit: {}
 
   services/search: {}
 

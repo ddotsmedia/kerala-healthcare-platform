@@ -1,0 +1,8 @@
+{
+  "name": "@khp/ratelimit",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "main": "index.js",
+  "description": "Sliding-window rate limiter. In-memory by default; Redis-swappable (REDIS_URL)."
+}
