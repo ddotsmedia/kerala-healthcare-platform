@@ -5,6 +5,7 @@
 
 import { randomBytes, randomUUID } from 'node:crypto';
 import { getPool } from '@khp/db';
+import { del } from '@khp/cache';
 import { toMinutes, toTime } from './time.js';
 
 const REF_ALPHABET = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
@@ -83,6 +84,7 @@ async function bookSlot(providerId, patientId, date, startTime, mode, idempotenc
       return { ok: false, error: 'slot_taken' };
     }
     await client.query('COMMIT');
+    del(`slots:${providerId}:${date}`); // invalidate slot cache for this provider/date
     return { ok: true, appointment: rows[0] };
   } catch (err) {
     await client.query('ROLLBACK');

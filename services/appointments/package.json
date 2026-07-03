@@ -6,6 +6,7 @@
   "main": "index.js",
   "description": "Slot availability computation and concurrency-safe booking.",
   "dependencies": {
-    "@khp/db": "workspace:*"
+    "@khp/db": "workspace:*",
+    "@khp/cache": "workspace:*"
   }
 }

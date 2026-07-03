@@ -1,0 +1,8 @@
+{
+  "name": "@khp/cache",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "main": "index.js",
+  "description": "Cache helpers with TTL. In-memory by default; Redis-swappable (REDIS_URL)."
+}

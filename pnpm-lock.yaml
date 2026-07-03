@@ -13,6 +13,9 @@ importers:
       '@khp/auth':
         specifier: workspace:*
         version: link:../../services/auth
+      '@khp/cache':
+        specifier: workspace:*
+        version: link:../../services/cache
       '@khp/db':
         specifier: workspace:*
         version: link:../../services/db
@@ -50,6 +53,9 @@ importers:
       '@khp/auth':
         specifier: workspace:*
         version: link:../../services/auth
+      '@khp/cache':
+        specifier: workspace:*
+        version: link:../../services/cache
       '@khp/db':
         specifier: workspace:*
         version: link:../../services/db
@@ -99,6 +105,9 @@ importers:
       '@khp/auth':
         specifier: workspace:*
         version: link:../../services/auth
+      '@khp/cache':
+        specifier: workspace:*
+        version: link:../../services/cache
       '@khp/db':
         specifier: workspace:*
         version: link:../../services/db
@@ -151,6 +160,9 @@ importers:
 
   services/appointments:
     dependencies:
+      '@khp/cache':
+        specifier: workspace:*
+        version: link:../cache
       '@khp/db':
         specifier: workspace:*
         version: link:../db
@@ -163,6 +175,8 @@ importers:
       '@khp/notifications':
         specifier: workspace:*
         version: link:../notifications
+
+  services/cache: {}
 
   services/db:
     dependencies:

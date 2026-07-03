@@ -2,13 +2,15 @@
 // Parameterised SQL only.
 
 import { getPool } from '@khp/db';
+import { cached, TTL } from '@khp/cache';
 import { toMinutes, toTime, dayOfWeek } from './time.js';
 
-/**
- * Available slots for a provider on a date.
- * @returns {Promise<Array<{start:string,end:string,mode:string,duration:number}>>}
- */
-async function getAvailableSlots(providerId, date) {
+/** Available slots for a provider on a date (cached 60s). */
+function getAvailableSlots(providerId, date) {
+  return cached(`slots:${providerId}:${date}`, TTL.slots, () => computeAvailableSlots(providerId, date));
+}
+
+async function computeAvailableSlots(providerId, date) {
   const pool = getPool();
   const dow = dayOfWeek(date);
 

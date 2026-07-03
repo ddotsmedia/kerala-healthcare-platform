@@ -8,6 +8,7 @@
 
 import { getPool } from '@khp/db';
 import { doctorVectorUpdate } from '@khp/search';
+import { delByPrefix } from '@khp/cache';
 import { getSession } from './session.js';
 
 /** @returns {Promise<string|null>} the current doctor's id, or null if not a doctor. */
@@ -114,6 +115,7 @@ async function updateProfile(id, fields) {
     }
 
     await client.query('COMMIT');
+    delByPrefix('providers:'); // invalidate provider search cache on profile change
     return { reverified: keyChanged };
   } catch (err) {
     await client.query('ROLLBACK');

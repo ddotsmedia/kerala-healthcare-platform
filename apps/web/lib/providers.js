@@ -5,6 +5,7 @@
 
 import { getPool } from '@khp/db';
 import { buildDoctorSearch, buildHospitalSearch, searchAll } from '@khp/search';
+import { cached, TTL } from '@khp/cache';
 
 async function run(query) {
   try {
@@ -24,12 +25,12 @@ async function runOne(text, values) {
 
 /** @param {object} opts { term, districtId, specialtyId, page, limit } */
 function searchDoctors(opts) {
-  return run(buildDoctorSearch(opts));
+  return cached(`providers:doctors:${JSON.stringify(opts || {})}`, TTL.providers, () => run(buildDoctorSearch(opts)));
 }
 
 /** @param {object} opts { term, districtId, serviceSlug, department, page, limit } */
 function searchHospitals(opts) {
-  return run(buildHospitalSearch(opts));
+  return cached(`providers:hospitals:${JSON.stringify(opts || {})}`, TTL.providers, () => run(buildHospitalSearch(opts)));
 }
 
 /** Unified search across doctors + hospitals. @returns {{doctors, hospitals}} */

@@ -3,6 +3,7 @@
 // content_editor+, approve/publish/archive require platform_admin.
 
 import { getPool } from '@khp/db';
+import { delByPrefix } from '@khp/cache';
 
 const EDIT_ROLES = ['content_editor', 'platform_admin'];
 const PUBLISH_ROLES = ['platform_admin'];
@@ -85,6 +86,7 @@ async function transition(session, id, from, to, needPublish) {
         [id, rows[0].body_ml, rows[0].body_en, session.userId]);
     }
     await client.query('COMMIT');
+    if (to === 'published') delByPrefix('content:'); // invalidate content caches
     return { ok: true, item: rows[0] };
   } catch (err) {
     await client.query('ROLLBACK');

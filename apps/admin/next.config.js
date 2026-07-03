@@ -1,7 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
-  transpilePackages: ['@khp/db', '@khp/auth'],
+  transpilePackages: ['@khp/db', '@khp/auth', '@khp/cache'],
   experimental: {
     serverComponentsExternalPackages: ['pg']
   }
