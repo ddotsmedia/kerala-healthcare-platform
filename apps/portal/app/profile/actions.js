@@ -33,7 +33,8 @@ export async function saveProfileAction(formData) {
     languages: csvToArray(formData.get('languages')),
     name_en: formData.get('name_en') || null,
     name_ml: formData.get('name_ml') || null,
-    registration_number: formData.get('registration_number') || null
+    registration_number: formData.get('registration_number') || null,
+    whatsapp_number: (formData.get('whatsapp_number') || '').replace(/\D/g, '') || null
   });
   revalidatePath('/profile');
 }

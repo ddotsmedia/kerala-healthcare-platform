@@ -12,6 +12,7 @@ import Tabs from '@/components/profile/Tabs';
 import ShareButton from '@/components/profile/ShareButton';
 import BookingWidget from '@/components/profile/BookingWidget';
 import { DoctorCard, LanguagePills, ReviewsSection } from '@khp/ui';
+import WhatsAppButton from '@/components/whatsapp/WhatsAppButton';
 
 export const dynamic = 'force-dynamic';
 
@@ -146,6 +147,10 @@ export default async function DoctorProfile(props) {
             <div className="flex flex-wrap gap-2 pt-1">
               <a href="#book" className="rounded-lg bg-brand px-4 py-2 text-sm font-semibold text-white hover:bg-brand-dark">📅 {ml ? 'അപ്പോയിന്റ്മെന്റ് ബുക്ക് ചെയ്യുക' : 'Book Appointment'}</a>
               {modes.includes('video') && <a href="#book" className="rounded-lg border border-brand px-4 py-2 text-sm font-semibold text-brand hover:bg-teal-50">💬 {ml ? 'ഓൺലൈൻ കൺസൾട്ടേഷൻ' : 'Online Consultation'}</a>}
+              <WhatsAppButton number={d.whatsapp_number} label="WhatsApp"
+                message={ml
+                  ? `നമസ്കാരം, ഞാൻ MalayaliDoctor.com വഴി ${d.display_name}-നെ കാണാൻ അപ്പോയ്ന്റ്മെന്റ് ആഗ്രഹിക്കുന്നു. ${url}`
+                  : `Hello, I'd like to book an appointment with ${d.display_name} via MalayaliDoctor.com. ${url}`} />
               <ShareButton locale={locale} title={d.display_name} />
             </div>
           </div>

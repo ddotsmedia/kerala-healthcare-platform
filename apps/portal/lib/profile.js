@@ -89,12 +89,14 @@ async function updateProfile(id, fields) {
               nmc_verified        = CASE WHEN $10 THEN false ELSE nmc_verified END,
               verified_at         = CASE WHEN $10 THEN NULL ELSE verified_at END,
               listing_status      = CASE WHEN $10 THEN 'draft' ELSE listing_status END,
+              whatsapp_number     = $12,
               updated_at = now()
         WHERE id = $11 AND deleted_at IS NULL`,
       [
         fields.about_ml || null, fields.about_en || null, fields.photo_url || null,
         fields.years_experience, fields.consultation_fee, fields.languages,
-        newName, fields.name_ml || null, newReg, keyChanged, id
+        newName, fields.name_ml || null, newReg, keyChanged, id,
+        fields.whatsapp_number || null
       ]
     );
 

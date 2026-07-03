@@ -70,6 +70,9 @@ export default async function ProfilePage() {
         <FormRow label="Photo URL" htmlFor="photo_url">
           <input id="photo_url" name="photo_url" type="url" defaultValue={doctor.photo_url || ''} className={inputCls} />
         </FormRow>
+        <FormRow label="WhatsApp number (public, optional)" htmlFor="whatsapp_number">
+          <input id="whatsapp_number" name="whatsapp_number" type="tel" placeholder="+91 98765 43210" defaultValue={doctor.whatsapp_number || ''} className={inputCls} />
+        </FormRow>
         <div className="grid grid-cols-2 gap-3">
           <FormRow label="Years experience" htmlFor="years_experience">
             <input id="years_experience" name="years_experience" type="number" min="0" defaultValue={doctor.years_experience ?? ''} className={inputCls} />

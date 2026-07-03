@@ -5,6 +5,7 @@ import { LOCALES } from '@/lib/i18n';
 import EmergencyBanner from '@/components/home/EmergencyBanner';
 import Navbar from '@/components/home/Navbar';
 import Footer from '@/components/home/Footer';
+import WhatsAppShare from '@/components/whatsapp/WhatsAppShare';
 
 export function generateStaticParams() {
   return LOCALES.map((locale) => ({ locale }));
@@ -20,6 +21,7 @@ export default async function LocaleLayout(props) {
       <EmergencyBanner locale={locale} />
       <Navbar locale={locale} />
       <main className="mx-auto w-full max-w-3xl flex-1 px-4 py-6">{children}</main>
+      <WhatsAppShare locale={locale} />
       <Footer locale={locale} />
     </div>
   );
