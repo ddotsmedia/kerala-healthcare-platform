@@ -27,6 +27,13 @@ export default async function sitemap() {
     for (const p of ['about', 'how-it-works', 'for-doctors', 'for-hospitals', 'contact', 'privacy', 'terms', 'disclaimer']) {
       add(`/${locale}/${p}`, 0.5, 'monthly');
     }
+    add(`/${locale}/health`, 0.7, 'daily');
+    add(`/${locale}/symptoms`, 0.6);
+    add(`/${locale}/emergency`, 0.6);
+    add(`/${locale}/tools`, 0.6);
+    for (const tool of ['bmi', 'due-date', 'water-intake', 'heart-rate', 'blood-pressure', 'sleep']) {
+      add(`/${locale}/tools/${tool}`, 0.5, 'monthly');
+    }
 
     for (const s of specialties) add(`/${locale}/specialties/${s.slug}`, 0.8);
     for (const d of districts) add(`/${locale}/districts/${districtSlug(d.name_en)}`, 0.8);

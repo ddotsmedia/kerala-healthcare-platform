@@ -45,6 +45,12 @@ export default function Navbar({ locale = 'ml' }) {
 
         <div className="flex items-center gap-2">
           <Link
+            href={`/${locale}/emergency`}
+            className="rounded-lg bg-red-600 px-2.5 py-1.5 text-xs font-bold text-white hover:bg-red-700"
+          >
+            🚨 {locale === 'ml' ? 'അടിയന്തരം' : 'Emergency'}
+          </Link>
+          <Link
             href={`/${locale}/login`}
             className="hidden rounded-lg bg-brand px-4 py-1.5 text-sm font-medium text-white hover:bg-brand-dark sm:inline-block"
           >

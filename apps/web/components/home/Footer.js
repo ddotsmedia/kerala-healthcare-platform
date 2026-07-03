@@ -17,7 +17,10 @@ const QUICK = [
   { href: 'how-it-works', ml: 'എങ്ങനെ ഉപയോഗിക്കാം', en: 'How It Works' },
   { href: 'for-doctors', ml: 'ഡോക്ടർമാർക്കായി', en: 'For Doctors' },
   { href: 'for-hospitals', ml: 'ആശുപത്രികൾക്കായി', en: 'For Hospitals' },
-  { href: 'contact', ml: 'ബന്ധപ്പെടുക', en: 'Contact' }
+  { href: 'contact', ml: 'ബന്ധപ്പെടുക', en: 'Contact' },
+  { href: 'emergency', ml: 'അടിയന്തരം', en: 'Emergency' },
+  { href: 'tools', ml: 'ഹെൽത്ത് ടൂളുകൾ', en: 'Health Tools' },
+  { href: 'symptoms', ml: 'ലക്ഷണങ്ങൾ', en: 'Symptom Checker' }
 ];
 const SOCIAL = ['📘', '𝕏', '📸', '▶️'];
 
