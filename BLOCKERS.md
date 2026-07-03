@@ -348,3 +348,13 @@ Quick status of every `[NEEDS DECISION]` ever logged (this section is additive; 
 - [ASSUMPTION] Contact form emails admin@malayalidoctor.com via Resend; delivery depends on Resend domain verification (pending DNS, logged earlier). API always returns success and logs failures, per spec.
 ### Verified
 - [OK] All 8 pages 200 (/ml/about,contact,how-it-works,for-doctors,for-hospitals,privacy,terms,disclaimer). FAQPage JSON-LD on how-it-works. POST /api/contact -> 201. Footer + sitemap link all trust pages.
+
+## Session: 2026-07-03 — WhatsApp + Health/News + Emergency/Tools/Symptoms
+### Assumptions
+- [ASSUMPTION] seed-prod.sh did not exist — created infra/scripts/seed-prod.sh (idempotent psql via khp-postgres container): demo WhatsApp numbers, 10 categorised articles, 20 symptoms w/ body_area+urgency, backfills. Run with `bash infra/scripts/seed-prod.sh` on the VPS after migrations.
+- [ASSUMPTION] Article "category" is a new denormalised varchar column (migration 0035) rather than the content_categories join taxonomy — matches the simple tab filter. symptoms.body_area added likewise.
+- [ASSUMPTION] Seeded article bodies are concise educational HTML (~100-150 words), not 300+, to bound size. Real long-form content authored via CMS.
+- [ASSUMPTION] Floating WhatsApp share added in the locale layout — shows site-wide on mobile (sm:hidden) rather than route-gated to doctor/hospital/health, since a server layout cannot cheaply detect the route.
+### Verified
+- [OK] Migrations 35 (0034 whatsapp, 0035 category+body_area). seed-prod: 20 articles, 30 symptoms, 3 doctors with WhatsApp.
+- [OK] 200: /ml/emergency,tools,health,symptoms,tools/{bmi,heart-rate,blood-pressure,sleep}. Doctor profile shows wa.me WhatsApp button. Health category tabs + article render. Symptoms grouped by body area. Emergency tel:112/108 tap-to-call.
