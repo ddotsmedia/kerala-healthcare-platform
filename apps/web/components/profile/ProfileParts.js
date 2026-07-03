@@ -16,7 +16,7 @@ export function initials(name = '') {
 
 export function Avatar({ src, name, size = 'lg' }) {
   const dim = size === 'lg' ? 'h-24 w-24 text-2xl' : 'h-14 w-14 text-base';
-  if (src) return <img src={src} alt={name || ''} className={`${dim} shrink-0 rounded-2xl object-cover`} />;
+  if (src) return <img src={src} alt={name ? `${name}` : ''} loading="lazy" decoding="async" className={`${dim} shrink-0 rounded-2xl object-cover`} />;
   return (
     <div className={`${dim} flex shrink-0 items-center justify-center rounded-2xl bg-teal-100 font-bold text-brand`}>
       {initials(name)}

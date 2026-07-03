@@ -21,7 +21,7 @@ export default function HospitalCard({ hospital, locale = 'ml' }) {
     >
       <div className="flex items-start gap-3">
         {hospital.logo_url && (
-          <img src={hospital.logo_url} alt="" className="h-12 w-12 shrink-0 rounded object-cover" />
+          <img src={hospital.logo_url} alt={hospital.name_en || ''} loading="lazy" decoding="async" width="48" height="48" className="h-12 w-12 shrink-0 rounded object-cover" />
         )}
         <div className="min-w-0 flex-1">
           <div className="flex items-start justify-between gap-2">
