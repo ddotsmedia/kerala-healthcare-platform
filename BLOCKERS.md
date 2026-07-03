@@ -331,3 +331,11 @@ Quick status of every `[NEEDS DECISION]` ever logged (this section is additive; 
 - [ASSUMPTION] Ran `pnpm db:seed:demo` on VPS (Law-sanctioned) so profiles/landing/homepage have real content: 11 doctors, 5 hospitals, 10 departments, 3 facilities published. This also populates the previously-empty featured/landing sections.
 ### Verified
 - [OK] /ml/doctors/<slug> 200 — Physician + BreadcrumbList JSON-LD, availableService/priceRange, booking widget. /ml/hospitals/<slug> 200 — Hospital + BreadcrumbList JSON-LD, PostalAddress, department.
+
+## Session: 2026-07-03 — Reviews & ratings system
+### Assumptions
+- [ASSUMPTION] Admin moderation endpoints live in the ADMIN app (apps/admin/app/api/reviews/*) not apps/web, because admin runs on a separate subdomain with its own session cookie — cross-subdomain cookies would not reach a web-app API. Patient review API stays in apps/web.
+- [ASSUMPTION] Admin app does not transpile @khp/ui, so the moderation table renders stars inline (★/☆) instead of importing StarRating.
+### Verified
+- [OK] Migrations 33 (0032 reviews, 0033 rating_cache+trigger). Seed: 8 approved reviews; trigger populated rating_avg/count on 3 doctors + 2 hospitals.
+- [OK] Doctor profile 200 with reviews section (avg 4.5, distribution {5:1,4:1}, review cards, Write-a-Review). GET /api/reviews returns reviews + summary. Admin /reviews guarded (redirects to /login). DoctorCard/HospitalCard show star rating.
