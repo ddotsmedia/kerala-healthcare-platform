@@ -225,6 +225,15 @@ Result: **6 PASS, 2 FAIL** (items 5, 6 — both data/indexing gaps, logged above
 - [ASSUMPTION] Phase 4 complete: all 5 tasks built, 7/7 smoke pass, lint+build green. NOT tagged — holding for confirmation. Proposed tag: `v0.5.0-jobs`. Evidence: docs/phases/PHASE_4_COMPLETION.md.
 - Migrations added: 0027 jobs, 0028 in-app notifications, 0029 saved_jobs.
 
+## Session: 2026-07-03 — Phase 5 (AI Assistant & Platform Scale)
+
+- [ASSUMPTION] AI model via `fetch` to Anthropic (no SDK package). Without `ANTHROPIC_API_KEY`, a RAG-only safe fallback is used. Safety rails (never diagnose, emergency 112/108 first, always recommend a professional, injection sanitisation) enforced in CODE, not just the prompt.
+- [ASSUMPTION] Redis not running → `@khp/cache` and `@khp/ratelimit` use an in-process store; interface is Redis-swappable via `REDIS_URL` (production infra).
+- [FIXED] RAG missed Malayalam/partial queries: switched to OR `to_tsquery`; word-clean regex was stripping Malayalam combining marks (`\p{M}`) — now preserved. Verified Malayalam question cites the correct article.
+- [NEEDS DECISION] `pnpm audit`: 6 high are Next.js framework advisories, unfixable in 14.2.x — clearing requires a **Next 15 major upgrade** (tracked in docs/security/owasp-checklist.md). No high/critical in first-party deps.
+- [NEEDS DECISION] Load test (1k concurrent, p95<500ms) deferred — requires load-test tooling/infra.
+- [ASSUMPTION] Phase 5 complete: 7 tasks built, 8/9 smoke pass (audit item partial per above), lint+build green. NOT tagged — holding for confirmation. Proposed tag: `v1.0.0-launch`. Migration 0030. Evidence: docs/phases/PHASE_5_COMPLETION.md.
+
 ## Open decisions index (as of 2026-07-02)
 
 Quick status of every `[NEEDS DECISION]` ever logged (this section is additive; original entries above are unchanged):
