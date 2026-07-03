@@ -350,6 +350,40 @@ async function seedAuthUsers(pool) {
   );
 }
 
+const REVIEWERS = ['Arjun Raj', 'Divya Suresh', 'Nikhil Pillai', 'Anjali Menon', 'Rebin Thomas'];
+// [entity_type, entity_slug, reviewer_index, rating, title, body]
+const DEMO_REVIEWS = [
+  ['doctor', 'dr-anand-nair-cardiology-ernakulam', 0, 5, 'Excellent cardiologist', 'Very thorough and caring. Explained my condition clearly and patiently.'],
+  ['doctor', 'dr-anand-nair-cardiology-ernakulam', 1, 4, 'Good experience', 'Professional and attentive. Slight wait time but worth it.'],
+  ['doctor', 'dr-meera-pillai-pediatrics-thiruvananthapuram', 2, 5, 'Great with kids', 'My daughter felt comfortable throughout. Highly recommend.'],
+  ['doctor', 'dr-rahul-menon-dermatology-kozhikode', 3, 4, 'Helpful dermatologist', 'Clear advice on skin care routine. Will visit again.'],
+  ['doctor', 'dr-rahul-menon-dermatology-kozhikode', 4, 5, 'Very knowledgeable', 'Solved my long-standing skin issue quickly and kindly.'],
+  ['hospital', 'lakeshore-hospital-ernakulam', 0, 5, 'Top facilities', 'Clean, well-staffed, modern equipment. Smooth experience.'],
+  ['hospital', 'lakeshore-hospital-ernakulam', 2, 4, 'Good care', 'Attentive nurses and clear billing.'],
+  ['hospital', 'medical-trust-hospital-thiruvananthapuram', 1, 5, 'Excellent service', 'Quick admission and great doctors.']
+];
+
+async function seedReviews(pool) {
+  for (const name of REVIEWERS) {
+    await pool.query(
+      `INSERT INTO users (role, full_name, locale)
+       SELECT 'patient', $1, 'ml' WHERE NOT EXISTS (SELECT 1 FROM users WHERE full_name = $1)`,
+      [name]
+    );
+  }
+  for (const [etype, slug, ri, rating, title, body] of DEMO_REVIEWS) {
+    const table = etype === 'doctor' ? 'doctors' : 'hospitals';
+    await pool.query(
+      `INSERT INTO reviews (entity_type, entity_id, patient_id, rating, title, body, status)
+       SELECT $1, e.id, u.id, $4, $5, $6, 'approved'
+         FROM ${table} e, users u
+        WHERE e.slug = $2 AND u.full_name = $3
+       ON CONFLICT (entity_type, entity_id, patient_id) DO NOTHING`,
+      [etype, slug, REVIEWERS[ri], rating, title, body]
+    );
+  }
+}
+
 async function seedPatientAndAvailability(pool) {
   // One demo patient (idempotent by name).
   await pool.query(
@@ -418,8 +452,10 @@ async function main() {
   await seedContent(pool);
   await seedSymptoms(pool);
   await seedJobs(pool);
+  await seedReviews(pool);
   const counts = await populateVectors(pool);
-  console.log(`Demo seed complete. Doctors: ${counts.doctors}, Hospitals: ${counts.hospitals}, Departments: ${DEMO_HOSPITALS.length * DEPTS.length}, Facilities: ${DEMO_FACILITIES.length}.`);
+  const rc = (await pool.query(`SELECT count(*)::int AS n FROM reviews WHERE deleted_at IS NULL`)).rows[0].n;
+  console.log(`Demo seed complete. Doctors: ${counts.doctors}, Hospitals: ${counts.hospitals}, Departments: ${DEMO_HOSPITALS.length * DEPTS.length}, Facilities: ${DEMO_FACILITIES.length}, Reviews: ${rc}.`);
 }
 
 main()
