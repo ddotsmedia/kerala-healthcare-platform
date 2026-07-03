@@ -231,6 +231,7 @@ Result: **6 PASS, 2 FAIL** (items 5, 6 — both data/indexing gaps, logged above
 - [ASSUMPTION] Redis not running → `@khp/cache` and `@khp/ratelimit` use an in-process store; interface is Redis-swappable via `REDIS_URL` (production infra).
 - [FIXED] RAG missed Malayalam/partial queries: switched to OR `to_tsquery`; word-clean regex was stripping Malayalam combining marks (`\p{M}`) — now preserved. Verified Malayalam question cites the correct article.
 - [NEEDS DECISION] `pnpm audit`: 6 high are Next.js framework advisories, unfixable in 14.2.x — clearing requires a **Next 15 major upgrade** (tracked in docs/security/owasp-checklist.md). No high/critical in first-party deps.
+- [NEEDS DECISION] **Next.js 15 major upgrade required before VPS deployment.** 6 framework-level high vulnerabilities documented in `docs/security/owasp-checklist.md`. MUST be resolved before `malayalidoctor.com` goes live. Blocks production launch on the VPS (194.164.151.202).
 - [NEEDS DECISION] Load test (1k concurrent, p95<500ms) deferred — requires load-test tooling/infra.
 - [ASSUMPTION] Phase 5 complete: 7 tasks built, 8/9 smoke pass (audit item partial per above), lint+build green. NOT tagged — holding for confirmation. Proposed tag: `v1.0.0-launch`. Migration 0030. Evidence: docs/phases/PHASE_5_COMPLETION.md.
 
@@ -249,6 +250,7 @@ Quick status of every `[NEEDS DECISION]` ever logged (this section is additive; 
 | Manglish token match | ✅ RESOLVED (commit af6ce19) |
 | Phases 1/2/3 tags | ✅ DONE (v0.2.0-directory, v0.3.0-appointments, v0.4.0-knowledge) |
 | **Legal review of COMPLIANCE.md (DPDP timelines, DPO, data-residency)** | 🔴 **OPEN** — required before public launch |
+| **Next.js 15 upgrade (6 framework highs) before VPS deploy** | 🔴 **OPEN** — must clear before malayalidoctor.com goes live |
 
 **Only genuinely open item: legal review of COMPLIANCE.md before launch.**
 

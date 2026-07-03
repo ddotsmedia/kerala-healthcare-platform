@@ -1,7 +1,7 @@
 # Phase 5 — AI Assistant & Platform Scale · Completion Report
 
 *Reconciles the build against `PHASE_5_SPEC.md`. Verified against local Postgres 15 (`khp-demo-pg`, port 5439), migrations 0001–0030 applied, demo data seeded.*
-*Status: build + smoke complete. NOT tagged (`v1.0.0-launch`) — holding for confirmation.*
+*Status: build + smoke complete. Tagged `v1.0.0-launch`. Pre-launch blocker: Next.js 15 upgrade (6 framework highs) before VPS deploy.*
 
 ---
 
