@@ -22,7 +22,8 @@ export async function generateMetadata(props) {
     title: ml ? 'മലയാളി ഡോക്ടർ · കേരള ആരോഗ്യ പോർട്ടൽ' : 'MalayaliDoctor · Kerala Health Portal',
     description: ml
       ? 'കേരളത്തിലെ മികച്ച ഡോക്ടർമാരെയും ആശുപത്രികളെയും കണ്ടെത്തൂ. അപ്പോയിന്റ്മെന്റ് ബുക്ക് ചെയ്യൂ.'
-      : 'Find the best doctors and hospitals in Kerala. Book appointments online.'
+      : 'Find the best doctors and hospitals in Kerala. Book appointments online.',
+    alternates: { canonical: `/${locale}`, languages: { ml: '/ml', en: '/en' } }
   };
 }
 
