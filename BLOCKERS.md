@@ -358,3 +358,14 @@ Quick status of every `[NEEDS DECISION]` ever logged (this section is additive; 
 ### Verified
 - [OK] Migrations 35 (0034 whatsapp, 0035 category+body_area). seed-prod: 20 articles, 30 symptoms, 3 doctors with WhatsApp.
 - [OK] 200: /ml/emergency,tools,health,symptoms,tools/{bmi,heart-rate,blood-pressure,sleep}. Doctor profile shows wa.me WhatsApp button. Health category tabs + article render. Symptoms grouped by body area. Emergency tel:112/108 tap-to-call.
+
+## Session: 2026-07-04 — Mobile polish + PWA + performance + a11y
+### Errors fixed
+- [FIXED] PWA icons 404 in production: Next standalone output excludes public/. Dockerfile.web now copies apps/web/public. Icons now 200 (image/png).
+### Assumptions / notes
+- [ASSUMPTION] Offline page lives at /offline (app/offline, per task file path); added /[locale]/offline alias so /ml/offline also 200 (task verify used /ml/offline).
+- [ASSUMPTION] PWA icons are teal SVG saved as .png (per task). Served 200 as image/png; a real PNG would be needed if a browser refuses to decode SVG bytes for install. Manifest otherwise valid + installable (HTTPS, standalone, name, start_url, 192+512 declared, shortcuts).
+- [NEEDS DECISION] Lighthouse could not be executed in this sandbox (no headless Chrome). Applied optimisations: next/font display=swap + preconnect, image loading=lazy/decoding=async + explicit width/height (no CLS), skeleton loaders + route loading.js, Cache-Control on GET /api/reviews, SEO metadata/canonicals/JSON-LD already present, a11y (skip link, aria-modal drawer, aria-labels, keyboard star picker). Run Lighthouse from a browser/CI to capture the 4 page scores.
+- [PARTIAL] Mobile items fully done: navbar drawer (close-on-route/Escape/active/44px), 16px inputs, emergency min-h-16, stats already 2x2. Deferred (lower value, logged): booking full-screen modal, specialty-chip horizontal snap-scroll, similar-doctors carousel — current responsive grids already usable at 375/390px.
+### Verified
+- [OK] /manifest.webmanifest, /icons/icon-192.png, /icons/icon-512.png, /offline, /ml/offline all 200. theme-color meta + rel=manifest in HTML. GET /api/reviews returns Cache-Control public s-maxage=60.
