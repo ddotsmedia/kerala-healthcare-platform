@@ -4,6 +4,7 @@
 import { NextResponse } from 'next/server';
 import { rateLimit } from '@khp/ratelimit';
 import { sendEmail } from '@khp/notifications';
+import { logger } from '@/lib/logger';
 
 export const dynamic = 'force-dynamic';
 
@@ -39,9 +40,9 @@ export async function POST(request) {
     <p><b>Message:</b></p><p>${message.replace(/</g, '&lt;')}</p>`;
   try {
     const r = await sendEmail(CONTACT_TO, `[Contact] ${subject} — ${name}`, html, `${name} <${email}>\n\n${message}`);
-    if (r.status === 'failed') console.error(`contact email failed: ${r.error}`);
+    if (r.status === 'failed') logger.error('contact_email_failed', { error: r.error, subject });
   } catch (err) {
-    console.error(`contact email threw: ${err.message}`);
+    logger.error('contact_email_threw', { error: err.message });
   }
   return NextResponse.json({ data: { sent: true }, meta: null, errors: null }, { status: 201 });
 }
