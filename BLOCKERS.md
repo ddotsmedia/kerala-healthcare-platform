@@ -369,3 +369,15 @@ Quick status of every `[NEEDS DECISION]` ever logged (this section is additive; 
 - [PARTIAL] Mobile items fully done: navbar drawer (close-on-route/Escape/active/44px), 16px inputs, emergency min-h-16, stats already 2x2. Deferred (lower value, logged): booking full-screen modal, specialty-chip horizontal snap-scroll, similar-doctors carousel — current responsive grids already usable at 375/390px.
 ### Verified
 - [OK] /manifest.webmanifest, /icons/icon-192.png, /icons/icon-512.png, /offline, /ml/offline all 200. theme-color meta + rel=manifest in HTML. GET /api/reviews returns Cache-Control public s-maxage=60.
+
+## Session: 2026-07-04 — Launch readiness (v1.1.0-post-launch-polish)
+### Verified (pass)
+- SEO: robots.txt 200 + correct rules; sitemap.xml 200; per-page titles/desc/canonical; JSON-LD Physician/Hospital/Article+MedicalWebPage/MedicalCondition/FAQPage/MedicalSpecialty/BreadcrumbList; site-wide OG + twitter card + og-image.
+- Security: HSTS, X-Content-Type nosniff, X-Frame-Options (DENY from Next + SAMEORIGIN from nginx), Referrer-Policy, Permissions-Policy, CSP all present. SSL valid to 2026-10-01, certbot.timer enabled+active (auto-renew). HTTP->HTTPS 301. Postgres 127.0.0.1:5440 + Redis 127.0.0.1:6380 (not public). .env.production 600. pnpm audit: 0 high/critical (1 moderate).
+- Monitoring: /api/health 200 {database:ok, redis:ok}. health-check.sh ALL OK. backup-db.sh ran (188K), daily cron 02:00 set. UPTIME.md documented.
+- UX: 404/500/loading, cookie consent, register (+/api/auth/register), login polish. All 26 launch URLs 200 (portal+admin 200). Migrations 35. Protected projects untouched (14 containers + ayurconnect + ddots-erp up).
+### Notes / not-done
+- [NOTE] P2 required no code change — security headers already present (added Phase 5 + nginx). Verification-only pass.
+- [NOTE] logger created at services/logger/index.js (task path) + apps/web/lib/logger.js (app import, avoids new-package lockfile churn); wired into contact + register routes. Other routes still use fail-soft console.error — migrate incrementally.
+- [NOTE] PWA/OG icons are SVG saved as .png (per earlier task instruction); real raster PNG recommended before heavy social sharing.
+- [OPEN NEEDS DECISION] Prior open items still stand: fill ANTHROPIC/SMS/SES secrets fully; verify Resend domain (DNS) for live email; run Lighthouse from a browser/CI for the 4 measured scores; UptimeRobot account setup (see docs/monitoring/UPTIME.md); Google Search Console sitemap submission.
