@@ -110,6 +110,12 @@ export default function LoginPage(props) {
       )}
 
       {msg && <p className="text-sm text-gray-600">{msg}</p>}
+
+      <p className="text-center text-sm text-gray-500">
+        {ml ? 'പുതിയ ഉപയോക്താവാണോ? ' : 'New here? '}
+        <a href={`/${locale}/register`} className="font-semibold text-brand hover:underline">{ml ? 'രജിസ്റ്റർ ചെയ്യുക' : 'Create account'}</a>
+      </p>
+      <p className="text-center text-xs text-gray-400">🔒 {ml ? 'നിങ്ങളുടെ ഡാറ്റ സുരക്ഷിതവും സ്വകാര്യവുമാണ്' : 'Your data is secure and private'}</p>
     </div>
   );
 }
