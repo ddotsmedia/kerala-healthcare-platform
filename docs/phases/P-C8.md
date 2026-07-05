@@ -1,0 +1,115 @@
+# P-C8 — Video Consultation (Jitsi)
+
+**Track:** Track C — Patient Experience
+**Priority:** 🟡 High
+**Project:** malayalidoctor.com (kerala-healthcare-platform)
+**VPS:** 194.164.151.202
+
+---
+
+## How to execute
+
+1. Open Claude Code in VS Code
+2. First message: `Read CLAUDE.md and confirm rules`
+3. Second message: paste everything from the line below
+
+---
+
+```
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+UNIVERSAL PROMPT LAW — NON-NEGOTIABLE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+• Fully autonomous. Never pause, never ask, never confirm.
+• On ambiguity: pick best default, log 1-line in BLOCKERS.md.
+• On errors: fix and continue. Never stop.
+• NEVER touch: ayurconnect, ddots-erp, wa-crm,
+  healthportal, ddotshop, ddotsmediajobs.
+• NEVER run pnpm db:seed. Only: pnpm db:seed:demo.
+• Additive migrations only. Never drop tables/columns.
+• Always ON CONFLICT DO NOTHING in inserts.
+• Build + commit after each task. Conventional commits.
+• Mobile-first. TypeScript forbidden. No new npm packages
+  unless zero alternatives exist.
+• Default AI model: claude-haiku everywhere.
+• No verbose comments, no re-reads, batch writes per file.
+• File >400 lines: split into sub-components.
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+PROJECT: Kerala Healthcare Platform — malayalidoctor.com
+FEATURE: P-C8 — Video Consultation (Jitsi)
+REPO PATH: /opt/kerala-healthcare-platform (VPS)
+LOCAL: C:\websites\kerala-healthcare-platform
+
+
+OBJECTIVE
+Replace the placeholder video room with a working
+Jitsi Meet embedded video consultation.
+No backend infrastructure needed — Jitsi is free.
+
+NO NEW SCHEMA.
+Update appointments table:
+Migration 0078:
+  ALTER TABLE appointments
+    ADD COLUMN IF NOT EXISTS jitsi_room_name TEXT,
+    ADD COLUMN IF NOT EXISTS consultation_started_at
+      TIMESTAMPTZ,
+    ADD COLUMN IF NOT EXISTS consultation_ended_at
+      TIMESTAMPTZ;
+
+VIDEO ROOM SERVICE
+services/appointments/video.js:
+  generateJitsiRoom(appointmentId):
+    — Room name: "khp-[appointmentId-truncated]"
+    — Jitsi URL: https://meet.jit.si/[room-name]
+    — No auth needed for basic Jitsi
+  
+  generateJWTConfig(appointment, userRole):
+    — For enhanced Jitsi with JWT (optional,
+      use 8x8.vc or self-hosted for production)
+    — For now: plain meet.jit.si room
+
+CONSULTATION PAGE UPGRADE
+apps/web/app/[locale]/consult/[roomId]/page.js
+  Current: shows room code only
+  Upgrade to:
+  — Pre-consultation checklist:
+    ✓ Camera working? ✓ Microphone? ✓ Quiet space?
+    ✓ Appointment details confirmed
+  — "Join Video Call" button → embed Jitsi iframe
+    OR open in new tab (iframe has CSP issues)
+  — Jitsi Meet API via script tag:
+    <script src="https://meet.jit.si/external_api.js">
+    Creates embedded video call in div
+  — Doctor and patient both join same room
+  — Room name from appointment record
+  — "End Call" button → marks consultation complete
+  — Post-call: "Leave a review" prompt
+
+PATIENT DASHBOARD UPDATE
+  Upcoming video appointment:
+  — "Join Video Call" button (active 15min before)
+  — Greyed out if not within 15min window
+
+PORTAL UPDATE
+  Doctor schedule:
+  — "Start Video Call" button for video appointments
+  — Same join page, different role view
+
+Smoke tests:
+  Video appointment generates Jitsi room URL
+  Join button appears 15min before appointment
+  Jitsi embeds in page
+  Consultation can be marked complete from video page
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+DEPLOY TO VPS AFTER COMPLETION
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+SSH into 194.164.151.202
+cd /opt/kerala-healthcare-platform
+git pull origin main
+docker compose -f infra/docker/docker-compose.prod.yml \
+  --env-file .env.production up -d --build
+Verify: curl -I https://malayalidoctor.com/ml/[new-route]
+Report: commit hash, migration count, live URL check.
+```
