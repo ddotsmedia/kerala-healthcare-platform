@@ -15,7 +15,10 @@ const NUMBERS = [
   { n: '104', icon: '🏥', ml: 'ആരോഗ്യ ഹെൽപ്‌ലൈൻ', en: 'Health Helpline' },
   { n: '100', icon: '👮', ml: 'പോലീസ്', en: 'Police' },
   { n: '101', icon: '🔥', ml: 'ഫയർ', en: 'Fire' },
-  { n: '1056', icon: '☎️', ml: 'മെഡിക്കൽ ഹെൽപ്‌ലൈൻ', en: 'Medical Helpline' }
+  { n: '1056', icon: '☎️', ml: 'മെഡിക്കൽ ഹെൽപ്‌ലൈൻ', en: 'Medical Helpline' },
+  { n: '1091', icon: '👩', ml: 'വനിതാ ഹെൽപ്‌ലൈൻ', en: "Women's Helpline" },
+  { n: '181', icon: '🛡️', ml: 'ഗാർഹിക പീഡനം', en: 'Domestic Violence' },
+  { n: '1098', icon: '🧒', ml: 'ശിശു ഹെൽപ്‌ലൈൻ', en: 'CHILDLINE' }
 ];
 
 export default async function EmergencyPage(props) {

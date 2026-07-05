@@ -20,7 +20,13 @@ const QUICK = [
   { href: 'contact', ml: 'ബന്ധപ്പെടുക', en: 'Contact' },
   { href: 'emergency', ml: 'അടിയന്തരം', en: 'Emergency' },
   { href: 'tools', ml: 'ഹെൽത്ത് ടൂളുകൾ', en: 'Health Tools' },
-  { href: 'symptoms', ml: 'ലക്ഷണങ്ങൾ', en: 'Symptom Checker' }
+  { href: 'symptoms', ml: 'ലക്ഷണങ്ങൾ', en: 'Symptom Checker' },
+  { href: 'womens-health', ml: 'സ്ത്രീ ആരോഗ്യം', en: "Women's Health" },
+  { href: 'mental-health', ml: 'മാനസികാരോഗ്യം', en: 'Mental Health' },
+  { href: 'child-health', ml: 'ശിശു ആരോഗ്യം', en: 'Child Health' },
+  { href: 'senior-care', ml: 'സീനിയർ കെയർ', en: 'Senior Care' },
+  { href: 'vaccination', ml: 'വാക്സിനേഷൻ', en: 'Vaccination' },
+  { href: 'patient/health-records', ml: 'ആരോഗ്യ രേഖകൾ', en: 'Health Records' }
 ];
 const SOCIAL = ['📘', '𝕏', '📸', '▶️'];
 

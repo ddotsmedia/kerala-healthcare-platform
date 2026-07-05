@@ -18,6 +18,14 @@ const LINKS = [
   { href: 'assistant', ml: 'AI അസിസ്റ്റന്റ്', en: 'AI Assistant' }
 ];
 
+const HUBS = [
+  { href: 'womens-health', ml: 'സ്ത്രീ ആരോഗ്യം', en: "Women's Health" },
+  { href: 'mental-health', ml: 'മാനസികാരോഗ്യം', en: 'Mental Health' },
+  { href: 'child-health', ml: 'ശിശു ആരോഗ്യം', en: 'Child Health' },
+  { href: 'senior-care', ml: 'സീനിയർ കെയർ', en: 'Senior Care' },
+  { href: 'vaccination', ml: 'വാക്സിനേഷൻ', en: 'Vaccination' }
+];
+
 export default function Navbar({ locale = 'ml' }) {
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
@@ -95,6 +103,10 @@ export default function Navbar({ locale = 'ml' }) {
                   className={`${drawerLink} ${isActive(l.href) ? 'bg-teal-50 text-brand' : 'text-gray-700 hover:bg-gray-100'}`}>
                   {L(l)}
                 </Link>
+              ))}
+              <div className="mt-2 px-3 text-xs font-semibold uppercase text-gray-400">{locale === 'ml' ? 'ആരോഗ്യ കേന്ദ്രങ്ങൾ' : 'Health Centres'}</div>
+              {HUBS.map((l) => (
+                <Link key={l.href} href={`/${locale}/${l.href}`} className={`${drawerLink} text-gray-700 hover:bg-gray-100`}>{L(l)}</Link>
               ))}
               <Link href={`/${locale}/login`} className={`${drawerLink} mt-2 justify-center bg-brand text-white`}>
                 {locale === 'ml' ? 'ലോഗിൻ' : 'Login'}

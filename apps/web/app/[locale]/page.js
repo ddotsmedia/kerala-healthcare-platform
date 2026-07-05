@@ -106,6 +106,28 @@ export default async function HomePage(props) {
       )}
 
       <HowItWorks locale={locale} />
+
+      {/* Health Centres */}
+      <FullBleed className="bg-white py-14">
+        <SectionHeading>{ml ? 'ആരോഗ്യ കേന്ദ്രങ്ങൾ' : 'Health Centres'}</SectionHeading>
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
+          {[
+            { href: 'womens-health', icon: '🌸', ml: 'സ്ത്രീ ആരോഗ്യം', en: "Women's" },
+            { href: 'mental-health', icon: '🧠', ml: 'മാനസികാരോഗ്യം', en: 'Mental Health' },
+            { href: 'child-health', icon: '👶', ml: 'ശിശു ആരോഗ്യം', en: 'Child' },
+            { href: 'senior-care', icon: '🧓', ml: 'സീനിയർ കെയർ', en: 'Senior Care' },
+            { href: 'vaccination', icon: '💉', ml: 'വാക്സിനേഷൻ', en: 'Vaccination' },
+            { href: 'patient/health-records', icon: '📋', ml: 'ആരോഗ്യ രേഖകൾ', en: 'Records' }
+          ].map((c) => (
+            <Link key={c.href} href={`/${locale}/${c.href}`}
+              className="flex flex-col items-center rounded-xl border border-gray-200 bg-white p-4 text-center shadow-sm transition hover:-translate-y-0.5 hover:shadow-md">
+              <span className="text-3xl">{c.icon}</span>
+              <span className="mt-2 text-xs font-semibold text-gray-900">{ml ? c.ml : c.en}</span>
+            </Link>
+          ))}
+        </div>
+      </FullBleed>
+
       <ToolsAndAI locale={locale} />
 
       {/* Latest articles */}
