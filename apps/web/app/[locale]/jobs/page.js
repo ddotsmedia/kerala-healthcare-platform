@@ -1,14 +1,18 @@
-// Job listings feed with filters. Active listings only.
+// Advanced job search — sidebar filters, sort bar, rich job cards.
 
 import Link from 'next/link';
 import { resolveLocale, t } from '@/lib/i18n';
 import { searchJobs } from '@/lib/jobs';
-import { listDistricts } from '@/lib/providers';
-import { DistrictFilter, EmptyState, Pagination } from '@khp/ui';
+import { listDistricts, listSpecialties } from '@/lib/providers';
+import { DistrictFilter, SpecialtyFilter, EmptyState, Pagination } from '@khp/ui';
+import JobCard from '@/components/jobs/JobCard';
 
 export const dynamic = 'force-dynamic';
 const LIMIT = 20;
-const TYPES = ['full_time', 'part_time', 'contract', 'locum'];
+const TYPES = ['full_time', 'part_time', 'contract', 'locum', 'internship'];
+const EXP = [['', 'All'], ['0', 'Fresher'], ['3', '1-3 yr'], ['5', '3-5 yr'], ['99', '5+ yr']];
+const POSTED = [['', 'Any time'], ['1', '24 hrs'], ['7', 'Last week'], ['30', 'Last month']];
+const SORTS = [['newest', 'Newest'], ['salary_high', 'Salary High'], ['salary_low', 'Salary Low'], ['closing_soon', 'Closing soon']];
 
 export async function generateMetadata(props) {
   const params = await props.params;
@@ -16,52 +20,88 @@ export async function generateMetadata(props) {
   return { title: `${t(locale, 'jobs')} · ${t(locale, 'site')}`, description: t(locale, 'job_search') };
 }
 
+function isoDaysAgo(days) {
+  const d = new Date(Date.now() - parseInt(days, 10) * 86400000);
+  return d.toISOString().slice(0, 10);
+}
+
 export default async function JobsFeed(props) {
-  const searchParams = await props.searchParams;
+  const sp = (await props.searchParams) || {};
   const params = await props.params;
   const locale = resolveLocale(params.locale);
-  const sp = searchParams || {};
+  const ml = locale === 'ml';
   const page = Math.max(1, parseInt(sp.page, 10) || 1);
-  const filters = { term: sp.q || '', districtId: sp.district || '', employmentType: sp.type || '' };
-  const [jobs, districts] = await Promise.all([searchJobs({ ...filters, page, limit: LIMIT }), listDistricts()]);
+
+  const opts = {
+    term: sp.q || '', jobType: sp.type || '', districtId: sp.district || '', specialtyId: sp.specialty || '',
+    experienceYearsMin: sp.exp || '', salaryMin: sp.salary_min || '', isRemote: sp.remote || '',
+    isUrgent: sp.urgent || '', postedAfter: sp.posted ? isoDaysAgo(sp.posted) : '', sort: sp.sort || 'newest',
+    page, limit: LIMIT
+  };
+  const [jobs, districts, specialties] = await Promise.all([searchJobs(opts), listDistricts(), listSpecialties()]);
   const basePath = `/${locale}/jobs`;
+  const loginPath = `/${locale}/login`;
+  const query = { q: sp.q, type: sp.type, district: sp.district, specialty: sp.specialty, exp: sp.exp, salary_min: sp.salary_min, remote: sp.remote, urgent: sp.urgent, posted: sp.posted, sort: sp.sort };
+  const sortLink = (s) => `${basePath}?${new URLSearchParams({ ...Object.fromEntries(Object.entries(query).filter(([, v]) => v)), sort: s }).toString()}`;
+
+  const inp = 'mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm';
+
+  const filters = (
+    <form action={basePath} method="get" className="space-y-3">
+      <input type="search" name="q" defaultValue={sp.q || ''} placeholder={t(locale, 'job_search')} className="w-full rounded-lg border border-gray-300 px-3 py-2 text-base focus:border-brand focus:outline-none" />
+      <label className="block text-sm"><span className="text-gray-700">{ml ? 'ജോലി തരം' : 'Job type'}</span>
+        <select name="type" defaultValue={sp.type || ''} className={inp}>
+          <option value="">{ml ? 'എല്ലാം' : 'All'}</option>
+          {TYPES.map((ty) => <option key={ty} value={ty}>{t(locale, ty)}</option>)}
+        </select></label>
+      <SpecialtyFilter specialties={specialties} selected={sp.specialty || ''} locale={locale} />
+      <DistrictFilter districts={districts} selected={sp.district || ''} locale={locale} />
+      <label className="block text-sm"><span className="text-gray-700">{ml ? 'അനുഭവം' : 'Experience'}</span>
+        <select name="exp" defaultValue={sp.exp || ''} className={inp}>{EXP.map(([v, l]) => <option key={v} value={v}>{l}</option>)}</select></label>
+      <label className="block text-sm"><span className="text-gray-700">{ml ? 'കുറഞ്ഞ ശമ്പളം' : 'Min salary'}: ₹{sp.salary_min || '0'}</span>
+        <input type="range" name="salary_min" min="0" max="500000" step="5000" defaultValue={sp.salary_min || '0'} className="mt-1 w-full" /></label>
+      <label className="block text-sm"><span className="text-gray-700">{ml ? 'പോസ്റ്റ് ചെയ്തത്' : 'Posted'}</span>
+        <select name="posted" defaultValue={sp.posted || ''} className={inp}>{POSTED.map(([v, l]) => <option key={v} value={v}>{l}</option>)}</select></label>
+      <label className="flex items-center gap-2 text-sm"><input type="checkbox" name="remote" value="1" defaultChecked={sp.remote === '1'} /> {ml ? 'റിമോട്ട്' : 'Remote'}</label>
+      <label className="flex items-center gap-2 text-sm"><input type="checkbox" name="urgent" value="1" defaultChecked={sp.urgent === '1'} /> {ml ? 'അടിയന്തരം' : 'Urgent only'}</label>
+      {sp.sort && <input type="hidden" name="sort" value={sp.sort} />}
+      <button className="w-full rounded-lg bg-brand px-4 py-2 text-sm font-semibold text-white hover:bg-brand-dark">{t(locale, 'search')}</button>
+    </form>
+  );
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-4">
       <h1 className="text-xl font-bold">{t(locale, 'jobs')}</h1>
-      <form action={basePath} method="get" className="space-y-3 rounded-xl border border-gray-200 bg-white p-4">
-        <input type="search" name="q" defaultValue={filters.term} placeholder={t(locale, 'job_search')}
-          className="w-full rounded-lg border border-gray-300 px-4 py-2 text-base focus:border-brand focus:outline-none" />
-        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-          <DistrictFilter districts={districts} selected={filters.districtId} locale={locale} />
-          <label className="block text-sm"><span className="text-gray-700">{t(locale, 'employment_type')}</span>
-            <select name="type" defaultValue={filters.employmentType} className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm">
-              <option value="">{locale === 'ml' ? 'എല്ലാം' : 'All'}</option>
-              {TYPES.map((ty) => <option key={ty} value={ty}>{t(locale, ty)}</option>)}
-            </select>
-          </label>
-        </div>
-        <button className="rounded-lg bg-brand px-4 py-2 text-sm font-medium text-white">{t(locale, 'search')}</button>
-      </form>
 
-      {jobs.length === 0 ? <EmptyState message={t(locale, 'no_results')} /> : (
-        <>
-          <div className="grid gap-3">
-            {jobs.map((j) => (
-              <Link key={j.id} href={`/${locale}/jobs/${j.slug}`} className="block rounded-xl border border-gray-200 bg-white p-4 shadow-sm hover:shadow-md">
-                <h3 className="font-semibold">{j.title}</h3>
-                <p className="text-sm text-brand">{j.org_name}</p>
-                <div className="mt-1 flex flex-wrap gap-x-3 text-xs text-gray-600">
-                  <span>{locale === 'ml' ? j.district_ml : j.district_en}</span>
-                  <span>{t(locale, j.employment_type)}</span>
-                  <span>{j.experience_years_min}+ {t(locale, 'years')}</span>
-                </div>
-              </Link>
+      {/* mobile filters */}
+      <details className="rounded-xl border border-gray-200 bg-white p-4 lg:hidden">
+        <summary className="cursor-pointer text-sm font-semibold text-brand">{ml ? 'ഫിൽട്ടറുകൾ' : 'Filters'}</summary>
+        <div className="mt-3">{filters}</div>
+      </details>
+
+      <div className="grid gap-5 lg:grid-cols-[260px_1fr]">
+        <aside className="hidden lg:block">
+          <div className="sticky top-20 rounded-xl border border-gray-200 bg-white p-4">{filters}</div>
+        </aside>
+
+        <div className="space-y-4">
+          <div className="flex flex-wrap items-center gap-2 text-xs">
+            <span className="text-gray-500">{ml ? 'ക്രമീകരിക്കുക:' : 'Sort:'}</span>
+            {SORTS.map(([s, l]) => (
+              <Link key={s} href={sortLink(s)} className={`rounded-full px-3 py-1 font-medium ${(sp.sort || 'newest') === s ? 'bg-brand text-white' : 'border border-gray-300 bg-white text-gray-700'}`}>{l}</Link>
             ))}
           </div>
-          <Pagination basePath={basePath} query={{ q: filters.term, district: filters.districtId, type: filters.employmentType }} page={page} hasNext={jobs.length === LIMIT} locale={locale} />
-        </>
-      )}
+
+          {jobs.length === 0 ? <EmptyState message={t(locale, 'no_results')} /> : (
+            <>
+              <div className="grid gap-3">
+                {jobs.map((j) => <JobCard key={j.id} job={j} locale={locale} loginPath={loginPath} />)}
+              </div>
+              <Pagination basePath={basePath} query={query} page={page} hasNext={jobs.length === LIMIT} locale={locale} />
+            </>
+          )}
+        </div>
+      </div>
     </div>
   );
 }

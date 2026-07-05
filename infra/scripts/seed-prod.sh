@@ -115,7 +115,17 @@ JOIN symptoms s ON s.slug = v.sslug
 JOIN specialties sp ON sp.slug = v.spslug
 ON CONFLICT (symptom_id, specialty_id) DO NOTHING;
 
+-- ===== P-B1: job search fields for demo jobs (smoke data) =====
+UPDATE job_listings SET job_type = COALESCE(job_type, employment_type, 'full_time') WHERE deleted_at IS NULL;
+UPDATE job_listings SET salary_min = COALESCE(salary_min, 30000), salary_max = COALESCE(salary_max, 60000),
+       salary_period = COALESCE(salary_period, 'monthly') WHERE deleted_at IS NULL AND salary_min IS NULL;
+UPDATE job_listings SET is_urgent = true
+ WHERE id IN (SELECT id FROM job_listings WHERE deleted_at IS NULL AND status='active' ORDER BY created_at DESC LIMIT 1);
+UPDATE job_listings SET is_remote = true, job_type = 'locum'
+ WHERE id IN (SELECT id FROM job_listings WHERE deleted_at IS NULL AND status='active' ORDER BY created_at ASC LIMIT 1);
+
 SELECT 'articles' AS kind, count(*) FROM content_items WHERE type='article' AND status='published' AND deleted_at IS NULL
-UNION ALL SELECT 'symptoms', count(*) FROM symptoms WHERE deleted_at IS NULL;
+UNION ALL SELECT 'symptoms', count(*) FROM symptoms WHERE deleted_at IS NULL
+UNION ALL SELECT 'urgent_jobs', count(*) FROM job_listings WHERE is_urgent = true AND deleted_at IS NULL;
 SQL
 echo "seed-prod complete."
