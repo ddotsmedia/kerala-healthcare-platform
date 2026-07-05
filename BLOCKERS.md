@@ -381,3 +381,11 @@ Quick status of every `[NEEDS DECISION]` ever logged (this section is additive; 
 - [NOTE] logger created at services/logger/index.js (task path) + apps/web/lib/logger.js (app import, avoids new-package lockfile churn); wired into contact + register routes. Other routes still use fail-soft console.error — migrate incrementally.
 - [NOTE] PWA/OG icons are SVG saved as .png (per earlier task instruction); real raster PNG recommended before heavy social sharing.
 - [OPEN NEEDS DECISION] Prior open items still stand: fill ANTHROPIC/SMS/SES secrets fully; verify Resend domain (DNS) for live email; run Lighthouse from a browser/CI for the 4 measured scores; UptimeRobot account setup (see docs/monitoring/UPTIME.md); Google Search Console sitemap submission.
+
+## Session: 2026-07-04 — Health Hubs (women/mental/child/senior/vaccination) + PHR
+### Assumptions / decisions
+- [ASSUMPTION] PHR file upload: NOT storing files. POST /api/phr/records saves metadata + file_name only; file_url stays null. Actual upload deferred until S3/R2 is configured (no S3 creds, base64-in-DB rejected to avoid DB bloat). Wire the upload endpoint when storage is provisioned.
+- [ASSUMPTION] Hub "featured specialists" reuse existing specialties (senior-care → general-physician, no geriatrics slug in taxonomy). Category-article sections render only when matching-category articles exist (seed-prod has none for the new women's/child categories yet — additive later via CMS).
+- [ASSUMPTION] Navbar hub links added to the mobile drawer ("Health Centres" group); desktop dropdown deferred — hubs reachable via homepage Health-Centres section + footer.
+### Verified
+- [OK] Migrations 38 (0036 waitlist, 0037 health_records, 0038 allergies+medications). New tables present. All 6 hub URLs 200. PHR API unauth -> 401 (ownership enforced by user_id in every query). POST /api/waitlist -> 201 (row stored). Crisis helplines (9152987821) + women's helpline (1091) render. Emergency page now includes 1091/181/1098.
