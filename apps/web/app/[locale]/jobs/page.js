@@ -6,6 +6,7 @@ import { searchJobs } from '@/lib/jobs';
 import { listDistricts, listSpecialties } from '@/lib/providers';
 import { DistrictFilter, SpecialtyFilter, EmptyState, Pagination } from '@khp/ui';
 import JobCard from '@/components/jobs/JobCard';
+import SaveSearchButton from '@/components/jobs/SaveSearchButton';
 
 export const dynamic = 'force-dynamic';
 const LIMIT = 20;
@@ -46,6 +47,15 @@ export default async function JobsFeed(props) {
 
   const inp = 'mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm';
 
+  const alertFilters = {};
+  if (sp.q) alertFilters.term = sp.q;
+  if (sp.type) alertFilters.job_type = sp.type;
+  if (sp.specialty) alertFilters.specialty_id = sp.specialty;
+  if (sp.district) alertFilters.district_id = sp.district;
+  if (sp.salary_min && sp.salary_min !== '0') alertFilters.salary_min = sp.salary_min;
+  if (sp.remote === '1') alertFilters.is_remote = true;
+  if (sp.urgent === '1') alertFilters.is_urgent = true;
+
   const filters = (
     <form action={basePath} method="get" className="space-y-3">
       <input type="search" name="q" defaultValue={sp.q || ''} placeholder={t(locale, 'job_search')} className="w-full rounded-lg border border-gray-300 px-3 py-2 text-base focus:border-brand focus:outline-none" />
@@ -85,6 +95,13 @@ export default async function JobsFeed(props) {
         </aside>
 
         <div className="space-y-4">
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <SaveSearchButton filters={alertFilters} locale={locale} loginPath={loginPath} defaultName={sp.q || ''} />
+            <Link href={`/${locale}/jobs/alerts`} className="text-sm font-medium text-brand hover:underline">
+              {ml ? '🔔 അലേർട്ടുകൾ കൈകാര്യം ചെയ്യുക' : '🔔 Manage alerts'}
+            </Link>
+          </div>
+
           <div className="flex flex-wrap items-center gap-2 text-xs">
             <span className="text-gray-500">{ml ? 'ക്രമീകരിക്കുക:' : 'Sort:'}</span>
             {SORTS.map(([s, l]) => (

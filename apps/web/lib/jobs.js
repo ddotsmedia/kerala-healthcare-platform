@@ -56,4 +56,56 @@ async function currentCandidateProfile() {
   return (await run(`SELECT * FROM candidate_profiles WHERE user_id=$1 AND deleted_at IS NULL LIMIT 1`, [s.userId]))[0] || null;
 }
 
-export { searchJobs, getJobBySlug, getCandidateBySlug, currentEmployerProfile, currentCandidateProfile };
+/** Job alerts owned by the current session user (null if unauthenticated). */
+async function listMyAlerts() {
+  const s = await getSession();
+  if (!s) return null;
+  return run(`SELECT id, name, filters, frequency, is_active, last_sent_at, created_at
+                FROM job_alerts WHERE user_id=$1 AND deleted_at IS NULL ORDER BY created_at DESC`, [s.userId]);
+}
+
+async function createAlert(name, filters, frequency) {
+  const s = await getSession();
+  if (!s) return null;
+  return (await run(
+    `INSERT INTO job_alerts (user_id, name, filters, frequency)
+       VALUES ($1, $2, $3::jsonb, $4)
+     RETURNING id, name, filters, frequency, is_active, last_sent_at, created_at`,
+    [s.userId, name, JSON.stringify(filters || {}), frequency || 'daily']))[0] || null;
+}
+
+async function getMyAlert(id) {
+  const s = await getSession();
+  if (!s) return null;
+  return (await run(`SELECT id, user_id, name, filters, frequency, is_active, last_sent_at
+                       FROM job_alerts WHERE id=$1 AND user_id=$2 AND deleted_at IS NULL`, [id, s.userId]))[0] || null;
+}
+
+async function updateAlert(id, fields) {
+  const s = await getSession();
+  if (!s) return null;
+  const sets = ['updated_at = now()'];
+  const values = [];
+  const set = (col, val, cast) => { values.push(val); sets.push(`${col} = $${values.length}${cast || ''}`); };
+  if (fields.name != null) set('name', fields.name);
+  if (fields.filters != null) set('filters', JSON.stringify(fields.filters), '::jsonb');
+  if (fields.frequency != null) set('frequency', fields.frequency);
+  if (fields.is_active != null) set('is_active', fields.is_active);
+  values.push(id); values.push(s.userId);
+  return (await run(
+    `UPDATE job_alerts SET ${sets.join(', ')}
+      WHERE id = $${values.length - 1} AND user_id = $${values.length} AND deleted_at IS NULL
+    RETURNING id, name, filters, frequency, is_active, last_sent_at`, values))[0] || null;
+}
+
+async function deleteAlert(id) {
+  const s = await getSession();
+  if (!s) return null;
+  return (await run(`UPDATE job_alerts SET deleted_at = now(), is_active = false, updated_at = now()
+                       WHERE id=$1 AND user_id=$2 AND deleted_at IS NULL RETURNING id`, [id, s.userId]))[0] || null;
+}
+
+export {
+  searchJobs, getJobBySlug, getCandidateBySlug, currentEmployerProfile, currentCandidateProfile,
+  listMyAlerts, createAlert, getMyAlert, updateAlert, deleteAlert
+};

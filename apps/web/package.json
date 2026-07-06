@@ -15,6 +15,7 @@
     "@khp/auth": "workspace:*",
     "@khp/cache": "workspace:*",
     "@khp/db": "workspace:*",
+    "@khp/jobs": "workspace:*",
     "@khp/notifications": "workspace:*",
     "@khp/ratelimit": "workspace:*",
     "@khp/search": "workspace:*",

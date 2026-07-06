@@ -400,3 +400,21 @@ Quick status of every `[NEEDS DECISION]` ever logged (this section is additive; 
 - [RULE] Recreate a single app container with `docker compose up -d --no-deps <svc>` so compose never tries to recreate postgres/redis (that caused the 5440 port conflict). Before `up`, ensure the old container is fully `rm`'d AND its docker-proxy is dead (`pkill -f 'docker-proxy.*-host-port <port>'`), else the new container starts without a port mapping.
 - [RULE] After any messy recreate, verify web can resolve the DB: `curl /api/health` must show database:ok (not "degraded"/EAI_AGAIN) before declaring success.
 - [NOTE] seed-prod.sh prefers host `psql` when present; must run with DATABASE_URL exported to the khp postgres (127.0.0.1:5440), else it hits the wrong/empty DB.
+
+## Session: 2026-07-06 — P-B2 Job Alerts Engine
+### Feature
+- [OK] Migration 0040_job_alerts (spec said 0056; numbered sequentially): job_alerts (user_id, name, filters JSONB, frequency instant|daily|weekly, is_active, last_sent_at) + job_alert_sends ledger (rate-limit + dedup). Migrations 39 -> 40 on deploy.
+- [OK] @khp/jobs package (services/jobs): alerts.js — filterMatchesJob, matchJobToAlerts (instant), sendJobAlertEmail (max 5 emails/alert/24h via job_alert_sends), dailyDigest(daily|weekly), unsubscribeToken/verifyUnsubscribe (HMAC, stateless). run-digest.js cron entry (node run-digest.js daily|weekly, 08:00).
+- [OK] Email template services/notifications/templates/job-alert.js (ml+en): subject "[N] new jobs matching [name]", up to 5 jobs w/ apply links + salary, manage + unsubscribe footer. Exported logNotification from @khp/notifications.
+- [OK] API: GET/POST /api/jobs/alerts; PATCH/DELETE /api/jobs/alerts/[id]; POST /api/jobs/alerts/[id]/test; POST /api/jobs (employer create -> fires matchJobToAlerts); unsubscribe page /[locale]/jobs/alerts/unsubscribe (HMAC token, no login).
+- [OK] UI: jobs/page.js "Save this search" modal (SaveSearchButton) + "Manage alerts" link; jobs/alerts/page.js + AlertsManager (toggle on/off, change frequency, test email, delete, filter chips).
+### Assumptions / decisions
+- [ASSUMPTION] Alert email recipient uses DEMO_NOTIFY_TO override — users.email_enc is column-encrypted and not decryptable in this layer (same constraint as notify.js). Without DEMO_NOTIFY_TO, sendEmail returns 'skipped'/'simulated' and the pipeline + ledger still run. Wire real per-user decryption when the KMS helper exists.
+- [ASSUMPTION] No employer job-create route existed (jobs only came from seed). Added POST /api/jobs as the trigger point for matchJobToAlerts, gated by currentEmployerProfile (403 otherwise). employment_type derived from job_type when omitted (CHECK excludes 'internship').
+- [ASSUMPTION] Alert "edit criteria" (filters) is done by saving a new alert from the search page; the manage page edits name/frequency/on-off + shows filters as read-only chips. Full in-place filter editing deferred.
+- [ASSUMPTION] Instant alerts fire inline on POST /api/jobs. Daily/weekly run via run-digest.js (cron/BullMQ at 08:00) — scheduler wiring is a VPS concern, same pattern as run-reminders.js.
+### Verified (local)
+- [OK] Build: 103 pages compiled ("Compiled successfully"). Final EPERM is the Windows-only .next standalone symlink-copy step (works in Docker on VPS) — not a code error.
+- [OK] alerts.js runtime import (incl. @khp/notifications/templates subpath) OK. filterMatchesJob hit/miss + salary gate correct. HMAC unsubscribe verify true / reject false. Template renders ml+en with apply + unsubscribe + salary.
+### Not done / pending
+- [PENDING DEPLOY] VPS deploy (git pull + docker compose build + pnpm db:migrate to 40) is a production action — commands in docs/phases/P-B2.md deploy block. Run on 194.164.151.202 after review.

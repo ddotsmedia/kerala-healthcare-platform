@@ -1,0 +1,12 @@
+{
+  "name": "@khp/jobs",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "main": "index.js",
+  "description": "Jobs portal server logic — job alerts matching, digests, email.",
+  "dependencies": {
+    "@khp/db": "workspace:*",
+    "@khp/notifications": "workspace:*"
+  }
+}
