@@ -4,13 +4,14 @@
 import { LOCALES } from '@/lib/i18n';
 import { listSpecialties, listDistricts } from '@/lib/providers';
 import { combosWithDoctors, allDoctorSlugs, allHospitalSlugs, districtSlug } from '@/lib/landing';
+import { allLabSlugs } from '@/lib/labs';
 import { SITE } from '@/components/landing/LandingParts';
 
 export const dynamic = 'force-dynamic';
 
 export default async function sitemap() {
-  const [specialties, districts, combos, doctors, hospitals] = await Promise.all([
-    listSpecialties(), listDistricts(), combosWithDoctors(), allDoctorSlugs(), allHospitalSlugs()
+  const [specialties, districts, combos, doctors, hospitals, labs] = await Promise.all([
+    listSpecialties(), listDistricts(), combosWithDoctors(), allDoctorSlugs(), allHospitalSlugs(), allLabSlugs()
   ]);
 
   const now = new Date();
@@ -22,6 +23,7 @@ export default async function sitemap() {
     add(`/${locale}`, 1.0, 'daily');
     add(`/${locale}/doctors`, 0.9, 'daily');
     add(`/${locale}/hospitals`, 0.8, 'daily');
+    add(`/${locale}/labs`, 0.8, 'daily');
     add(`/${locale}/specialties`, 0.8);
     add(`/${locale}/districts`, 0.8);
     for (const p of ['about', 'how-it-works', 'for-doctors', 'for-hospitals', 'contact', 'privacy', 'terms', 'disclaimer']) {
@@ -43,6 +45,7 @@ export default async function sitemap() {
     for (const c of combos) add(`/${locale}/doctors/${districtSlug(c.district_name)}/${c.specialty_slug}`, 0.7);
     for (const d of doctors) if (d.slug) add(`/${locale}/doctors/${d.slug}`, 0.6);
     for (const h of hospitals) if (h.slug) add(`/${locale}/hospitals/${h.slug}`, 0.6);
+    for (const l of labs) if (l.slug) add(`/${locale}/labs/${l.slug}`, 0.6);
   }
 
   return out;

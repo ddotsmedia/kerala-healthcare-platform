@@ -49,6 +49,34 @@ function hospitalSchema(hospital, locale, extra = {}) {
   };
 }
 
+/** MedicalOrganization structured data for a diagnostic lab. */
+function labSchema(lab, locale) {
+  const region = lab.district_en || lab.district_ml || 'Kerala';
+  const phones = Array.isArray(lab.phone) ? lab.phone : (lab.phone ? [lab.phone] : []);
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'MedicalOrganization',
+    name: lab.name_en || lab.name_ml,
+    url: `${SITE}/${locale}/labs/${lab.slug}`,
+    telephone: phones[0] || undefined,
+    email: lab.email || undefined,
+    medicalSpecialty: lab.type || 'Diagnostic',
+    address: {
+      '@type': 'PostalAddress',
+      streetAddress: lab.address_en || lab.address_ml || undefined,
+      addressRegion: region, addressCountry: 'IN'
+    },
+    areaServed: region,
+    ...(lab.lat != null && lab.lng != null
+      ? { geo: { '@type': 'GeoCoordinates', latitude: lab.lat, longitude: lab.lng } }
+      : {}),
+    ...(lab.rating_count > 0
+      ? { aggregateRating: { '@type': 'AggregateRating', ratingValue: Number(lab.rating_avg), reviewCount: lab.rating_count } }
+      : {}),
+    ...(lab.is_nabl_accredited ? { hasCredential: 'NABL Accredited' } : {})
+  };
+}
+
 /** MedicalWebPage wrapper — every health-context page. */
 function medicalWebPageSchema(title, description, url) {
   return {
@@ -80,4 +108,4 @@ function jobPostingSchema(job, locale) {
   };
 }
 
-export { physicianSchema, hospitalSchema, medicalWebPageSchema, jobPostingSchema, SITE };
+export { physicianSchema, hospitalSchema, labSchema, medicalWebPageSchema, jobPostingSchema, SITE };

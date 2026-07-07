@@ -453,3 +453,21 @@ Quick status of every `[NEEDS DECISION]` ever logged (this section is additive; 
 - [OK] Build "Compiled successfully", 0 errors. buildCandidateQuery gates is_searchable + is_open_to_work, leaks no contact columns, param binding correct (7 params for full filter, 2 for empty).
 ### Not done / pending
 - [PENDING DEPLOY] VPS deploy (git pull + docker build + pnpm db:migrate to 43). Production action — not auto-run. Commands in docs/phases/P-B4.md.
+
+## Session: 2026-07-07 — P-A1 Diagnostic Labs Directory
+### Feature
+- [OK] Migrations 0044 diagnostic_labs + 0045 lab_tests (spec 0039/0040; numbered sequentially). New provider type. Migrations 43 -> 45 on deploy.
+- [OK] lib/labs.js: searchLabs (district/nabl/home/category/term over name+test names/open-now), getLabBySlug (+tests), listLabTests (category/q), nearbyLabs, allLabSlugs, countLabs, isLabOpenNow (Asia/Kolkata operating_hours). Verified-only.
+- [OK] UI: packages/ui LabCard + TestRow (exported). schema.js labSchema (MedicalOrganization JSON-LD).
+- [OK] Pages: /[locale]/labs (search + NABL/home/open-now/category/district filters), /[locale]/labs/[slug] (SSR profile: header w/ NABL badge + tap-to-call + hours + directions, searchable tests table (TestsTable client), how-to-book, nearby 3, MedicalOrganization+MedicalWebPage+BreadcrumbList JSON-LD, breadcrumb, non-dismissable disclaimer w/ 112/108).
+- [OK] API: GET /api/labs, GET /api/labs/[slug], GET /api/labs/[slug]/tests.
+- [OK] Nav: "Labs" link after Hospitals (desktop + drawer). Homepage: Labs stat in StatsBar + 🧪 Diagnostic Labs directory card. Sitemap: /labs + /labs/[slug] both locales.
+- [OK] Seed: seedLabs — 5 NABL/typed labs across EKM/TVM/KKD/TSR/KTM, 10 tests each (CBC/FBS/lipid/thyroid/LFT/KFT/urine/HbA1c/VitD/CXR), ON CONFLICT DO NOTHING + NOT EXISTS guard on test_code. Runs via pnpm db:seed:demo.
+### Assumptions / decisions
+- [ASSUMPTION] "Open now" computed in JS from operating_hours (Asia/Kolkata) and applied post-query — fine at demo scale; move into SQL if lab volume grows large.
+- [ASSUMPTION] Labs list search matches lab name OR any of its test names (EXISTS subquery). Test-category filter = labs having >=1 test in that category.
+- [ASSUMPTION] LabCard shows phone as text (card is one <a>; nested anchor invalid) — tap-to-call lives on the profile page. Homepage labs stat is static "200+" like the other StatsBar figures.
+### Verified (local)
+- [OK] Build "Compiled successfully", 0 errors (only pre-existing <img> warnings). isLabOpenNow: all-day=true, null=null, narrow-window=false. seed-demo.js + labs.js `node --check` pass. All new files <400 lines.
+### Not done / pending
+- [PENDING DEPLOY] VPS: git pull + docker build + pnpm db:migrate (to 45) + pnpm db:seed:demo (loads 5 labs). Production action — not auto-run. Commands in docs/phases/P-A1.md.

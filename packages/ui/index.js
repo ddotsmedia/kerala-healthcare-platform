@@ -3,6 +3,8 @@
 // Directory (spec-named)
 export { default as DoctorCard } from './components/directory/DoctorCard.js';
 export { default as HospitalCard } from './components/directory/HospitalCard.js';
+export { default as LabCard } from './components/directory/LabCard.js';
+export { default as TestRow } from './components/directory/TestRow.js';
 export { default as SpecialtyFilter } from './components/directory/SpecialtyFilter.js';
 export { default as DistrictFilter } from './components/directory/DistrictFilter.js';
 export { default as ConsultationModeFilter } from './components/directory/ConsultationModeFilter.js';

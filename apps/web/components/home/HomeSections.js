@@ -93,8 +93,8 @@ export function StatsBar({ locale }) {
   const stats = [
     { n: '10,000+', ml: 'ഡോക്ടർമാർ', en: 'Doctors' },
     { n: '500+', ml: 'ആശുപത്രികൾ', en: 'Hospitals' },
-    { n: '14', ml: 'ജില്ലകൾ', en: 'Districts' },
-    { n: ml ? 'സൗജന്യം' : 'Free', ml: 'കൺസൾട്ടേഷൻ', en: 'Consultation' }
+    { n: '200+', ml: 'ലാബുകൾ', en: 'Labs' },
+    { n: '14', ml: 'ജില്ലകൾ', en: 'Districts' }
   ];
   return (
     <FullBleed className="bg-teal-50 py-8">

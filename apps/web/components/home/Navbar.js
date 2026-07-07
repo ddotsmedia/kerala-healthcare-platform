@@ -11,6 +11,7 @@ const BRAND = { ml: 'മലയാളി ഡോക്ടർ', en: 'MalayaliDoctor
 const LINKS = [
   { href: 'doctors', ml: 'ഡോക്ടർമാർ', en: 'Doctors' },
   { href: 'hospitals', ml: 'ആശുപത്രികൾ', en: 'Hospitals' },
+  { href: 'labs', ml: 'ലാബുകൾ', en: 'Labs' },
   { href: 'health', ml: 'ആരോഗ്യ വിവരം', en: 'Health Info' },
   { href: 'symptoms', ml: 'ലക്ഷണങ്ങൾ', en: 'Symptoms' },
   { href: 'jobs', ml: 'ജോലികൾ', en: 'Jobs' },

@@ -440,6 +440,55 @@ async function populateVectors(pool) {
   return { doctors: docs.rowCount, hospitals: hosps.rowCount };
 }
 
+// name_ml, name_en, slug, type, district_code, nabl, cert, home, home_fee, phone, report_hours, online
+const DEMO_LABS = [
+  ['തൈറോകെയർ ലാബ്', 'Thyrocare Lab', 'thyrocare-lab-ernakulam', 'pathology', 'EKM', true, 'NABL-MC-2451', true, 100, ['0484-2200100', '9847000100'], 12, true],
+  ['മെട്രോപോളിസ്', 'Metropolis Diagnostics', 'metropolis-diagnostics-thiruvananthapuram', 'multi-specialty', 'TVM', true, 'NABL-MC-2452', true, 150, ['0471-2300200'], 24, true],
+  ['SRL ഡയഗ്നോസ്റ്റിക്സ്', 'SRL Diagnostics', 'srl-diagnostics-kozhikode', 'pathology', 'KKD', true, 'NABL-MC-2453', false, null, ['0495-2400300'], 24, false],
+  ['അമല സ്കാൻ', 'Amala Scan Centre', 'amala-scan-centre-thrissur', 'radiology', 'TSR', false, null, false, null, ['0487-2500400'], 6, true],
+  ['ലൈഫ്‌ലൈൻ ലാബ്', 'Lifeline Lab', 'lifeline-lab-kottayam', 'imaging', 'KTM', true, 'NABL-MC-2455', true, 120, ['0481-2600500', '9847000500'], 18, false]
+];
+const LAB_HOURS = { mon: { open: '07:00', close: '20:00' }, tue: { open: '07:00', close: '20:00' }, wed: { open: '07:00', close: '20:00' }, thu: { open: '07:00', close: '20:00' }, fri: { open: '07:00', close: '20:00' }, sat: { open: '07:00', close: '18:00' }, sun: { open: '08:00', close: '13:00' } };
+// name_ml, name_en, code, category, price, sample, fasting, report_hours, home
+const LAB_TESTS = [
+  ['സമ്പൂർണ രക്തപരിശോധന', 'Complete Blood Count (CBC)', 'CBC', 'hematology', 300, 'blood', false, 12, true],
+  ['രക്തത്തിലെ പഞ്ചസാര (ഫാസ്റ്റിംഗ്)', 'Fasting Blood Sugar', 'FBS', 'biochemistry', 120, 'blood', true, 6, true],
+  ['ലിപിഡ് പ്രൊഫൈൽ', 'Lipid Profile', 'LIPID', 'biochemistry', 600, 'blood', true, 24, true],
+  ['തൈറോയ്ഡ് പ്രൊഫൈൽ', 'Thyroid Profile (T3 T4 TSH)', 'TFT', 'biochemistry', 550, 'blood', false, 24, true],
+  ['കരൾ പ്രവർത്തന പരിശോധന', 'Liver Function Test', 'LFT', 'biochemistry', 700, 'blood', true, 24, true],
+  ['വൃക്ക പ്രവർത്തന പരിശോധന', 'Kidney Function Test', 'KFT', 'biochemistry', 700, 'blood', true, 24, true],
+  ['മൂത്രപരിശോധന', 'Urine Routine', 'URINE', 'microbiology', 150, 'urine', false, 12, false],
+  ['HbA1c', 'HbA1c (Glycated Haemoglobin)', 'HBA1C', 'biochemistry', 450, 'blood', false, 24, true],
+  ['വിറ്റാമിൻ D', 'Vitamin D (25-OH)', 'VITD', 'biochemistry', 1200, 'blood', false, 48, true],
+  ['നെഞ്ച് എക്സ്-റേ', 'Chest X-Ray', 'CXR', 'radiology', 400, 'imaging', false, 2, false]
+];
+
+async function seedLabs(pool) {
+  for (let i = 0; i < DEMO_LABS.length; i++) {
+    const l = DEMO_LABS[i];
+    await pool.query(
+      `INSERT INTO diagnostic_labs
+         (name_ml,name_en,slug,type,verification_status,district_id,
+          is_nabl_accredited,nabl_cert_number,home_collection,home_collection_fee_inr,
+          phone,operating_hours,report_delivery_hours,online_reports,rating_avg,rating_count)
+       SELECT $1,$2,$3,$4,'verified',di.id,$5,$6,$7,$8,$9,$10::jsonb,$11,$12,$13,$14
+         FROM districts di WHERE di.code=$15
+       ON CONFLICT (slug) DO NOTHING`,
+      [l[0], l[1], l[2], l[3], l[5], l[6], l[7], l[8], l[9], JSON.stringify(LAB_HOURS), l[10], l[11],
+       (4.0 + i * 0.15).toFixed(2), 20 + i * 7, l[4]]
+    );
+    for (const trow of LAB_TESTS) {
+      await pool.query(
+        `INSERT INTO lab_tests
+           (lab_id,test_name_ml,test_name_en,test_code,category,price_inr,sample_type,fasting_required,report_hours,home_collection_available)
+         SELECT id,$2,$3,$4,$5,$6,$7,$8,$9,$10 FROM diagnostic_labs WHERE slug=$1
+           AND NOT EXISTS (SELECT 1 FROM lab_tests t WHERE t.lab_id = diagnostic_labs.id AND t.test_code = $4)`,
+        [l[2], trow[0], trow[1], trow[2], trow[3], trow[4] + i * 20, trow[5], trow[6], trow[7], l[7] && trow[8]]
+      );
+    }
+  }
+}
+
 async function main() {
   const pool = getPool();
   await runMigrations(pool);
@@ -447,6 +496,7 @@ async function main() {
   await seedHospitals(pool);
   await seedDepartments(pool);
   await seedFacilities(pool);
+  await seedLabs(pool);
   await seedPatientAndAvailability(pool);
   await seedAuthUsers(pool);
   await seedContent(pool);
@@ -455,7 +505,7 @@ async function main() {
   await seedReviews(pool);
   const counts = await populateVectors(pool);
   const rc = (await pool.query(`SELECT count(*)::int AS n FROM reviews WHERE deleted_at IS NULL`)).rows[0].n;
-  console.log(`Demo seed complete. Doctors: ${counts.doctors}, Hospitals: ${counts.hospitals}, Departments: ${DEMO_HOSPITALS.length * DEPTS.length}, Facilities: ${DEMO_FACILITIES.length}, Reviews: ${rc}.`);
+  console.log(`Demo seed complete. Doctors: ${counts.doctors}, Hospitals: ${counts.hospitals}, Departments: ${DEMO_HOSPITALS.length * DEPTS.length}, Facilities: ${DEMO_FACILITIES.length}, Labs: ${DEMO_LABS.length} (${LAB_TESTS.length} tests each), Reviews: ${rc}.`);
 }
 
 main()

@@ -105,6 +105,20 @@ export default async function HomePage(props) {
         </FullBleed>
       )}
 
+      {/* Directory — diagnostic labs */}
+      <FullBleed className="bg-white py-14">
+        <SectionHeading>{ml ? 'ഡയഗ്നോസ്റ്റിക് ലാബുകൾ' : 'Diagnostic Labs'}</SectionHeading>
+        <Link href={`/${locale}/labs`}
+          className="mx-auto flex max-w-2xl items-center gap-4 rounded-2xl border border-gray-200 bg-gradient-to-br from-teal-50 to-white p-6 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md">
+          <span className="text-4xl">🧪</span>
+          <span className="flex-1">
+            <span className="block text-base font-bold text-gray-900">{ml ? 'ലാബുകൾ & ടെസ്റ്റുകൾ കണ്ടെത്തുക' : 'Find labs & tests'}</span>
+            <span className="block text-sm text-gray-500">{ml ? 'NABL ലാബുകൾ, രക്തപരിശോധന, ഹോം കളക്ഷൻ' : 'NABL labs, blood tests, home collection'}</span>
+          </span>
+          <span className="text-brand">→</span>
+        </Link>
+      </FullBleed>
+
       <HowItWorks locale={locale} />
 
       {/* Health Centres */}
