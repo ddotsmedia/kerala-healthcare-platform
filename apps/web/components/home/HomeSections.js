@@ -94,11 +94,12 @@ export function StatsBar({ locale }) {
     { n: '10,000+', ml: 'ഡോക്ടർമാർ', en: 'Doctors' },
     { n: '500+', ml: 'ആശുപത്രികൾ', en: 'Hospitals' },
     { n: '200+', ml: 'ലാബുകൾ', en: 'Labs' },
+    { n: '1,000+', ml: 'ഫാർമസികൾ', en: 'Pharmacies' },
     { n: '14', ml: 'ജില്ലകൾ', en: 'Districts' }
   ];
   return (
     <FullBleed className="bg-teal-50 py-8">
-      <div className="grid grid-cols-2 gap-4 text-center sm:grid-cols-4">
+      <div className="grid grid-cols-2 gap-4 text-center sm:grid-cols-5">
         {stats.map((s) => (
           <div key={s.en}>
             <div className="text-2xl font-extrabold text-brand sm:text-3xl">{s.n}</div>

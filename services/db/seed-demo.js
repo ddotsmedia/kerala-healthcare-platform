@@ -489,6 +489,32 @@ async function seedLabs(pool) {
   }
 }
 
+// name_ml, name_en, slug, type, district_code, is_24hr, delivery, radius, generic, cold, phone
+const DEMO_PHARMACIES = [
+  ['അപ്പോളോ ഫാർമസി', 'Apollo Pharmacy', 'apollo-pharmacy-ernakulam', 'retail', 'EKM', true, true, 5, false, true, ['0484-2711000', '9847100100']],
+  ['ജനൗഷധി കേന്ദ്രം', 'Jan Aushadhi Kendra', 'jan-aushadhi-kendra-thiruvananthapuram', 'generic', 'TVM', false, false, null, true, false, ['0471-2711200']],
+  ['മെഡ്‌പ്ലസ്', 'MedPlus Pharmacy', 'medplus-pharmacy-kozhikode', 'retail', 'KKD', true, true, 8, true, true, ['0495-2711300']],
+  ['അമല ഫാർമസി', 'Amala Hospital Pharmacy', 'amala-hospital-pharmacy-thrissur', 'hospital', 'TSR', true, false, null, false, true, ['0487-2711400']],
+  ['നെറ്റ്‌മെഡ്‌സ്', 'Netmeds Store', 'netmeds-store-kottayam', 'online', 'KTM', false, true, 15, true, false, ['0481-2711500', '9847100500']]
+];
+const PHARM_HOURS = { mon: { open: '08:00', close: '22:00' }, tue: { open: '08:00', close: '22:00' }, wed: { open: '08:00', close: '22:00' }, thu: { open: '08:00', close: '22:00' }, fri: { open: '08:00', close: '22:00' }, sat: { open: '08:00', close: '22:00' }, sun: { open: '09:00', close: '21:00' } };
+
+async function seedPharmacies(pool) {
+  for (let i = 0; i < DEMO_PHARMACIES.length; i++) {
+    const p = DEMO_PHARMACIES[i];
+    await pool.query(
+      `INSERT INTO pharmacies
+         (name_ml,name_en,slug,type,verification_status,district_id,is_24hr,has_delivery,
+          delivery_radius_km,sells_generic,has_cold_storage,phone,operating_hours,rating_avg,rating_count)
+       SELECT $1,$2,$3,$4,'verified',di.id,$5,$6,$7,$8,$9,$10,$11::jsonb,$12,$13
+         FROM districts di WHERE di.code=$14
+       ON CONFLICT (slug) DO NOTHING`,
+      [p[0], p[1], p[2], p[3], p[5], p[6], p[7], p[8], p[9], p[10],
+       JSON.stringify(p[5] ? {} : PHARM_HOURS), (4.1 + i * 0.12).toFixed(2), 30 + i * 9, p[4]]
+    );
+  }
+}
+
 async function main() {
   const pool = getPool();
   await runMigrations(pool);
@@ -497,6 +523,7 @@ async function main() {
   await seedDepartments(pool);
   await seedFacilities(pool);
   await seedLabs(pool);
+  await seedPharmacies(pool);
   await seedPatientAndAvailability(pool);
   await seedAuthUsers(pool);
   await seedContent(pool);
@@ -505,7 +532,7 @@ async function main() {
   await seedReviews(pool);
   const counts = await populateVectors(pool);
   const rc = (await pool.query(`SELECT count(*)::int AS n FROM reviews WHERE deleted_at IS NULL`)).rows[0].n;
-  console.log(`Demo seed complete. Doctors: ${counts.doctors}, Hospitals: ${counts.hospitals}, Departments: ${DEMO_HOSPITALS.length * DEPTS.length}, Facilities: ${DEMO_FACILITIES.length}, Labs: ${DEMO_LABS.length} (${LAB_TESTS.length} tests each), Reviews: ${rc}.`);
+  console.log(`Demo seed complete. Doctors: ${counts.doctors}, Hospitals: ${counts.hospitals}, Departments: ${DEMO_HOSPITALS.length * DEPTS.length}, Facilities: ${DEMO_FACILITIES.length}, Labs: ${DEMO_LABS.length} (${LAB_TESTS.length} tests each), Pharmacies: ${DEMO_PHARMACIES.length}, Reviews: ${rc}.`);
 }
 
 main()

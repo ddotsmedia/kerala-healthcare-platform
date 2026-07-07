@@ -471,3 +471,21 @@ Quick status of every `[NEEDS DECISION]` ever logged (this section is additive; 
 - [OK] Build "Compiled successfully", 0 errors (only pre-existing <img> warnings). isLabOpenNow: all-day=true, null=null, narrow-window=false. seed-demo.js + labs.js `node --check` pass. All new files <400 lines.
 ### Not done / pending
 - [PENDING DEPLOY] VPS: git pull + docker build + pnpm db:migrate (to 45) + pnpm db:seed:demo (loads 5 labs). Production action — not auto-run. Commands in docs/phases/P-A1.md.
+
+## Session: 2026-07-07 — P-A2 Pharmacy Directory
+### Feature
+- [OK] Migration 0046 pharmacies (spec 0041; sequential). New provider type. Migrations 45 -> 46 on deploy.
+- [OK] lib/pharmacies.js: searchPharmacies (24hr/delivery/generic/district/term/open-now), getPharmacyBySlug, nearbyPharmacies, allPharmacySlugs, isPharmacyOpenNow (24hr => always open; else reuses labs isLabOpenNow Asia/Kolkata).
+- [OK] UI: packages/ui PharmacyCard (exported). schema.js pharmacySchema (Pharmacy JSON-LD; openingHours 24x7 when is_24hr).
+- [OK] Pages: /[locale]/pharmacies (search + 24hr/delivery/generic/open-now/district filters + disclaimer), /[locale]/pharmacies/[slug] (SSR profile: badges, tap-to-call, services, hours (24h aware), nearby 3, Pharmacy+MedicalWebPage+BreadcrumbList JSON-LD, breadcrumb, self-medication disclaimer + 112/108).
+- [OK] API: GET /api/pharmacies, GET /api/pharmacies/[slug].
+- [OK] Nav "Pharmacies" link (after Labs). Homepage StatsBar += Pharmacies (grid sm:grid-cols-5). Sitemap: /pharmacies + /pharmacies/[slug] both locales.
+- [OK] Seed: 5 pharmacies (Apollo/JanAushadhi/MedPlus/Amala/Netmeds) across EKM/TVM/KKD/TSR/KTM, mix of 24hr/delivery/generic/cold-storage, ON CONFLICT DO NOTHING. Runs via pnpm db:seed:demo.
+### Assumptions / decisions
+- [ASSUMPTION] Disclaimer text is verbatim from spec: "Always consult a doctor before taking any medication. Never self-medicate with prescription drugs." on both list + profile.
+- [ASSUMPTION] is_24hr pharmacies store operating_hours = {} and short-circuit open-now to true; homepage pharmacy stat static "1,000+".
+- [ASSUMPTION] isPharmacyOpenNow imports isLabOpenNow from labs.js (generic Asia/Kolkata hours check) to avoid duplicating the helper.
+### Verified (local)
+- [OK] Build "Compiled successfully", 0 errors. seed-demo.js + pharmacies.js node --check pass. All new files <400 lines.
+### Not done / pending
+- [PENDING DEPLOY] VPS: git pull + docker build + pnpm db:migrate (to 46) + pnpm db:seed:demo (loads 5 pharmacies). Production action — not auto-run. Commands in docs/phases/P-A2.md.

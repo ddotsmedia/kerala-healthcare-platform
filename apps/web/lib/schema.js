@@ -77,6 +77,33 @@ function labSchema(lab, locale) {
   };
 }
 
+/** Pharmacy structured data for a pharmacy profile. */
+function pharmacySchema(ph, locale) {
+  const region = ph.district_en || ph.district_ml || 'Kerala';
+  const phones = Array.isArray(ph.phone) ? ph.phone : (ph.phone ? [ph.phone] : []);
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'Pharmacy',
+    name: ph.name_en || ph.name_ml,
+    url: `${SITE}/${locale}/pharmacies/${ph.slug}`,
+    telephone: phones[0] || undefined,
+    email: ph.email || undefined,
+    address: {
+      '@type': 'PostalAddress',
+      streetAddress: ph.address_en || ph.address_ml || undefined,
+      addressRegion: region, addressCountry: 'IN'
+    },
+    areaServed: region,
+    ...(ph.lat != null && ph.lng != null
+      ? { geo: { '@type': 'GeoCoordinates', latitude: ph.lat, longitude: ph.lng } }
+      : {}),
+    ...(ph.is_24hr ? { openingHours: 'Mo-Su 00:00-23:59' } : {}),
+    ...(ph.rating_count > 0
+      ? { aggregateRating: { '@type': 'AggregateRating', ratingValue: Number(ph.rating_avg), reviewCount: ph.rating_count } }
+      : {})
+  };
+}
+
 /** MedicalWebPage wrapper — every health-context page. */
 function medicalWebPageSchema(title, description, url) {
   return {
@@ -108,4 +135,4 @@ function jobPostingSchema(job, locale) {
   };
 }
 
-export { physicianSchema, hospitalSchema, labSchema, medicalWebPageSchema, jobPostingSchema, SITE };
+export { physicianSchema, hospitalSchema, labSchema, pharmacySchema, medicalWebPageSchema, jobPostingSchema, SITE };
