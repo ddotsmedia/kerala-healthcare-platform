@@ -418,3 +418,21 @@ Quick status of every `[NEEDS DECISION]` ever logged (this section is additive; 
 - [OK] alerts.js runtime import (incl. @khp/notifications/templates subpath) OK. filterMatchesJob hit/miss + salary gate correct. HMAC unsubscribe verify true / reject false. Template renders ml+en with apply + unsubscribe + salary.
 ### Not done / pending
 - [PENDING DEPLOY] VPS deploy (git pull + docker compose build + pnpm db:migrate to 40) is a production action — commands in docs/phases/P-B2.md deploy block. Run on 194.164.151.202 after review.
+
+## Session: 2026-07-07 — P-B3 Resume Builder
+### Feature
+- [OK] Migration 0041_resume_profiles (spec said 0057; sequential): resume_profiles (personal/experience/education/certifications/publications/languages/refs as jsonb arrays, skills text[], template_id CHECK kerala_classic|modern_minimal|gulf_ready, ai_enhanced_summary, is_public, last_exported_at). Migrations 40 -> 41 on deploy.
+- [OK] AI: @khp/ai-assistant.enhanceResumeSummary(resume, locale) — Haiku (claude-haiku-20241022), hardcoded CV-writer prompt, sanitised input, no invented creds/clinical claims, per-locale. Logged via logInteraction (now exported).
+- [OK] Render: apps/web/lib/resumeRender.js — pure renderResumeBody/renderResumeDoc + resumeCSS for 3 CSS-only print templates; all user data HTML-escaped; export doc has @page + auto-print script.
+- [OK] API: GET/POST /api/resume; PATCH /api/resume/[id] (autosave); POST /api/resume/[id]/enhance (rate limit 10/user/day via @khp/ratelimit, returns before/after, no auto-save); GET /api/resume/[id]/export (print-ready HTML, ?template/&locale/&print=1).
+- [OK] UI: /[locale]/candidate/resume — ResumeWizard (5 steps, split preview desktop / tab toggle mobile, template picker, ✨ AI enhance modal with before/after accept-or-edit, Download PDF -> browser print, autosave 30s + on Next/Save). "Build Resume" link added to candidate dashboard.
+### Assumptions / decisions
+- [ASSUMPTION] Section arrays stored as jsonb holding a JSON array (spec said jsonb[]) — cleaner node-pg binding, equivalent behaviour.
+- [ASSUMPTION] `references` column renamed `refs` (SQL reserved keyword). App/render use `refs` throughout.
+- [ASSUMPTION] enhance returns a suggestion only (before/after); user accepts -> PATCH persists ai_enhanced_summary. AI summary generated for the active locale per call (not both ml+en at once).
+- [ASSUMPTION] GET /api/resume returns the user's most recent resume (single). Rate-limit is in-process (@khp/ratelimit) — resets on restart; swap to Redis with the DB store later, same as chat limit.
+- [ASSUMPTION] Download PDF opens /export?print=1 in a new tab which auto-triggers the browser print dialog (print CSS strips everything but the resume) — no @react-pdf, per spec.
+### Verified (local)
+- [OK] Build: "Compiled successfully", 0 errors (img/tailwind warnings pre-existing). renderResumeBody/Doc correct for all 3 templates, XSS-escaped (<script> neutralised), print doc has @page + window.print. enhanceResumeSummary returns null gracefully without ANTHROPIC_API_KEY. MODEL = claude-haiku-20241022.
+### Not done / pending
+- [PENDING DEPLOY] VPS deploy (git pull + docker build + pnpm db:migrate to 41). Production action — not auto-run. Commands in docs/phases/P-B3.md.

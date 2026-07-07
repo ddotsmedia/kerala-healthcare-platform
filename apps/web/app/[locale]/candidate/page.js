@@ -52,6 +52,10 @@ export default async function CandidateHome(props) {
         <Link href={`/${locale}/candidate/applications`} className="rounded-xl border border-gray-200 bg-white p-4 text-center"><p className="text-2xl font-bold text-brand">{active}</p><p className="text-xs text-gray-500">{t(locale, 'my_applications')}</p></Link>
         <Link href={`/${locale}/candidate/saved`} className="rounded-xl border border-gray-200 bg-white p-4 text-center"><p className="text-2xl font-bold text-brand">{saved.length}</p><p className="text-xs text-gray-500">{t(locale, 'saved_jobs')}</p></Link>
       </div>
+      <Link href={`/${locale}/candidate/resume`} className="flex items-center justify-between rounded-xl border border-brand bg-teal-50 px-4 py-3">
+        <span className="text-sm font-semibold text-brand">📄 {locale === 'ml' ? 'റെസ്യൂം തയ്യാറാക്കുക' : 'Build Resume'}</span>
+        <span className="text-brand">→</span>
+      </Link>
       {notifs.length > 0 && (
         <section><h2 className="mb-2 text-sm font-semibold text-gray-700">Notifications</h2>
           <ul className="space-y-1 text-sm">{notifs.slice(0, 5).map((n) => <li key={n.id} className="rounded-lg bg-gray-50 px-3 py-2 text-gray-700">{n.body}</li>)}</ul>
