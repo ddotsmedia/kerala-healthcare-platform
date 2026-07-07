@@ -51,7 +51,10 @@ export default async function EmployerHome(props) {
         <div className="rounded-xl border border-gray-200 bg-white p-4 text-center"><p className="text-2xl font-bold text-brand">{active}</p><p className="text-xs text-gray-500">Active listings</p></div>
         <div className="rounded-xl border border-gray-200 bg-white p-4 text-center"><p className="text-2xl font-bold text-brand">{apps}</p><p className="text-xs text-gray-500">{t(locale, 'applications')}</p></div>
       </div>
-      <Link href={`/${locale}/employer/listings`} className="inline-block text-sm text-brand underline">Manage listings →</Link>
+      <div className="flex flex-wrap gap-4">
+        <Link href={`/${locale}/employer/listings`} className="text-sm text-brand underline">Manage listings →</Link>
+        <Link href={`/${locale}/employer/candidates`} className="text-sm text-brand underline">{locale === 'ml' ? 'ഉദ്യോഗാർത്ഥികളെ തിരയുക' : 'Search candidates'} →</Link>
+      </div>
     </div>
   );
 }

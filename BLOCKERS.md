@@ -436,3 +436,20 @@ Quick status of every `[NEEDS DECISION]` ever logged (this section is additive; 
 - [OK] Build: "Compiled successfully", 0 errors (img/tailwind warnings pre-existing). renderResumeBody/Doc correct for all 3 templates, XSS-escaped (<script> neutralised), print doc has @page + window.print. enhanceResumeSummary returns null gracefully without ANTHROPIC_API_KEY. MODEL = claude-haiku-20241022.
 ### Not done / pending
 - [PENDING DEPLOY] VPS deploy (git pull + docker build + pnpm db:migrate to 41). Production action — not auto-run. Commands in docs/phases/P-B3.md.
+
+## Session: 2026-07-07 — P-B4 Candidate Search for Recruiters
+### Feature
+- [OK] Migration 0042 (spec 0058): candidate_profiles += is_searchable, current_location, preferred_districts[], preferred_job_types[], expected_salary_min, notice_period_days, profile_views, last_active_at (+headline/summary IF NOT EXISTS; already from 0027). Migration 0043 (spec 0059): recruiter_contact_requests (unique employer+candidate, status pending|accepted|rejected) + candidate_search_log (audit). Migrations 41 -> 43 on deploy.
+- [OK] services/search/candidates.js buildCandidateQuery — gates is_searchable + is_open_to_work, filters role/specialty/district/exp/salary/job_type, returns NO contact fields. Exported from @khp/search.
+- [OK] lib/recruiter.js: searchCandidates (audit-logged), getCandidateForEmployer (no contact unless accepted; +profile_views), requestContact (notifies candidate in-app + SMS), listContactRequests, respondContactRequest (accept notifies employer).
+- [OK] API (employer auth): GET /api/employer/candidates, GET /api/employer/candidates/[id], POST .../request-contact. (candidate): GET /api/candidate/contact-requests, PATCH /api/candidate/contact-requests/[id] (accept|reject).
+- [OK] Pages: employer/candidates (search+filters+CandidateCard, privacy banner), employer/candidates/[id] (full profile, contact gated + Request Contact), candidate/contact-requests (accept/reject). Nav: "Search candidates" on employer dashboard, "Contact Requests" on candidate dashboard.
+### Assumptions / decisions
+- [ASSUMPTION] Contact reveal on accept = candidate email (DEMO_NOTIFY_TO override — users.email_enc not decryptable here) + linkedin_url + resume_url. Wire real email decryption with KMS helper later.
+- [ASSUMPTION] Candidate-search audit stored in new candidate_search_log (employer_id, filters jsonb, result_count) — spec required logging but gave no table; added additively in 0043.
+- [ASSUMPTION] Search excludes is_open_to_work=false as well as is_searchable=false (a private/closed profile must not surface). One contact request per employer+candidate (unique constraint; re-request is a no-op duplicate).
+- [ASSUMPTION] "Skills" on the profile view reuse candidate_experience.role rows (no dedicated skills table on candidate_profiles).
+### Verified (local)
+- [OK] Build "Compiled successfully", 0 errors. buildCandidateQuery gates is_searchable + is_open_to_work, leaks no contact columns, param binding correct (7 params for full filter, 2 for empty).
+### Not done / pending
+- [PENDING DEPLOY] VPS deploy (git pull + docker build + pnpm db:migrate to 43). Production action — not auto-run. Commands in docs/phases/P-B4.md.

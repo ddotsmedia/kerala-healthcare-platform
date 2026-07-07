@@ -56,6 +56,10 @@ export default async function CandidateHome(props) {
         <span className="text-sm font-semibold text-brand">📄 {locale === 'ml' ? 'റെസ്യൂം തയ്യാറാക്കുക' : 'Build Resume'}</span>
         <span className="text-brand">→</span>
       </Link>
+      <Link href={`/${locale}/candidate/contact-requests`} className="flex items-center justify-between rounded-xl border border-gray-200 bg-white px-4 py-3">
+        <span className="text-sm font-semibold text-gray-800">📨 {locale === 'ml' ? 'കോൺടാക്റ്റ് അഭ്യർത്ഥനകൾ' : 'Contact Requests'}</span>
+        <span className="text-brand">→</span>
+      </Link>
       {notifs.length > 0 && (
         <section><h2 className="mb-2 text-sm font-semibold text-gray-700">Notifications</h2>
           <ul className="space-y-1 text-sm">{notifs.slice(0, 5).map((n) => <li key={n.id} className="rounded-lg bg-gray-50 px-3 py-2 text-gray-700">{n.body}</li>)}</ul>
