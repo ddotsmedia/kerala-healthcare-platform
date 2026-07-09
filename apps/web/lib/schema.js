@@ -149,6 +149,35 @@ function ambulanceSchema(a, locale) {
   };
 }
 
+/** Dentist structured data for a dental clinic profile. */
+function dentalSchema(c, locale) {
+  const region = c.district_en || c.district_ml || 'Kerala';
+  const phones = Array.isArray(c.phone) ? c.phone : (c.phone ? [c.phone] : []);
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'Dentist',
+    name: c.name_en || c.name_ml,
+    url: `${SITE}/${locale}/dental/${c.slug}`,
+    telephone: phones[0] || undefined,
+    email: c.email || undefined,
+    address: {
+      '@type': 'PostalAddress',
+      streetAddress: c.address_en || c.address_ml || undefined,
+      addressRegion: region, addressCountry: 'IN'
+    },
+    areaServed: region,
+    ...(c.lat != null && c.lng != null
+      ? { geo: { '@type': 'GeoCoordinates', latitude: c.lat, longitude: c.lng } }
+      : {}),
+    ...(Array.isArray(c.treatments_offered) && c.treatments_offered.length
+      ? { availableService: c.treatments_offered.map((t) => ({ '@type': 'MedicalProcedure', name: t.replace('_', ' ') })) }
+      : {}),
+    ...(c.rating_count > 0
+      ? { aggregateRating: { '@type': 'AggregateRating', ratingValue: Number(c.rating_avg), reviewCount: c.rating_count } }
+      : {})
+  };
+}
+
 /** MedicalWebPage wrapper — every health-context page. */
 function medicalWebPageSchema(title, description, url) {
   return {
@@ -180,4 +209,4 @@ function jobPostingSchema(job, locale) {
   };
 }
 
-export { physicianSchema, hospitalSchema, labSchema, pharmacySchema, bloodBankSchema, ambulanceSchema, medicalWebPageSchema, jobPostingSchema, SITE };
+export { physicianSchema, hospitalSchema, labSchema, pharmacySchema, bloodBankSchema, ambulanceSchema, dentalSchema, medicalWebPageSchema, jobPostingSchema, SITE };

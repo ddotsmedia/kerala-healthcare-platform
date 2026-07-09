@@ -8,6 +8,7 @@ export { default as TestRow } from './components/directory/TestRow.js';
 export { default as PharmacyCard } from './components/directory/PharmacyCard.js';
 export { default as BloodBankCard, BloodTypeBadges } from './components/directory/BloodBankCard.js';
 export { default as AmbulanceCard, AmbulanceTypeBadges } from './components/directory/AmbulanceCard.js';
+export { default as DentalCard } from './components/directory/DentalCard.js';
 export { default as SpecialtyFilter } from './components/directory/SpecialtyFilter.js';
 export { default as DistrictFilter } from './components/directory/DistrictFilter.js';
 export { default as ConsultationModeFilter } from './components/directory/ConsultationModeFilter.js';

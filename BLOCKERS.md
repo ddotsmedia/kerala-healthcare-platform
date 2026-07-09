@@ -525,3 +525,21 @@ Quick status of every `[NEEDS DECISION]` ever logged (this section is additive; 
 - [OK] Build "Compiled successfully", 0 errors. seed-demo.js + ambulance.js node --check pass. Files <400 lines.
 ### Not done / pending
 - [PENDING DEPLOY] VPS: git pull + docker build + pnpm db:migrate (to 48) + pnpm db:seed:demo (loads 5 providers). Production action — not auto-run. Commands in docs/phases/P-A4.md.
+
+## Session: 2026-07-09 — P-A6 Dental Clinics Directory
+### Note
+- [NOTE] User skipped P-A5 (jumped P-A4 -> P-A6). Built P-A6 as requested; P-A5 remains unbuilt.
+### Feature
+- [OK] Migration 0049 dental_clinics (spec 0045; sequential). New provider type. Migrations 48 -> 49 on deploy.
+- [OK] lib/dental.js: searchDental (district/treatment via @> array/implants/ortho/pediatric/term, paginated), getDentalBySlug, nearbyDental, allDentalSlugs.
+- [OK] UI: packages/ui DentalCard (exported). schema.js dentalSchema (Dentist JSON-LD w/ availableService = treatments).
+- [OK] Pages: /[locale]/dental (search + treatment/district/implants/ortho/pediatric filters + by-district SEO links + disclaimer), /[locale]/dental/[slug] (treatments grid, dentists list from doctors specialty=dentistry same district, nearby, Dentist+MedicalWebPage+BreadcrumbList JSON-LD, disclaimer), /[locale]/dental/district/[district] (SEO "Dentists in [District]" — clinics + dentists).
+- [OK] API: GET /api/dental, GET /api/dental/[slug]. Nav "Dental" link. Sitemap: /dental + /dental/[slug] + /dental/district/[district] (per district) both locales.
+- [OK] Seed: 5 clinics across EKM/TVM/KKD/TSR/KTM, varied treatments/implants/ortho/pediatric, ON CONFLICT DO NOTHING.
+### Assumptions / decisions
+- [ASSUMPTION] District SEO route is /dental/district/[district] NOT /dental/[district] (spec) — Next.js forbids two different dynamic segment names ([slug] vs [district]) at the same path level. district/ prefix avoids the collision.
+- [ASSUMPTION] Dentists on the profile/district pages come from doctors where specialty slug='dentistry' + matching district (searchDoctors + getSpecialtyBySlug). Treatment filter uses array containment (treatments_offered @> ARRAY[t]) + GIN index. Added Dental to navbar (spec omitted nav) for discoverability.
+### Verified (local)
+- [OK] Build "Compiled successfully", 0 errors, no dynamic-route conflict. seed-demo.js + dental.js node --check pass. Files <400 lines.
+### Not done / pending
+- [PENDING DEPLOY] VPS: git pull + docker build + pnpm db:migrate (to 49) + pnpm db:seed:demo (loads 5 clinics). Production action — not auto-run. Commands in docs/phases/P-A6.md.

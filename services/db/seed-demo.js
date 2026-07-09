@@ -564,6 +564,32 @@ async function seedAmbulance(pool) {
   }
 }
 
+// name_ml, name_en, slug, district_code, reg, treatments[], xray, rct, implants, ortho, pediatric, steril, fee
+const DEMO_DENTAL = [
+  ['സ്മൈൽ കെയർ ഡെന്റൽ', 'Smile Care Dental Clinic', 'smile-care-dental-ernakulam', 'EKM', 'KDC-EKM-001', ['cleaning', 'filling', 'root_canal', 'implant', 'whitening', 'extraction'], true, true, true, false, false, 'Class B autoclave', 300],
+  ['ഡെന്റൽ വേൾഡ്', 'Dental World', 'dental-world-thiruvananthapuram', 'TVM', 'KDC-TVM-002', ['cleaning', 'filling', 'root_canal', 'braces', 'orthodontics', 'extraction'], true, true, false, true, false, 'Class B autoclave', 250],
+  ['പേൾ ഡെന്റൽ കെയർ', 'Pearl Dental Care', 'pearl-dental-care-kozhikode', 'KKD', 'KDC-KKD-003', ['cleaning', 'filling', 'whitening', 'pediatric', 'extraction'], true, false, false, false, true, 'Class N autoclave', 200],
+  ['ഓർത്തോ ഡെന്റൽ സ്റ്റുഡിയോ', 'Ortho Dental Studio', 'ortho-dental-studio-thrissur', 'TSR', 'KDC-TSR-004', ['cleaning', 'braces', 'orthodontics', 'implant', 'root_canal'], true, true, true, true, false, 'Class B autoclave', 400],
+  ['കിഡ്‌സ് & ഫാമിലി ഡെന്റൽ', 'Kids & Family Dental', 'kids-family-dental-kottayam', 'KTM', 'KDC-KTM-005', ['cleaning', 'filling', 'pediatric', 'extraction', 'whitening'], true, false, false, false, true, 'Class N autoclave', 220]
+];
+
+async function seedDental(pool) {
+  for (let i = 0; i < DEMO_DENTAL.length; i++) {
+    const c = DEMO_DENTAL[i];
+    await pool.query(
+      `INSERT INTO dental_clinics
+         (name_ml,name_en,slug,district_id,registration_number,treatments_offered,
+          has_digital_xray,has_rct,has_implants,has_orthodontics,has_pediatric_dental,
+          sterilisation_standard,consultation_fee_inr,verification_status,rating_avg,rating_count)
+       SELECT $1,$2,$3,di.id,$4,$5,$6,$7,$8,$9,$10,$11,$12,'verified',$13,$14
+         FROM districts di WHERE di.code=$15
+       ON CONFLICT (slug) DO NOTHING`,
+      [c[0], c[1], c[2], c[4], c[5], c[6], c[7], c[8], c[9], c[10], c[11], c[12],
+       (4.2 + i * 0.1).toFixed(2), 25 + i * 8, c[3]]
+    );
+  }
+}
+
 async function main() {
   const pool = getPool();
   await runMigrations(pool);
@@ -575,6 +601,7 @@ async function main() {
   await seedPharmacies(pool);
   await seedBloodBanks(pool);
   await seedAmbulance(pool);
+  await seedDental(pool);
   await seedPatientAndAvailability(pool);
   await seedAuthUsers(pool);
   await seedContent(pool);
@@ -583,7 +610,7 @@ async function main() {
   await seedReviews(pool);
   const counts = await populateVectors(pool);
   const rc = (await pool.query(`SELECT count(*)::int AS n FROM reviews WHERE deleted_at IS NULL`)).rows[0].n;
-  console.log(`Demo seed complete. Doctors: ${counts.doctors}, Hospitals: ${counts.hospitals}, Departments: ${DEMO_HOSPITALS.length * DEPTS.length}, Facilities: ${DEMO_FACILITIES.length}, Labs: ${DEMO_LABS.length} (${LAB_TESTS.length} tests each), Pharmacies: ${DEMO_PHARMACIES.length}, BloodBanks: ${DEMO_BLOOD_BANKS.length}, Ambulance: ${DEMO_AMBULANCE.length}, Reviews: ${rc}.`);
+  console.log(`Demo seed complete. Doctors: ${counts.doctors}, Hospitals: ${counts.hospitals}, Departments: ${DEMO_HOSPITALS.length * DEPTS.length}, Facilities: ${DEMO_FACILITIES.length}, Labs: ${DEMO_LABS.length} (${LAB_TESTS.length} tests each), Pharmacies: ${DEMO_PHARMACIES.length}, BloodBanks: ${DEMO_BLOOD_BANKS.length}, Ambulance: ${DEMO_AMBULANCE.length}, Dental: ${DEMO_DENTAL.length}, Reviews: ${rc}.`);
 }
 
 main()
