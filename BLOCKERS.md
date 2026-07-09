@@ -489,3 +489,22 @@ Quick status of every `[NEEDS DECISION]` ever logged (this section is additive; 
 - [OK] Build "Compiled successfully", 0 errors. seed-demo.js + pharmacies.js node --check pass. All new files <400 lines.
 ### Not done / pending
 - [PENDING DEPLOY] VPS: git pull + docker build + pnpm db:migrate (to 46) + pnpm db:seed:demo (loads 5 pharmacies). Production action — not auto-run. Commands in docs/phases/P-A2.md.
+
+## Session: 2026-07-09 — P-A3 Blood Banks Directory
+### Note
+- [NOTE] User re-sent "execute P-A2" but P-A2 (pharmacies, 6bb9c70) was already complete + pushed. Proceeded to next-in-track P-A3 as best default (idempotent re-run of P-A2 = no new work).
+### Feature
+- [OK] Migration 0047 blood_banks (spec 0042; sequential). New provider type, emergency-oriented. Migrations 46 -> 47 on deploy.
+- [OK] lib/bloodBanks.js: searchBloodBanks (district/blood_type via @> array/24hr/term; NO pagination — returns ALL, emergency use), getBloodBankBySlug (+hospital join), nearbyBloodBanks, allBloodBankSlugs, open-now via labs isLabOpenNow (24hr => open).
+- [OK] UI: packages/ui BloodBankCard + BloodTypeBadges (exported). schema.js bloodBankSchema (MedicalOrganization JSON-LD).
+- [OK] Pages: /[locale]/blood-banks (red emergency hero always visible + 108/112 tap-to-call, ALL results no pagination, filters district/blood-type/24hr, no-JS GET form, BloodBankCard w/ large call button), /[locale]/blood-banks/[slug] (Call Now primary CTA w/ emergency_phone, 8-type availability grid, facilities, hospital link, directions, 3x JSON-LD, disclaimer).
+- [OK] API: GET /api/blood-banks (all matches), GET /api/blood-banks/[slug].
+- [OK] Nav "Blood Banks" link. Emergency page: "🩸 Find Blood Bank →" CTA beside Find-hospital. Sitemap: /blood-banks + /blood-banks/[slug] both locales.
+- [OK] Seed: 5 blood banks (Lakeshore/MedTrust/Govt-KKD/Amala/Caritas) linked to seeded hospitals, mix 24hr + blood-type sets + apheresis/component, ON CONFLICT DO NOTHING. Runs via pnpm db:seed:demo.
+### Assumptions / decisions
+- [ASSUMPTION] Blood-type filter uses array containment (blood_types_available @> ARRAY[type]) with a GIN index. Card/profile "Call" prefers emergency_phone then first phone.
+- [ASSUMPTION] Blood Banks added to main navbar (after Pharmacies) in addition to the emergency-page CTA — spec said "emergency section"; nav improves discoverability.
+### Verified (local)
+- [OK] Build "Compiled successfully", 0 errors. seed-demo.js + bloodBanks.js node --check pass. Files <400 lines.
+### Not done / pending
+- [PENDING DEPLOY] VPS: git pull + docker build + pnpm db:migrate (to 47) + pnpm db:seed:demo (loads 5 blood banks). Production action — not auto-run. Commands in docs/phases/P-A3.md.

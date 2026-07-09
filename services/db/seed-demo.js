@@ -515,6 +515,31 @@ async function seedPharmacies(pool) {
   }
 }
 
+// name_ml, name_en, slug, district_code, hospital_slug|null, phone[], emergency, license, is_24hr, types[], apheresis, component
+const DEMO_BLOOD_BANKS = [
+  ['ലേക്ഷോർ ബ്ലഡ് ബാങ്ക്', 'Lakeshore Blood Bank', 'lakeshore-blood-bank-ernakulam', 'EKM', 'lakeshore-hospital-ernakulam', ['0484-2701000'], '0484-2701108', 'KL-BB-EKM-001', true, ['A+', 'A-', 'B+', 'B-', 'O+', 'O-', 'AB+', 'AB-'], true, true],
+  ['മെഡിക്കൽ ട്രസ്റ്റ് ബ്ലഡ് ബാങ്ക്', 'Medical Trust Blood Bank', 'medical-trust-blood-bank-thiruvananthapuram', 'TVM', 'medical-trust-hospital-thiruvananthapuram', ['0471-2702000'], '0471-2702108', 'KL-BB-TVM-002', true, ['A+', 'B+', 'O+', 'O-', 'AB+'], false, true],
+  ['ഗവ. ബ്ലഡ് ബാങ്ക് കോഴിക്കോട്', 'Govt Blood Bank Kozhikode', 'govt-blood-bank-kozhikode', 'KKD', 'general-hospital-kozhikode', ['0495-2703000'], '0495-2703108', 'KL-BB-KKD-003', true, ['A+', 'A-', 'B+', 'O+', 'O-'], false, false],
+  ['അമല ബ്ലഡ് ബാങ്ക്', 'Amala Blood Bank', 'amala-blood-bank-thrissur', 'TSR', 'amala-hospital-thrissur', ['0487-2704000'], '0487-2704108', 'KL-BB-TSR-004', false, ['A+', 'B+', 'B-', 'O+', 'AB+', 'AB-'], true, true],
+  ['കാരിത്താസ് ബ്ലഡ് ബാങ്ക്', 'Caritas Blood Bank', 'caritas-blood-bank-kottayam', 'KTM', 'caritas-hospital-kottayam', ['0481-2705000'], '0481-2705108', 'KL-BB-KTM-005', true, ['A+', 'O+', 'O-', 'AB+', 'AB-'], false, true]
+];
+const BB_HOURS = { mon: { open: '09:00', close: '17:00' }, tue: { open: '09:00', close: '17:00' }, wed: { open: '09:00', close: '17:00' }, thu: { open: '09:00', close: '17:00' }, fri: { open: '09:00', close: '17:00' }, sat: { open: '09:00', close: '13:00' }, sun: { open: '', close: '' } };
+
+async function seedBloodBanks(pool) {
+  for (const b of DEMO_BLOOD_BANKS) {
+    await pool.query(
+      `INSERT INTO blood_banks
+         (name_ml,name_en,slug,district_id,hospital_id,phone,emergency_phone,license_number,
+          is_24hr,blood_types_available,has_apheresis,has_component_separation,operating_hours,verification_status)
+       SELECT $1,$2,$3,di.id,(SELECT id FROM hospitals WHERE slug=$4),$5,$6,$7,$8,$9,$10,$11,$12::jsonb,'verified'
+         FROM districts di WHERE di.code=$13
+       ON CONFLICT (slug) DO NOTHING`,
+      [b[0], b[1], b[2], b[4], b[5], b[6], b[7], b[8], b[9], b[10], b[11],
+       JSON.stringify(b[8] ? {} : BB_HOURS), b[3]]
+    );
+  }
+}
+
 async function main() {
   const pool = getPool();
   await runMigrations(pool);
@@ -524,6 +549,7 @@ async function main() {
   await seedFacilities(pool);
   await seedLabs(pool);
   await seedPharmacies(pool);
+  await seedBloodBanks(pool);
   await seedPatientAndAvailability(pool);
   await seedAuthUsers(pool);
   await seedContent(pool);
@@ -532,7 +558,7 @@ async function main() {
   await seedReviews(pool);
   const counts = await populateVectors(pool);
   const rc = (await pool.query(`SELECT count(*)::int AS n FROM reviews WHERE deleted_at IS NULL`)).rows[0].n;
-  console.log(`Demo seed complete. Doctors: ${counts.doctors}, Hospitals: ${counts.hospitals}, Departments: ${DEMO_HOSPITALS.length * DEPTS.length}, Facilities: ${DEMO_FACILITIES.length}, Labs: ${DEMO_LABS.length} (${LAB_TESTS.length} tests each), Pharmacies: ${DEMO_PHARMACIES.length}, Reviews: ${rc}.`);
+  console.log(`Demo seed complete. Doctors: ${counts.doctors}, Hospitals: ${counts.hospitals}, Departments: ${DEMO_HOSPITALS.length * DEPTS.length}, Facilities: ${DEMO_FACILITIES.length}, Labs: ${DEMO_LABS.length} (${LAB_TESTS.length} tests each), Pharmacies: ${DEMO_PHARMACIES.length}, BloodBanks: ${DEMO_BLOOD_BANKS.length}, Reviews: ${rc}.`);
 }
 
 main()

@@ -104,6 +104,31 @@ function pharmacySchema(ph, locale) {
   };
 }
 
+/** MedicalOrganization structured data for a blood bank. */
+function bloodBankSchema(bank, locale) {
+  const region = bank.district_en || bank.district_ml || 'Kerala';
+  const phones = Array.isArray(bank.phone) ? bank.phone : (bank.phone ? [bank.phone] : []);
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'MedicalOrganization',
+    name: bank.name_en || bank.name_ml,
+    url: `${SITE}/${locale}/blood-banks/${bank.slug}`,
+    medicalSpecialty: 'Hematology',
+    telephone: bank.emergency_phone || phones[0] || undefined,
+    email: bank.email || undefined,
+    address: {
+      '@type': 'PostalAddress',
+      streetAddress: bank.address_en || bank.address_ml || undefined,
+      addressRegion: region, addressCountry: 'IN'
+    },
+    areaServed: region,
+    ...(bank.lat != null && bank.lng != null
+      ? { geo: { '@type': 'GeoCoordinates', latitude: bank.lat, longitude: bank.lng } }
+      : {}),
+    ...(bank.is_24hr ? { openingHours: 'Mo-Su 00:00-23:59' } : {})
+  };
+}
+
 /** MedicalWebPage wrapper — every health-context page. */
 function medicalWebPageSchema(title, description, url) {
   return {
@@ -135,4 +160,4 @@ function jobPostingSchema(job, locale) {
   };
 }
 
-export { physicianSchema, hospitalSchema, labSchema, pharmacySchema, medicalWebPageSchema, jobPostingSchema, SITE };
+export { physicianSchema, hospitalSchema, labSchema, pharmacySchema, bloodBankSchema, medicalWebPageSchema, jobPostingSchema, SITE };

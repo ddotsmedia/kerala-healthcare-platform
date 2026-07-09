@@ -81,10 +81,16 @@ export default async function EmergencyPage(props) {
             ))}
           </div>
 
-          <Link href={`/${locale}/hospitals?service=emergency`}
-            className="mt-6 block rounded-xl bg-brand px-4 py-3 text-center text-sm font-semibold text-white hover:bg-brand-dark">
-            🏥 {ml ? 'അടുത്തുള്ള ആശുപത്രി കണ്ടെത്തുക' : 'Find nearest hospital'}
-          </Link>
+          <div className="mt-6 grid grid-cols-1 gap-3 sm:grid-cols-2">
+            <Link href={`/${locale}/hospitals?service=emergency`}
+              className="block rounded-xl bg-brand px-4 py-3 text-center text-sm font-semibold text-white hover:bg-brand-dark">
+              🏥 {ml ? 'അടുത്തുള്ള ആശുപത്രി കണ്ടെത്തുക' : 'Find nearest hospital'}
+            </Link>
+            <Link href={`/${locale}/blood-banks`}
+              className="block rounded-xl bg-red-600 px-4 py-3 text-center text-sm font-semibold text-white hover:bg-red-700">
+              🩸 {ml ? 'ബ്ലഡ് ബാങ്ക് കണ്ടെത്തുക →' : 'Find Blood Bank →'}
+            </Link>
+          </div>
 
           <div role="note" className="mt-6 rounded-xl border border-red-300 bg-red-50 px-4 py-3 text-sm font-medium text-red-800">
             {ml ? 'ഉടനടി അപകടത്തിലാണെങ്കിൽ ആദ്യം 112 വിളിക്കുക. കാത്തിരിക്കരുത്. ഈ പേജ് മാർഗനിർദേശത്തിന് മാത്രം.' : 'If in immediate danger, call 112 first. Do not wait. This page is for guidance only.'}
