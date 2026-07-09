@@ -16,6 +16,7 @@ const LINKS = [
   { href: 'blood-banks', ml: 'ബ്ലഡ് ബാങ്കുകൾ', en: 'Blood Banks' },
   { href: 'ambulance', ml: 'ആംബുലൻസ്', en: 'Ambulance' },
   { href: 'dental', ml: 'ഡെന്റൽ', en: 'Dental' },
+  { href: 'eye-hospitals', ml: 'നേത്ര ആശുപത്രികൾ', en: 'Eye Hospitals' },
   { href: 'health', ml: 'ആരോഗ്യ വിവരം', en: 'Health Info' },
   { href: 'symptoms', ml: 'ലക്ഷണങ്ങൾ', en: 'Symptoms' },
   { href: 'jobs', ml: 'ജോലികൾ', en: 'Jobs' },

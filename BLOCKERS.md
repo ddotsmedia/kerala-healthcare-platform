@@ -543,3 +543,18 @@ Quick status of every `[NEEDS DECISION]` ever logged (this section is additive; 
 - [OK] Build "Compiled successfully", 0 errors, no dynamic-route conflict. seed-demo.js + dental.js node --check pass. Files <400 lines.
 ### Not done / pending
 - [PENDING DEPLOY] VPS: git pull + docker build + pnpm db:migrate (to 49) + pnpm db:seed:demo (loads 5 clinics). Production action — not auto-run. Commands in docs/phases/P-A6.md.
+
+## Session: 2026-07-09 — P-A7 Eye Hospitals Directory
+### Feature
+- [OK] Migration 0050 eye_centres (spec 0046; sequential). New provider type (ophthalmology). Migrations 49 -> 50 on deploy.
+- [OK] lib/eyeCentres.js: searchEyeCentres (district/type/surgery via @> array/optical/low-vision/pediatric/term, paginated), getEyeCentreBySlug, nearbyEyeCentres, allEyeCentreSlugs.
+- [OK] UI: packages/ui EyeCentreCard (exported). schema.js eyeCentreSchema (MedicalOrganization JSON-LD, availableService = surgeries).
+- [OK] Pages: /[locale]/eye-hospitals (search + surgery/type/district/optical/low-vision/pediatric filters), /[locale]/eye-hospitals/[slug] (surgeries grid, equipment list, linked ophthalmologists from doctors specialty=ophthalmology same district, nearby, MedicalOrganization+MedicalWebPage+BreadcrumbList JSON-LD, disclaimer).
+- [OK] API: GET /api/eye-hospitals, GET /api/eye-hospitals/[slug]. Nav "Eye Hospitals" link. Sitemap: /eye-hospitals + /eye-hospitals/[slug] both locales.
+- [OK] Seed: 3 eye centres (Drishti hospital EKM, Vision Care clinic TVM, Nethra optical KKD), varied surgeries/equipment, ON CONFLICT DO NOTHING.
+### Assumptions / decisions
+- [ASSUMPTION] Linked ophthalmologists from doctors where specialty slug='ophthalmology' + matching district. Surgery filter via array containment (surgeries_offered @> ARRAY[s]) + GIN index. Added Eye Hospitals to navbar.
+### Verified (local)
+- [OK] Build "Compiled successfully", 0 errors. seed-demo.js + eyeCentres.js node --check pass. Files <400 lines.
+### Not done / pending
+- [PENDING DEPLOY] VPS: git pull + docker build + pnpm db:migrate (to 50) + pnpm db:seed:demo (loads 3 eye centres). Production action — not auto-run. Commands in docs/phases/P-A7.md.

@@ -178,6 +178,36 @@ function dentalSchema(c, locale) {
   };
 }
 
+/** MedicalOrganization structured data for an eye centre. */
+function eyeCentreSchema(e, locale) {
+  const region = e.district_en || e.district_ml || 'Kerala';
+  const phones = Array.isArray(e.phone) ? e.phone : (e.phone ? [e.phone] : []);
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'MedicalOrganization',
+    name: e.name_en || e.name_ml,
+    url: `${SITE}/${locale}/eye-hospitals/${e.slug}`,
+    medicalSpecialty: 'Ophthalmology',
+    telephone: phones[0] || undefined,
+    email: e.email || undefined,
+    address: {
+      '@type': 'PostalAddress',
+      streetAddress: e.address_en || e.address_ml || undefined,
+      addressRegion: region, addressCountry: 'IN'
+    },
+    areaServed: region,
+    ...(e.lat != null && e.lng != null
+      ? { geo: { '@type': 'GeoCoordinates', latitude: e.lat, longitude: e.lng } }
+      : {}),
+    ...(Array.isArray(e.surgeries_offered) && e.surgeries_offered.length
+      ? { availableService: e.surgeries_offered.map((s) => ({ '@type': 'MedicalProcedure', name: `${s} surgery` })) }
+      : {}),
+    ...(e.rating_count > 0
+      ? { aggregateRating: { '@type': 'AggregateRating', ratingValue: Number(e.rating_avg), reviewCount: e.rating_count } }
+      : {})
+  };
+}
+
 /** MedicalWebPage wrapper — every health-context page. */
 function medicalWebPageSchema(title, description, url) {
   return {
@@ -209,4 +239,4 @@ function jobPostingSchema(job, locale) {
   };
 }
 
-export { physicianSchema, hospitalSchema, labSchema, pharmacySchema, bloodBankSchema, ambulanceSchema, dentalSchema, medicalWebPageSchema, jobPostingSchema, SITE };
+export { physicianSchema, hospitalSchema, labSchema, pharmacySchema, bloodBankSchema, ambulanceSchema, dentalSchema, eyeCentreSchema, medicalWebPageSchema, jobPostingSchema, SITE };

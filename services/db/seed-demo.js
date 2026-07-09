@@ -590,6 +590,30 @@ async function seedDental(pool) {
   }
 }
 
+// name_ml, name_en, slug, type, district_code, surgeries[], equipment[], optical, lowvision, pediatric, fee
+const DEMO_EYE = [
+  ['ദൃഷ്ടി നേത്ര ആശുപത്രി', 'Drishti Eye Hospital', 'drishti-eye-hospital-ernakulam', 'hospital', 'EKM', ['cataract', 'lasik', 'glaucoma', 'retina', 'cornea'], ['oct', 'slit_lamp', 'field_analyser', 'fundus_camera'], true, true, true, 350],
+  ['വിഷൻ കെയർ ഐ സെന്റർ', 'Vision Care Eye Centre', 'vision-care-eye-centre-thiruvananthapuram', 'clinic', 'TVM', ['cataract', 'glaucoma', 'squint'], ['slit_lamp', 'fundus_camera'], true, false, true, 250],
+  ['നേത്ര ഒപ്റ്റിക്കൽസ്', 'Nethra Opticals & Eye Clinic', 'nethra-opticals-kozhikode', 'optical_shop', 'KKD', ['cataract'], ['slit_lamp'], true, false, false, 150]
+];
+
+async function seedEyeCentres(pool) {
+  for (let i = 0; i < DEMO_EYE.length; i++) {
+    const e = DEMO_EYE[i];
+    await pool.query(
+      `INSERT INTO eye_centres
+         (name_ml,name_en,slug,type,district_id,surgeries_offered,equipment,
+          has_optical_shop,has_low_vision_clinic,has_pediatric_ophthalmology,
+          consultation_fee_inr,verification_status,rating_avg,rating_count)
+       SELECT $1,$2,$3,$4,di.id,$5,$6,$7,$8,$9,$10,'verified',$11,$12
+         FROM districts di WHERE di.code=$13
+       ON CONFLICT (slug) DO NOTHING`,
+      [e[0], e[1], e[2], e[3], e[5], e[6], e[7], e[8], e[9], e[10],
+       (4.3 + i * 0.1).toFixed(2), 30 + i * 10, e[4]]
+    );
+  }
+}
+
 async function main() {
   const pool = getPool();
   await runMigrations(pool);
@@ -602,6 +626,7 @@ async function main() {
   await seedBloodBanks(pool);
   await seedAmbulance(pool);
   await seedDental(pool);
+  await seedEyeCentres(pool);
   await seedPatientAndAvailability(pool);
   await seedAuthUsers(pool);
   await seedContent(pool);
@@ -610,7 +635,7 @@ async function main() {
   await seedReviews(pool);
   const counts = await populateVectors(pool);
   const rc = (await pool.query(`SELECT count(*)::int AS n FROM reviews WHERE deleted_at IS NULL`)).rows[0].n;
-  console.log(`Demo seed complete. Doctors: ${counts.doctors}, Hospitals: ${counts.hospitals}, Departments: ${DEMO_HOSPITALS.length * DEPTS.length}, Facilities: ${DEMO_FACILITIES.length}, Labs: ${DEMO_LABS.length} (${LAB_TESTS.length} tests each), Pharmacies: ${DEMO_PHARMACIES.length}, BloodBanks: ${DEMO_BLOOD_BANKS.length}, Ambulance: ${DEMO_AMBULANCE.length}, Dental: ${DEMO_DENTAL.length}, Reviews: ${rc}.`);
+  console.log(`Demo seed complete. Doctors: ${counts.doctors}, Hospitals: ${counts.hospitals}, Departments: ${DEMO_HOSPITALS.length * DEPTS.length}, Facilities: ${DEMO_FACILITIES.length}, Labs: ${DEMO_LABS.length} (${LAB_TESTS.length} tests each), Pharmacies: ${DEMO_PHARMACIES.length}, BloodBanks: ${DEMO_BLOOD_BANKS.length}, Ambulance: ${DEMO_AMBULANCE.length}, Dental: ${DEMO_DENTAL.length}, EyeCentres: ${DEMO_EYE.length}, Reviews: ${rc}.`);
 }
 
 main()
