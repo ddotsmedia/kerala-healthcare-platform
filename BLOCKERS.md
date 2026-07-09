@@ -558,3 +558,21 @@ Quick status of every `[NEEDS DECISION]` ever logged (this section is additive; 
 - [OK] Build "Compiled successfully", 0 errors. seed-demo.js + eyeCentres.js node --check pass. Files <400 lines.
 ### Not done / pending
 - [PENDING DEPLOY] VPS: git pull + docker build + pnpm db:migrate (to 50) + pnpm db:seed:demo (loads 3 eye centres). Production action — not auto-run. Commands in docs/phases/P-A7.md.
+
+## Session: 2026-07-09 — P-A8 Physiotherapy Centres
+### Feature
+- [OK] Migration 0051 physio_centres (spec 0047; sequential). New provider type. Migrations 50 -> 51 on deploy.
+- [OK] lib/physio.js: searchPhysio (district/specialisation via @> array/home-visit/term, paginated), getPhysioBySlug, nearbyPhysio, allPhysioSlugs.
+- [OK] UI: packages/ui PhysioCard (exported). schema.js physioSchema (MedicalOrganization, medicalSpecialty=PhysicalTherapy).
+- [OK] Pages: /[locale]/physiotherapy (search + specialisation/district/home-visit filters), /[locale]/physiotherapy/[slug] (specialisations grid, equipment, home-visit coverage districts, linked physiotherapists [graceful-empty], nearby, MedicalOrganization+MedicalWebPage+BreadcrumbList JSON-LD, disclaimer).
+- [OK] API: GET /api/physiotherapy, GET /api/physiotherapy/[slug]. Nav "Physiotherapy" link. Sitemap: /physiotherapy + /physiotherapy/[slug] both locales.
+- [OK] Seed: 3 physio centres (Active EKM, Rehab Care TVM, Mobility KKD) varied specialisations/equipment/home-visit, ON CONFLICT DO NOTHING.
+### Assumptions / decisions
+- [ASSUMPTION] No 'physiotherapy' specialty exists in the 0003 taxonomy, so getSpecialtyBySlug('physiotherapy') returns null and the "linked physiotherapists" section renders empty/hidden (graceful). Did NOT add a specialty row (would surface zero doctors anyway). Revisit if a physiotherapy specialty + providers are added.
+- [ASSUMPTION] Specialisation filter via array containment (specialisations @> ARRAY[s]) + GIN index. Card fee prefers session_fee then consultation_fee.
+### Nav debt
+- [NEEDS DECISION] Desktop navbar now has ~14 top-level links (6 directory tabs among them) — overflows on lg. Recommend grouping labs/pharmacies/blood-banks/ambulance/dental/eye/physio under a "Directory" dropdown or a /directory hub page. Not done this phase (scope); flag for a dedicated nav-refactor task.
+### Verified (local)
+- [OK] Build "Compiled successfully", 0 errors. seed-demo.js + physio.js node --check pass. Files <400 lines.
+### Not done / pending
+- [PENDING DEPLOY] VPS: git pull + docker build + pnpm db:migrate (to 51) + pnpm db:seed:demo (loads 3 centres). Commands in docs/phases/P-A8.md.

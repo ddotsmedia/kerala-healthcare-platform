@@ -10,13 +10,14 @@ import { allBloodBankSlugs } from '@/lib/bloodBanks';
 import { allAmbulanceSlugs } from '@/lib/ambulance';
 import { allDentalSlugs } from '@/lib/dental';
 import { allEyeCentreSlugs } from '@/lib/eyeCentres';
+import { allPhysioSlugs } from '@/lib/physio';
 import { SITE } from '@/components/landing/LandingParts';
 
 export const dynamic = 'force-dynamic';
 
 export default async function sitemap() {
-  const [specialties, districts, combos, doctors, hospitals, labs, pharmacies, bloodBanks, ambulance, dental, eye] = await Promise.all([
-    listSpecialties(), listDistricts(), combosWithDoctors(), allDoctorSlugs(), allHospitalSlugs(), allLabSlugs(), allPharmacySlugs(), allBloodBankSlugs(), allAmbulanceSlugs(), allDentalSlugs(), allEyeCentreSlugs()
+  const [specialties, districts, combos, doctors, hospitals, labs, pharmacies, bloodBanks, ambulance, dental, eye, physio] = await Promise.all([
+    listSpecialties(), listDistricts(), combosWithDoctors(), allDoctorSlugs(), allHospitalSlugs(), allLabSlugs(), allPharmacySlugs(), allBloodBankSlugs(), allAmbulanceSlugs(), allDentalSlugs(), allEyeCentreSlugs(), allPhysioSlugs()
   ]);
 
   const now = new Date();
@@ -35,6 +36,7 @@ export default async function sitemap() {
     add(`/${locale}/dental`, 0.8, 'daily');
     for (const d of districts) add(`/${locale}/dental/district/${districtSlug(d.name_en)}`, 0.7);
     add(`/${locale}/eye-hospitals`, 0.8, 'daily');
+    add(`/${locale}/physiotherapy`, 0.8, 'daily');
     add(`/${locale}/specialties`, 0.8);
     add(`/${locale}/districts`, 0.8);
     for (const p of ['about', 'how-it-works', 'for-doctors', 'for-hospitals', 'contact', 'privacy', 'terms', 'disclaimer']) {
@@ -62,6 +64,7 @@ export default async function sitemap() {
     for (const am of ambulance) if (am.slug) add(`/${locale}/ambulance/${am.slug}`, 0.6);
     for (const dc of dental) if (dc.slug) add(`/${locale}/dental/${dc.slug}`, 0.6);
     for (const ec of eye) if (ec.slug) add(`/${locale}/eye-hospitals/${ec.slug}`, 0.6);
+    for (const pc of physio) if (pc.slug) add(`/${locale}/physiotherapy/${pc.slug}`, 0.6);
   }
 
   return out;

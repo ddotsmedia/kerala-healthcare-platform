@@ -614,6 +614,29 @@ async function seedEyeCentres(pool) {
   }
 }
 
+// name_ml, name_en, slug, district_code, specialisations[], equipment[], home, home_districts[], consult_fee, session_fee
+const DEMO_PHYSIO = [
+  ['ആക്ടീവ് ഫിസിയോ ക്ലിനിക്', 'Active Physio Clinic', 'active-physio-clinic-ernakulam', 'EKM', ['ortho', 'sports', 'neuro'], ['ultrasound', 'tens', 'traction', 'laser'], true, ['Ernakulam', 'Thrissur'], 300, 500],
+  ['റീഹാബ് കെയർ സെന്റർ', 'Rehab Care Centre', 'rehab-care-centre-thiruvananthapuram', 'TVM', ['neuro', 'geriatric', 'cardio'], ['ultrasound', 'tens', 'hydrotherapy'], true, ['Thiruvananthapuram'], 250, 400],
+  ['മൊബിലിറ്റി ഫിസിയോ', 'Mobility Physiotherapy', 'mobility-physiotherapy-kozhikode', 'KKD', ['ortho', 'paediatric', 'geriatric'], ['tens', 'traction'], false, [], 200, 350]
+];
+
+async function seedPhysio(pool) {
+  for (let i = 0; i < DEMO_PHYSIO.length; i++) {
+    const p = DEMO_PHYSIO[i];
+    await pool.query(
+      `INSERT INTO physio_centres
+         (name_ml,name_en,slug,district_id,specialisations,equipment,has_home_visit,
+          home_visit_districts,consultation_fee_inr,session_fee_inr,verification_status,rating_avg,rating_count)
+       SELECT $1,$2,$3,di.id,$4,$5,$6,$7,$8,$9,'verified',$10,$11
+         FROM districts di WHERE di.code=$12
+       ON CONFLICT (slug) DO NOTHING`,
+      [p[0], p[1], p[2], p[4], p[5], p[6], p[7], p[8], p[9],
+       (4.2 + i * 0.1).toFixed(2), 20 + i * 9, p[3]]
+    );
+  }
+}
+
 async function main() {
   const pool = getPool();
   await runMigrations(pool);
@@ -627,6 +650,7 @@ async function main() {
   await seedAmbulance(pool);
   await seedDental(pool);
   await seedEyeCentres(pool);
+  await seedPhysio(pool);
   await seedPatientAndAvailability(pool);
   await seedAuthUsers(pool);
   await seedContent(pool);
@@ -635,7 +659,7 @@ async function main() {
   await seedReviews(pool);
   const counts = await populateVectors(pool);
   const rc = (await pool.query(`SELECT count(*)::int AS n FROM reviews WHERE deleted_at IS NULL`)).rows[0].n;
-  console.log(`Demo seed complete. Doctors: ${counts.doctors}, Hospitals: ${counts.hospitals}, Departments: ${DEMO_HOSPITALS.length * DEPTS.length}, Facilities: ${DEMO_FACILITIES.length}, Labs: ${DEMO_LABS.length} (${LAB_TESTS.length} tests each), Pharmacies: ${DEMO_PHARMACIES.length}, BloodBanks: ${DEMO_BLOOD_BANKS.length}, Ambulance: ${DEMO_AMBULANCE.length}, Dental: ${DEMO_DENTAL.length}, EyeCentres: ${DEMO_EYE.length}, Reviews: ${rc}.`);
+  console.log(`Demo seed complete. Doctors: ${counts.doctors}, Hospitals: ${counts.hospitals}, Departments: ${DEMO_HOSPITALS.length * DEPTS.length}, Facilities: ${DEMO_FACILITIES.length}, Labs: ${DEMO_LABS.length} (${LAB_TESTS.length} tests each), Pharmacies: ${DEMO_PHARMACIES.length}, BloodBanks: ${DEMO_BLOOD_BANKS.length}, Ambulance: ${DEMO_AMBULANCE.length}, Dental: ${DEMO_DENTAL.length}, EyeCentres: ${DEMO_EYE.length}, Physio: ${DEMO_PHYSIO.length}, Reviews: ${rc}.`);
 }
 
 main()

@@ -208,6 +208,33 @@ function eyeCentreSchema(e, locale) {
   };
 }
 
+/** MedicalOrganization structured data for a physiotherapy centre. */
+function physioSchema(p, locale) {
+  const region = p.district_en || p.district_ml || 'Kerala';
+  const phones = Array.isArray(p.phone) ? p.phone : (p.phone ? [p.phone] : []);
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'MedicalOrganization',
+    name: p.name_en || p.name_ml,
+    url: `${SITE}/${locale}/physiotherapy/${p.slug}`,
+    medicalSpecialty: 'PhysicalTherapy',
+    telephone: phones[0] || undefined,
+    email: p.email || undefined,
+    address: {
+      '@type': 'PostalAddress',
+      streetAddress: p.address_en || p.address_ml || undefined,
+      addressRegion: region, addressCountry: 'IN'
+    },
+    areaServed: region,
+    ...(p.lat != null && p.lng != null
+      ? { geo: { '@type': 'GeoCoordinates', latitude: p.lat, longitude: p.lng } }
+      : {}),
+    ...(p.rating_count > 0
+      ? { aggregateRating: { '@type': 'AggregateRating', ratingValue: Number(p.rating_avg), reviewCount: p.rating_count } }
+      : {})
+  };
+}
+
 /** MedicalWebPage wrapper — every health-context page. */
 function medicalWebPageSchema(title, description, url) {
   return {
@@ -239,4 +266,4 @@ function jobPostingSchema(job, locale) {
   };
 }
 
-export { physicianSchema, hospitalSchema, labSchema, pharmacySchema, bloodBankSchema, ambulanceSchema, dentalSchema, eyeCentreSchema, medicalWebPageSchema, jobPostingSchema, SITE };
+export { physicianSchema, hospitalSchema, labSchema, pharmacySchema, bloodBankSchema, ambulanceSchema, dentalSchema, eyeCentreSchema, physioSchema, medicalWebPageSchema, jobPostingSchema, SITE };
