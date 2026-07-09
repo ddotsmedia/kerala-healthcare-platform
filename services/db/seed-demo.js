@@ -540,6 +540,30 @@ async function seedBloodBanks(pool) {
   }
 }
 
+// name_ml, name_en, slug, type, district_code, phone[], whatsapp, coverage[], is_24hr, amb_types[], oxygen, vent, cardiac, paramedic, base, per_km
+const DEMO_AMBULANCE = [
+  ['കനിവ് 108', 'Kanivu 108 Ambulance', 'kanivu-108-ambulance-ernakulam', 'government', 'EKM', ['108'], null, ['Ernakulam', 'Thrissur', 'Kottayam'], true, ['basic', 'advanced'], true, false, false, true, 0, 0],
+  ['ആസ്റ്റർ ആംബുലൻസ്', 'Aster Ambulance Service', 'aster-ambulance-ernakulam', 'hospital-based', 'EKM', ['0484-6699999', '9847011111'], '919847011111', ['Ernakulam'], true, ['icu', 'advanced', 'basic'], true, true, true, true, 1500, 40],
+  ['കിംസ് ആംബുലൻസ്', 'KIMS Ambulance', 'kims-ambulance-thiruvananthapuram', 'hospital-based', 'TVM', ['0471-3041000'], '919847022222', ['Thiruvananthapuram', 'Kollam'], true, ['icu', 'nicu', 'advanced'], true, true, true, true, 1800, 45],
+  ['സ്നേഹ ആംബുലൻസ്', 'Sneha Ambulance NGO', 'sneha-ambulance-kozhikode', 'ngo', 'KKD', ['9847033333'], '919847033333', ['Kozhikode', 'Malappuram', 'Wayanad'], true, ['basic'], true, false, false, false, 500, 20],
+  ['ലൈഫ്‌ലൈൻ ആംബുലൻസ്', 'Lifeline Ambulance', 'lifeline-ambulance-thrissur', 'private', 'TSR', ['9847044444', '0487-2333444'], '919847044444', ['Thrissur', 'Palakkad'], true, ['advanced', 'icu', 'mortuary'], true, true, true, true, 1200, 35]
+];
+
+async function seedAmbulance(pool) {
+  for (const a of DEMO_AMBULANCE) {
+    await pool.query(
+      `INSERT INTO ambulance_providers
+         (name_ml,name_en,slug,type,district_id,phone,whatsapp_number,coverage_districts,is_24hr,
+          ambulance_types,has_oxygen,has_ventilator,has_cardiac_monitor,has_trained_paramedic,
+          base_fare_inr,per_km_fare_inr,verification_status)
+       SELECT $1,$2,$3,$4,di.id,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,'verified'
+         FROM districts di WHERE di.code=$16
+       ON CONFLICT (slug) DO NOTHING`,
+      [a[0], a[1], a[2], a[3], a[5], a[6], a[7], a[8], a[9], a[10], a[11], a[12], a[13], a[14], a[15], a[16], a[4]]
+    );
+  }
+}
+
 async function main() {
   const pool = getPool();
   await runMigrations(pool);
@@ -550,6 +574,7 @@ async function main() {
   await seedLabs(pool);
   await seedPharmacies(pool);
   await seedBloodBanks(pool);
+  await seedAmbulance(pool);
   await seedPatientAndAvailability(pool);
   await seedAuthUsers(pool);
   await seedContent(pool);
@@ -558,7 +583,7 @@ async function main() {
   await seedReviews(pool);
   const counts = await populateVectors(pool);
   const rc = (await pool.query(`SELECT count(*)::int AS n FROM reviews WHERE deleted_at IS NULL`)).rows[0].n;
-  console.log(`Demo seed complete. Doctors: ${counts.doctors}, Hospitals: ${counts.hospitals}, Departments: ${DEMO_HOSPITALS.length * DEPTS.length}, Facilities: ${DEMO_FACILITIES.length}, Labs: ${DEMO_LABS.length} (${LAB_TESTS.length} tests each), Pharmacies: ${DEMO_PHARMACIES.length}, BloodBanks: ${DEMO_BLOOD_BANKS.length}, Reviews: ${rc}.`);
+  console.log(`Demo seed complete. Doctors: ${counts.doctors}, Hospitals: ${counts.hospitals}, Departments: ${DEMO_HOSPITALS.length * DEPTS.length}, Facilities: ${DEMO_FACILITIES.length}, Labs: ${DEMO_LABS.length} (${LAB_TESTS.length} tests each), Pharmacies: ${DEMO_PHARMACIES.length}, BloodBanks: ${DEMO_BLOOD_BANKS.length}, Ambulance: ${DEMO_AMBULANCE.length}, Reviews: ${rc}.`);
 }
 
 main()

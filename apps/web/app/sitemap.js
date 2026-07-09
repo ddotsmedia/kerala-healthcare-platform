@@ -7,13 +7,14 @@ import { combosWithDoctors, allDoctorSlugs, allHospitalSlugs, districtSlug } fro
 import { allLabSlugs } from '@/lib/labs';
 import { allPharmacySlugs } from '@/lib/pharmacies';
 import { allBloodBankSlugs } from '@/lib/bloodBanks';
+import { allAmbulanceSlugs } from '@/lib/ambulance';
 import { SITE } from '@/components/landing/LandingParts';
 
 export const dynamic = 'force-dynamic';
 
 export default async function sitemap() {
-  const [specialties, districts, combos, doctors, hospitals, labs, pharmacies, bloodBanks] = await Promise.all([
-    listSpecialties(), listDistricts(), combosWithDoctors(), allDoctorSlugs(), allHospitalSlugs(), allLabSlugs(), allPharmacySlugs(), allBloodBankSlugs()
+  const [specialties, districts, combos, doctors, hospitals, labs, pharmacies, bloodBanks, ambulance] = await Promise.all([
+    listSpecialties(), listDistricts(), combosWithDoctors(), allDoctorSlugs(), allHospitalSlugs(), allLabSlugs(), allPharmacySlugs(), allBloodBankSlugs(), allAmbulanceSlugs()
   ]);
 
   const now = new Date();
@@ -28,6 +29,7 @@ export default async function sitemap() {
     add(`/${locale}/labs`, 0.8, 'daily');
     add(`/${locale}/pharmacies`, 0.8, 'daily');
     add(`/${locale}/blood-banks`, 0.8, 'daily');
+    add(`/${locale}/ambulance`, 0.8, 'daily');
     add(`/${locale}/specialties`, 0.8);
     add(`/${locale}/districts`, 0.8);
     for (const p of ['about', 'how-it-works', 'for-doctors', 'for-hospitals', 'contact', 'privacy', 'terms', 'disclaimer']) {
@@ -52,6 +54,7 @@ export default async function sitemap() {
     for (const l of labs) if (l.slug) add(`/${locale}/labs/${l.slug}`, 0.6);
     for (const ph of pharmacies) if (ph.slug) add(`/${locale}/pharmacies/${ph.slug}`, 0.6);
     for (const bb of bloodBanks) if (bb.slug) add(`/${locale}/blood-banks/${bb.slug}`, 0.6);
+    for (const am of ambulance) if (am.slug) add(`/${locale}/ambulance/${am.slug}`, 0.6);
   }
 
   return out;

@@ -90,6 +90,10 @@ export default async function EmergencyPage(props) {
               className="block rounded-xl bg-red-600 px-4 py-3 text-center text-sm font-semibold text-white hover:bg-red-700">
               🩸 {ml ? 'ബ്ലഡ് ബാങ്ക് കണ്ടെത്തുക →' : 'Find Blood Bank →'}
             </Link>
+            <Link href={`/${locale}/ambulance`}
+              className="block rounded-xl bg-red-600 px-4 py-3 text-center text-sm font-semibold text-white hover:bg-red-700 sm:col-span-2">
+              🚑 {ml ? 'ആംബുലൻസ് കണ്ടെത്തുക →' : 'Find an Ambulance →'}
+            </Link>
           </div>
 
           <div role="note" className="mt-6 rounded-xl border border-red-300 bg-red-50 px-4 py-3 text-sm font-medium text-red-800">

@@ -508,3 +508,20 @@ Quick status of every `[NEEDS DECISION]` ever logged (this section is additive; 
 - [OK] Build "Compiled successfully", 0 errors. seed-demo.js + bloodBanks.js node --check pass. Files <400 lines.
 ### Not done / pending
 - [PENDING DEPLOY] VPS: git pull + docker build + pnpm db:migrate (to 47) + pnpm db:seed:demo (loads 5 blood banks). Production action — not auto-run. Commands in docs/phases/P-A3.md.
+
+## Session: 2026-07-09 — P-A4 Ambulance Providers Directory
+### Feature
+- [OK] Migration 0048 ambulance_providers (spec 0043; sequential). New provider type, emergency-first. Migrations 47 -> 48 on deploy.
+- [OK] lib/ambulance.js: searchAmbulance (district/type via @> array/term; NO pagination, govt-first ordering), getAmbulanceBySlug, nearbyAmbulance, allAmbulanceSlugs.
+- [OK] UI: packages/ui AmbulanceCard + AmbulanceTypeBadges (exported). schema.js ambulanceSchema (EmergencyService JSON-LD; areaServed = coverage_districts).
+- [OK] Pages: /[locale]/ambulance (red hero w/ hardcoded 108 free-govt + 112 above the fold, then private list — ALL, no pagination; filters district + ambulance type; no-JS GET form; AmbulanceCard large call button + coverage), /[locale]/ambulance/[slug] (Call Now CTA + 2nd phone + WhatsApp, equipment, fares & coverage, nearby, EmergencyService+MedicalWebPage+BreadcrumbList JSON-LD, disclaimer).
+- [OK] API: GET /api/ambulance (all matches), GET /api/ambulance/[slug].
+- [OK] Nav "Ambulance" link. Emergency page: "🚑 Find an Ambulance →" card. Sitemap: /ambulance + /ambulance/[slug] both locales.
+- [OK] Seed: 5 providers (Kanivu-108 govt, Aster/KIMS hospital-based, Sneha NGO, Lifeline private) across EKM/TVM/KKD/TSR, mix icu/nicu/advanced/basic/mortuary + equipment + fares + coverage, ON CONFLICT DO NOTHING.
+### Assumptions / decisions
+- [ASSUMPTION] Ambulance type filter uses array containment (ambulance_types @> ARRAY[type]) + GIN index. List orders government first, then 24hr, then name. Schema type = EmergencyService (schema.org has no Ambulance type).
+- [ASSUMPTION] Ambulance added to main navbar (after Blood Banks) in addition to emergency-page card.
+### Verified (local)
+- [OK] Build "Compiled successfully", 0 errors. seed-demo.js + ambulance.js node --check pass. Files <400 lines.
+### Not done / pending
+- [PENDING DEPLOY] VPS: git pull + docker build + pnpm db:migrate (to 48) + pnpm db:seed:demo (loads 5 providers). Production action — not auto-run. Commands in docs/phases/P-A4.md.

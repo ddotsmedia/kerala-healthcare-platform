@@ -129,6 +129,26 @@ function bloodBankSchema(bank, locale) {
   };
 }
 
+/** EmergencyService structured data for an ambulance provider. */
+function ambulanceSchema(a, locale) {
+  const region = a.district_en || a.district_ml || 'Kerala';
+  const phones = Array.isArray(a.phone) ? a.phone : (a.phone ? [a.phone] : []);
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'EmergencyService',
+    name: a.name_en || a.name_ml,
+    url: `${SITE}/${locale}/ambulance/${a.slug}`,
+    telephone: phones[0] || undefined,
+    address: {
+      '@type': 'PostalAddress',
+      streetAddress: a.address_en || a.address_ml || undefined,
+      addressRegion: region, addressCountry: 'IN'
+    },
+    areaServed: (Array.isArray(a.coverage_districts) && a.coverage_districts.length) ? a.coverage_districts : region,
+    ...(a.is_24hr ? { openingHours: 'Mo-Su 00:00-23:59' } : {})
+  };
+}
+
 /** MedicalWebPage wrapper — every health-context page. */
 function medicalWebPageSchema(title, description, url) {
   return {
@@ -160,4 +180,4 @@ function jobPostingSchema(job, locale) {
   };
 }
 
-export { physicianSchema, hospitalSchema, labSchema, pharmacySchema, bloodBankSchema, medicalWebPageSchema, jobPostingSchema, SITE };
+export { physicianSchema, hospitalSchema, labSchema, pharmacySchema, bloodBankSchema, ambulanceSchema, medicalWebPageSchema, jobPostingSchema, SITE };
