@@ -34,6 +34,7 @@ export default async function sitemap() {
     add(`/${locale}`, 1.0, 'daily');
     add(`/${locale}/doctors`, 0.9, 'daily');
     add(`/${locale}/hospitals`, 0.8, 'daily');
+    add(`/${locale}/compare`, 0.6, 'weekly');
     add(`/${locale}/labs`, 0.8, 'daily');
     add(`/${locale}/pharmacies`, 0.8, 'daily');
     add(`/${locale}/blood-banks`, 0.8, 'daily');

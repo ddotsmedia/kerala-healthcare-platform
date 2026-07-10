@@ -653,3 +653,16 @@ Quick status of every `[NEEDS DECISION]` ever logged (this section is additive; 
 - [OK] Build "Compiled successfully", 0 errors. seed-demo.js + homeNursing.js node --check pass. Files <400 lines.
 ### Not done / pending
 - [PENDING DEPLOY] VPS: git pull + docker build + pnpm db:migrate (to 56) + pnpm db:seed:demo (loads 3 agencies). Commands in docs/phases/P-A13.md.
+
+## Session: 2026-07-10 — P-A14 Compare Hospitals
+### Feature (NO new schema — uses existing hospitals data)
+- [OK] lib/compare.js: getHospitalsForCompare(ids) — single query pulling bed_count/icu/nicu/emergency/type/rating/district + array_agg(service_slug) + array_agg(accreditation body) + department count; preserves ?h order; verified+published only. parseCompareIds sanitises csv uuids, dedupes, caps at MAX_COMPARE=3.
+- [OK] UI (packages/ui/components/compare): CompareTable (server; rows Type/District/Rating/Beds/ICU/NICU/Specialties/Emergency/Dialysis/IVF/MRI/CT/NABH/NABL + Book-appointment CTA row; tick/cross; horizontal scroll on mobile), CompareBar (client, floating bottom bar, localStorage, max 3, Compare(N) -> /compare?h=), CompareToggle (client checkbox), compareStore.js (localStorage + window-event store). All exported from @khp/ui.
+- [OK] Page: /[locale]/compare — ?h=id1,id2,id3 shareable selection, ?q= hospital search to Add (server-side, no-JS friendly), remove chips, renders CompareTable. Hospitals listing: HospitalCard gets `compare` prop (Compare checkbox) + CompareBar mounted + "⚖️ Compare" header link. Sitemap: /compare both locales.
+### Assumptions / decisions
+- [ASSUMPTION] "OT count" row from spec OMITTED — no ot_count column in hospitals schema (would be all "—"). Substituted a "Specialties" (department count) row. Dialysis/IVF/MRI/CT rows derive from hospital_services.service_slug; NABH/NABL from hospital_accreditations.body; Emergency from emergency_24x7 OR service_slug 'emergency'.
+- [ASSUMPTION] HospitalCard root changed from <a> to <div> (inner <a> for the link) so the Compare checkbox isn't nested inside an anchor (invalid HTML). Compare checkbox only renders when compare={true} (hospitals listing); other HospitalCard usages unchanged. Compare bar needs >=2 to activate the button.
+### Verified (local)
+- [OK] Build "Compiled successfully", 0 errors. compare.js node --check pass. Files <400 lines. Client (CompareBar/Toggle) + server (CompareTable) components co-exported from @khp/ui, build clean.
+### Not done / pending
+- [PENDING DEPLOY] VPS: git pull + docker build (NO migration this phase; migrations stay 56). Verify /ml/compare?h=<id1>,<id2>. Commands in docs/phases/P-A14.md.

@@ -3,7 +3,7 @@
 
 import { resolveLocale, t } from '@/lib/i18n';
 import { searchHospitals, listDistricts } from '@/lib/providers';
-import { HospitalCard, EmptyState, DistrictFilter, Pagination } from '@khp/ui';
+import { HospitalCard, EmptyState, DistrictFilter, Pagination, CompareBar } from '@khp/ui';
 
 export const dynamic = 'force-dynamic';
 const LIMIT = 20;
@@ -33,7 +33,10 @@ export default async function HospitalsPage(props) {
 
   return (
     <div className="space-y-5">
-      <h1 className="text-xl font-bold">{t(locale, 'find_hospital')}</h1>
+      <div className="flex items-center justify-between">
+        <h1 className="text-xl font-bold">{t(locale, 'find_hospital')}</h1>
+        <a href={`/${locale}/compare`} className="text-sm font-medium text-brand hover:underline">⚖️ {locale === 'ml' ? 'താരതമ്യം ചെയ്യുക' : 'Compare'}</a>
+      </div>
 
       <form action={basePath} method="get" className="space-y-3 rounded-xl border border-gray-200 bg-white p-4">
         <input type="search" name="q" defaultValue={filters.term} placeholder={t(locale, 'search_placeholder')}
@@ -58,11 +61,12 @@ export default async function HospitalsPage(props) {
       ) : (
         <>
           <div className="grid gap-3">
-            {hospitals.map((h) => <HospitalCard key={h.id} locale={locale} hospital={h} />)}
+            {hospitals.map((h) => <HospitalCard key={h.id} locale={locale} hospital={h} compare />)}
           </div>
           <Pagination basePath={basePath} query={query} page={page} hasNext={hospitals.length === LIMIT} locale={locale} />
         </>
       )}
+      <CompareBar locale={locale} />
     </div>
   );
 }
