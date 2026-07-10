@@ -742,3 +742,16 @@ Quick status of every `[NEEDS DECISION]` ever logged (this section is additive; 
 ### Not done / pending
 - [PENDING DEPLOY] VPS: git pull + docker build + pnpm db:migrate (to 61). No seed. Verify /ml/patient/prescriptions (login-gated). Commands in docs/phases/P-C3.md.
 - [FUTURE] H3 S3/R2: migrate base64 prescription files to object storage; POST should upload to S3 and store the URL; /file route redirects/streams from S3.
+
+## Session: 2026-07-10 — P-C4 Lab Report Storage & Trends
+### Feature
+- [OK] Migration 0062 lab_reports (spec 0073; sequential) + user/date index + GIN on results. results = jsonb object keyed by marker {value,unit,normal_min,normal_max}. file_url = base64 data URI. Migrations 61 -> 62 on deploy.
+- [OK] lib/labMarkers.js (PURE): 9 tracked markers (hba1c/glucose_fasting/cholesterol_total/ldl/hdl/tsh/creatinine/haemoglobin/uric_acid) + normal bands + REPORT_TYPES + bandFor (report override) + isOutOfRange. lib/labReports.js (server): list/search, CRUD, owner-scoped file, cleanResults (known markers, finite values). lib/labTrends.js: getParameterHistory(userId, param) -> ordered points {date,value,out,normal} + trend up/down/stable.
+- [OK] API: GET/POST /api/patient/lab-reports (POST multipart -> base64, jpg/png/pdf <=2MB + results JSON), PATCH/DELETE /[id], GET /[id]/file (streams blob), GET /api/patient/lab-reports/trends?parameter=. currentPatientId-gated.
+- [OK] UI: components/labreports — ResultsEditor (all markers, value/unit + band hint), UploadLabReport (drag-drop modal + metadata + results), LabTrendChart (client; marker select -> fetch trends -> inline SVG line chart with SHADED normal band + red out-of-range points + trend label), LabReportCard, EditLabReport. Pages: /[locale]/patient/lab-reports (list + trend chart + search + upload) + /[id] (results table with out-of-range red highlight, image/PDF preview, edit). Patient dashboard "🧪 Lab Reports" tile.
+### Assumptions / decisions
+- [ASSUMPTION] Trend service placed at apps/web/lib/labTrends.js (spec path services/patient/lab-trends.js) to match the web import convention (avoids a new @khp/patient workspace package). Same base64-in-DB file storage as P-C3 — [MIGRATE TO S3/R2 at H3]. A report's own normal_min/max overrides the marker default band.
+### Verified (local)
+- [OK] Build "Compiled successfully", 0 errors (labMarkers pure -> safe in client; no getPool leak). labReports/labTrends/labMarkers node --check pass. Files <400 lines.
+### Not done / pending
+- [PENDING DEPLOY] VPS: git pull + docker build + pnpm db:migrate (to 62). No seed. Verify /ml/patient/lab-reports (login-gated). Commands in docs/phases/P-C4.md.
