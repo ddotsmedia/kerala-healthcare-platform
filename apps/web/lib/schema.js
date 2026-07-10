@@ -287,6 +287,36 @@ function dialysisSchema(c, locale) {
   };
 }
 
+/** MedicalClinic structured data for a fertility centre. */
+function fertilitySchema(f, locale) {
+  const region = f.district_en || f.district_ml || 'Kerala';
+  const phones = Array.isArray(f.phone) ? f.phone : (f.phone ? [f.phone] : []);
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'MedicalClinic',
+    name: f.name_en || f.name_ml,
+    url: `${SITE}/${locale}/fertility/${f.slug}`,
+    medicalSpecialty: 'Obstetric',
+    telephone: phones[0] || undefined,
+    email: f.email || undefined,
+    address: {
+      '@type': 'PostalAddress',
+      streetAddress: f.address_en || f.address_ml || undefined,
+      addressRegion: region, addressCountry: 'IN'
+    },
+    areaServed: region,
+    ...(f.lat != null && f.lng != null
+      ? { geo: { '@type': 'GeoCoordinates', latitude: f.lat, longitude: f.lng } }
+      : {}),
+    ...(Array.isArray(f.treatments) && f.treatments.length
+      ? { availableService: f.treatments.map((t) => ({ '@type': 'MedicalProcedure', name: t.replace(/_/g, ' ') })) }
+      : {}),
+    ...(f.rating_count > 0
+      ? { aggregateRating: { '@type': 'AggregateRating', ratingValue: Number(f.rating_avg), reviewCount: f.rating_count } }
+      : {})
+  };
+}
+
 /** MedicalWebPage wrapper — every health-context page. */
 function medicalWebPageSchema(title, description, url) {
   return {
@@ -318,4 +348,4 @@ function jobPostingSchema(job, locale) {
   };
 }
 
-export { physicianSchema, hospitalSchema, labSchema, pharmacySchema, bloodBankSchema, ambulanceSchema, dentalSchema, eyeCentreSchema, physioSchema, mentalHealthSchema, dialysisSchema, medicalWebPageSchema, jobPostingSchema, SITE };
+export { physicianSchema, hospitalSchema, labSchema, pharmacySchema, bloodBankSchema, ambulanceSchema, dentalSchema, eyeCentreSchema, physioSchema, mentalHealthSchema, dialysisSchema, fertilitySchema, medicalWebPageSchema, jobPostingSchema, SITE };

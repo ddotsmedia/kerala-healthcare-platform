@@ -681,6 +681,29 @@ async function seedDialysis(pool) {
   }
 }
 
+// name_ml, name_en, slug, district_code, treatments[], sperm_bank, egg_donation, success_rate, est_year, fee
+const DEMO_FERTILITY = [
+  ['ക്രാഡിൽ ഫെർട്ടിലിറ്റി', 'Cradle Fertility Centre', 'cradle-fertility-ernakulam', 'EKM', ['ivf', 'iui', 'icsi', 'egg_freezing', 'embryo_freezing', 'donor_egg', 'male_infertility'], true, true, 62, 2012, 800],
+  ['ന്യൂ ലൈഫ് IVF', 'New Life IVF Centre', 'new-life-ivf-thiruvananthapuram', 'TVM', ['ivf', 'iui', 'icsi', 'surrogacy_consultation', 'sperm_bank'], true, false, 58, 2015, 600],
+  ['ബ്ലെസിംഗ് ഫെർട്ടിലിറ്റി', 'Blessing Fertility Clinic', 'blessing-fertility-kozhikode', 'KKD', ['ivf', 'iui', 'male_infertility'], false, false, 55, 2018, 500]
+];
+
+async function seedFertility(pool) {
+  for (let i = 0; i < DEMO_FERTILITY.length; i++) {
+    const f = DEMO_FERTILITY[i];
+    await pool.query(
+      `INSERT INTO fertility_centres
+         (name_ml,name_en,slug,district_id,treatments,has_sperm_bank,has_egg_donation,
+          ivf_success_rate_percent,established_year,consultation_fee_inr,verification_status,rating_avg,rating_count)
+       SELECT $1,$2,$3,di.id,$4,$5,$6,$7,$8,$9,'verified',$10,$11
+         FROM districts di WHERE di.code=$12
+       ON CONFLICT (slug) DO NOTHING`,
+      [f[0], f[1], f[2], f[4], f[5], f[6], f[7], f[8], f[9],
+       (4.2 + i * 0.15).toFixed(2), 20 + i * 8, f[3]]
+    );
+  }
+}
+
 async function main() {
   const pool = getPool();
   await runMigrations(pool);
@@ -697,6 +720,7 @@ async function main() {
   await seedPhysio(pool);
   await seedMentalHealth(pool);
   await seedDialysis(pool);
+  await seedFertility(pool);
   await seedPatientAndAvailability(pool);
   await seedAuthUsers(pool);
   await seedContent(pool);
@@ -705,7 +729,7 @@ async function main() {
   await seedReviews(pool);
   const counts = await populateVectors(pool);
   const rc = (await pool.query(`SELECT count(*)::int AS n FROM reviews WHERE deleted_at IS NULL`)).rows[0].n;
-  console.log(`Demo seed complete. Doctors: ${counts.doctors}, Hospitals: ${counts.hospitals}, Departments: ${DEMO_HOSPITALS.length * DEPTS.length}, Facilities: ${DEMO_FACILITIES.length}, Labs: ${DEMO_LABS.length} (${LAB_TESTS.length} tests each), Pharmacies: ${DEMO_PHARMACIES.length}, BloodBanks: ${DEMO_BLOOD_BANKS.length}, Ambulance: ${DEMO_AMBULANCE.length}, Dental: ${DEMO_DENTAL.length}, EyeCentres: ${DEMO_EYE.length}, Physio: ${DEMO_PHYSIO.length}, MentalHealth: ${DEMO_MENTAL.length}, Dialysis: ${DEMO_DIALYSIS.length}, Reviews: ${rc}.`);
+  console.log(`Demo seed complete. Doctors: ${counts.doctors}, Hospitals: ${counts.hospitals}, Departments: ${DEMO_HOSPITALS.length * DEPTS.length}, Facilities: ${DEMO_FACILITIES.length}, Labs: ${DEMO_LABS.length} (${LAB_TESTS.length} tests each), Pharmacies: ${DEMO_PHARMACIES.length}, BloodBanks: ${DEMO_BLOOD_BANKS.length}, Ambulance: ${DEMO_AMBULANCE.length}, Dental: ${DEMO_DENTAL.length}, EyeCentres: ${DEMO_EYE.length}, Physio: ${DEMO_PHYSIO.length}, MentalHealth: ${DEMO_MENTAL.length}, Dialysis: ${DEMO_DIALYSIS.length}, Fertility: ${DEMO_FERTILITY.length}, Reviews: ${rc}.`);
 }
 
 main()

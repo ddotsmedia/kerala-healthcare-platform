@@ -607,3 +607,18 @@ Quick status of every `[NEEDS DECISION]` ever logged (this section is additive; 
 - [OK] Build "Compiled successfully", 0 errors. seed-demo.js + dialysis.js node --check pass. Files <400 lines.
 ### Not done / pending
 - [PENDING DEPLOY] VPS: git pull + docker build + pnpm db:migrate (to 53) + pnpm db:seed:demo (loads 3 centres). Commands in docs/phases/P-A10.md.
+
+## Session: 2026-07-10 — P-A11 Fertility Centres
+### Feature
+- [OK] Migration 0054 fertility_centres (spec 0050; sequential). New provider type (IVF/IUI). Migrations 53 -> 54 on deploy.
+- [OK] lib/fertility.js: searchFertility (district/treatment via @> array/sperm-bank/egg-donation/term, paginated), getFertilityBySlug, nearbyFertility, allFertilitySlugs.
+- [OK] UI: packages/ui FertilityCard (treatments, success rate flagged self-reported). schema.js fertilitySchema (MedicalClinic, availableService=treatments).
+- [OK] Pages: /[locale]/fertility (search + treatment/district/sperm-bank/egg-donation filters + success-rate disclaimer), /[locale]/fertility/[slug] (success-rate block w/ MANDATORY disclaimer "self-reported and vary by individual case. Consult a specialist.", treatments grid, team of specialists=gynecology doctors, nearby, MedicalClinic+MedicalWebPage+BreadcrumbList JSON-LD).
+- [OK] API: GET /api/fertility, GET /api/fertility/[slug]. Added to navbar Directory dropdown. Sitemap: /fertility + /fertility/[slug] both locales.
+- [OK] Seed: 3 centres (Cradle EKM full-service, New Life TVM, Blessing KKD), varied treatments + success rates + est years, ON CONFLICT DO NOTHING.
+### Assumptions / decisions
+- [ASSUMPTION] "Team of specialists" from doctors specialty slug='gynecology' + matching district (no dedicated fertility/reproductive specialty in taxonomy). Treatment filter via array containment (treatments @> ARRAY[t]) + GIN index. Success rate ALWAYS shown with the spec disclaimer on card + profile + list.
+### Verified (local)
+- [OK] Build "Compiled successfully", 0 errors. seed-demo.js + fertility.js node --check pass. Files <400 lines.
+### Not done / pending
+- [PENDING DEPLOY] VPS: git pull + docker build + pnpm db:migrate (to 54) + pnpm db:seed:demo (loads 3 centres). Commands in docs/phases/P-A11.md.
