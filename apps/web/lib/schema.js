@@ -235,6 +235,33 @@ function physioSchema(p, locale) {
   };
 }
 
+/** MedicalOrganization structured data for a mental-health centre. */
+function mentalHealthSchema(m, locale) {
+  const region = m.district_en || m.district_ml || 'Kerala';
+  const phones = Array.isArray(m.phone) ? m.phone : (m.phone ? [m.phone] : []);
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'MedicalOrganization',
+    name: m.name_en || m.name_ml,
+    url: `${SITE}/${locale}/mental-health-centres/${m.slug}`,
+    medicalSpecialty: 'Psychiatric',
+    telephone: m.emergency_phone || phones[0] || undefined,
+    email: m.email || undefined,
+    address: {
+      '@type': 'PostalAddress',
+      streetAddress: m.address_en || m.address_ml || undefined,
+      addressRegion: region, addressCountry: 'IN'
+    },
+    areaServed: region,
+    ...(m.lat != null && m.lng != null
+      ? { geo: { '@type': 'GeoCoordinates', latitude: m.lat, longitude: m.lng } }
+      : {}),
+    ...(m.rating_count > 0
+      ? { aggregateRating: { '@type': 'AggregateRating', ratingValue: Number(m.rating_avg), reviewCount: m.rating_count } }
+      : {})
+  };
+}
+
 /** MedicalWebPage wrapper — every health-context page. */
 function medicalWebPageSchema(title, description, url) {
   return {
@@ -266,4 +293,4 @@ function jobPostingSchema(job, locale) {
   };
 }
 
-export { physicianSchema, hospitalSchema, labSchema, pharmacySchema, bloodBankSchema, ambulanceSchema, dentalSchema, eyeCentreSchema, physioSchema, medicalWebPageSchema, jobPostingSchema, SITE };
+export { physicianSchema, hospitalSchema, labSchema, pharmacySchema, bloodBankSchema, ambulanceSchema, dentalSchema, eyeCentreSchema, physioSchema, mentalHealthSchema, medicalWebPageSchema, jobPostingSchema, SITE };

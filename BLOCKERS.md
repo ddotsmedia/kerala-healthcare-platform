@@ -576,3 +576,19 @@ Quick status of every `[NEEDS DECISION]` ever logged (this section is additive; 
 - [OK] Build "Compiled successfully", 0 errors. seed-demo.js + physio.js node --check pass. Files <400 lines.
 ### Not done / pending
 - [PENDING DEPLOY] VPS: git pull + docker build + pnpm db:migrate (to 51) + pnpm db:seed:demo (loads 3 centres). Commands in docs/phases/P-A8.md.
+
+## Session: 2026-07-09 — P-A9 Mental Health Centres
+### Feature
+- [OK] Migration 0052 mental_health_centres (spec 0048; sequential). New provider type (psychiatry/deaddiction/rehab/counselling). Migrations 51 -> 52 on deploy.
+- [OK] lib/mentalHealth.js: searchMentalHealth (district/type/service via @> array/emergency/inpatient/term, paginated), getMentalHealthBySlug, nearbyMentalHealth, allMentalHealthSlugs.
+- [OK] UI: packages/ui MentalHealthCentreCard (compassionate, service badges, emergency/inpatient). Non-dismissable CrisisBanner component (apps/web/components/mentalhealth) — iCall 9152987821 · Vandrevala 1860-2662-345 · DISHA 104, tap-to-call, on list + profile. schema.js mentalHealthSchema (MedicalOrganization, Psychiatric).
+- [OK] Pages: /[locale]/mental-health-centres (crisis banner + type tabs All/Psychiatry/Clinic/Counselling/De-addiction/Rehab + district + emergency filter, non-stigmatising disclaimer), /[locale]/mental-health-centres/[slug] (crisis banner, services grid, inpatient+emergency, linked psychiatrists specialty=psychiatry, nearby, MedicalOrganization+MedicalWebPage+BreadcrumbList JSON-LD, compassionate disclaimer + 112).
+- [OK] API: GET /api/mental-health-centres, GET /api/mental-health-centres/[slug]. Added to navbar Directory dropdown. Sitemap: /mental-health-centres + /mental-health-centres/[slug] both locales.
+- [OK] Seed: 3 centres (Shanti psychiatry hospital EKM, Punarjani de-addiction TSR, Mindful counselling TVM), varied services/inpatient/emergency, ON CONFLICT DO NOTHING.
+### Assumptions / decisions
+- [ASSUMPTION] Linked providers from doctors specialty slug='psychiatry' (no 'psychology' specialty in taxonomy). Type tab "Psychiatry" maps to type='hospital' (closest existing type value). Service filter via array containment (services @> ARRAY[s]) + GIN index.
+- [ASSUMPTION] Route is /mental-health-centres (distinct from the existing /mental-health health-hub page). Crisis helplines hardcoded in CrisisBanner (compassionate, non-dismissable) per spec.
+### Verified (local)
+- [OK] Build "Compiled successfully", 0 errors. seed-demo.js + mentalHealth.js node --check pass. Files <400 lines.
+### Not done / pending
+- [PENDING DEPLOY] VPS: git pull + docker build + pnpm db:migrate (to 52) + pnpm db:seed:demo (loads 3 centres). Commands in docs/phases/P-A9.md.

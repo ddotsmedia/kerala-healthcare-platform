@@ -11,6 +11,7 @@ export { default as AmbulanceCard, AmbulanceTypeBadges } from './components/dire
 export { default as DentalCard } from './components/directory/DentalCard.js';
 export { default as EyeCentreCard } from './components/directory/EyeCentreCard.js';
 export { default as PhysioCard } from './components/directory/PhysioCard.js';
+export { default as MentalHealthCentreCard } from './components/directory/MentalHealthCentreCard.js';
 export { default as SpecialtyFilter } from './components/directory/SpecialtyFilter.js';
 export { default as DistrictFilter } from './components/directory/DistrictFilter.js';
 export { default as ConsultationModeFilter } from './components/directory/ConsultationModeFilter.js';

@@ -637,6 +637,29 @@ async function seedPhysio(pool) {
   }
 }
 
+// name_ml, name_en, slug, type, district_code, services[], inpatient, beds, emergency, govt, emergency_phone, fee
+const DEMO_MENTAL = [
+  ['ശാന്തി മെന്റൽ ഹെൽത്ത് സെന്റർ', 'Shanti Mental Health Centre', 'shanti-mental-health-ernakulam', 'hospital', 'EKM', ['psychiatry', 'psychology', 'counselling', 'group_therapy'], true, 30, true, true, '0484-2811108', 400],
+  ['പുനർജനി ഡീ-അഡിക്ഷൻ സെന്റർ', 'Punarjani De-addiction Centre', 'punarjani-deaddiction-thrissur', 'deaddiction', 'TSR', ['deaddiction', 'rehabilitation', 'counselling', 'group_therapy'], true, 40, true, true, '0487-2811108', 300],
+  ['മൈൻഡ്‌ഫുൾ കൗൺസലിംഗ്', 'Mindful Counselling Clinic', 'mindful-counselling-thiruvananthapuram', 'counselling', 'TVM', ['psychology', 'counselling'], false, null, false, false, null, 250]
+];
+
+async function seedMentalHealth(pool) {
+  for (let i = 0; i < DEMO_MENTAL.length; i++) {
+    const m = DEMO_MENTAL[i];
+    await pool.query(
+      `INSERT INTO mental_health_centres
+         (name_ml,name_en,slug,type,district_id,services,has_inpatient,inpatient_beds,
+          has_emergency,is_govt_approved,emergency_phone,consultation_fee_inr,verification_status,rating_avg,rating_count)
+       SELECT $1,$2,$3,$4,di.id,$5,$6,$7,$8,$9,$10,$11,'verified',$12,$13
+         FROM districts di WHERE di.code=$14
+       ON CONFLICT (slug) DO NOTHING`,
+      [m[0], m[1], m[2], m[3], m[5], m[6], m[7], m[8], m[9], m[10], m[11],
+       (4.3 + i * 0.1).toFixed(2), 15 + i * 6, m[4]]
+    );
+  }
+}
+
 async function main() {
   const pool = getPool();
   await runMigrations(pool);
@@ -651,6 +674,7 @@ async function main() {
   await seedDental(pool);
   await seedEyeCentres(pool);
   await seedPhysio(pool);
+  await seedMentalHealth(pool);
   await seedPatientAndAvailability(pool);
   await seedAuthUsers(pool);
   await seedContent(pool);
@@ -659,7 +683,7 @@ async function main() {
   await seedReviews(pool);
   const counts = await populateVectors(pool);
   const rc = (await pool.query(`SELECT count(*)::int AS n FROM reviews WHERE deleted_at IS NULL`)).rows[0].n;
-  console.log(`Demo seed complete. Doctors: ${counts.doctors}, Hospitals: ${counts.hospitals}, Departments: ${DEMO_HOSPITALS.length * DEPTS.length}, Facilities: ${DEMO_FACILITIES.length}, Labs: ${DEMO_LABS.length} (${LAB_TESTS.length} tests each), Pharmacies: ${DEMO_PHARMACIES.length}, BloodBanks: ${DEMO_BLOOD_BANKS.length}, Ambulance: ${DEMO_AMBULANCE.length}, Dental: ${DEMO_DENTAL.length}, EyeCentres: ${DEMO_EYE.length}, Physio: ${DEMO_PHYSIO.length}, Reviews: ${rc}.`);
+  console.log(`Demo seed complete. Doctors: ${counts.doctors}, Hospitals: ${counts.hospitals}, Departments: ${DEMO_HOSPITALS.length * DEPTS.length}, Facilities: ${DEMO_FACILITIES.length}, Labs: ${DEMO_LABS.length} (${LAB_TESTS.length} tests each), Pharmacies: ${DEMO_PHARMACIES.length}, BloodBanks: ${DEMO_BLOOD_BANKS.length}, Ambulance: ${DEMO_AMBULANCE.length}, Dental: ${DEMO_DENTAL.length}, EyeCentres: ${DEMO_EYE.length}, Physio: ${DEMO_PHYSIO.length}, MentalHealth: ${DEMO_MENTAL.length}, Reviews: ${rc}.`);
 }
 
 main()
