@@ -14,6 +14,7 @@ export { default as PhysioCard } from './components/directory/PhysioCard.js';
 export { default as MentalHealthCentreCard } from './components/directory/MentalHealthCentreCard.js';
 export { default as DialysisCard } from './components/directory/DialysisCard.js';
 export { default as FertilityCard } from './components/directory/FertilityCard.js';
+export { default as PalliativeCard } from './components/directory/PalliativeCard.js';
 export { default as SpecialtyFilter } from './components/directory/SpecialtyFilter.js';
 export { default as DistrictFilter } from './components/directory/DistrictFilter.js';
 export { default as ConsultationModeFilter } from './components/directory/ConsultationModeFilter.js';

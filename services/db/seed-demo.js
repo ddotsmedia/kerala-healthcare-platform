@@ -704,6 +704,27 @@ async function seedFertility(pool) {
   }
 }
 
+// name_ml, name_en, slug, type, district_code, coverage[], home_visits, inpatient, beds, services[], free, donations
+const DEMO_PALLIATIVE = [
+  ['പെയിൻ & പാലിയേറ്റീവ് കെയർ സൊസൈറ്റി', 'Pain & Palliative Care Society', 'pain-palliative-society-kozhikode', 'ngo', 'KKD', ['Kozhikode', 'Malappuram', 'Wayanad'], true, true, 20, ['pain_management', 'counselling', 'nursing', 'spiritual_care', 'bereavement'], true, true],
+  ['കാരുണ്യ ഹോം കെയർ', 'Karunya Home Care', 'karunya-home-care-ernakulam', 'home_care', 'EKM', ['Ernakulam'], true, false, null, ['pain_management', 'nursing', 'physiotherapy', 'counselling'], true, true],
+  ['ശാന്തി ഹോസ്‌പിസ്', 'Shanti Hospice', 'shanti-hospice-thiruvananthapuram', 'hospice', 'TVM', ['Thiruvananthapuram', 'Kollam'], true, true, 15, ['pain_management', 'nursing', 'spiritual_care', 'bereavement'], false, true]
+];
+
+async function seedPalliative(pool) {
+  for (const p of DEMO_PALLIATIVE) {
+    await pool.query(
+      `INSERT INTO palliative_centres
+         (name_ml,name_en,slug,type,district_id,coverage_districts,has_home_visits,
+          has_inpatient,inpatient_beds,services,is_free_of_cost,accepts_donations,verification_status)
+       SELECT $1,$2,$3,$4,di.id,$5,$6,$7,$8,$9,$10,$11,'verified'
+         FROM districts di WHERE di.code=$12
+       ON CONFLICT (slug) DO NOTHING`,
+      [p[0], p[1], p[2], p[3], p[5], p[6], p[7], p[8], p[9], p[10], p[11], p[4]]
+    );
+  }
+}
+
 async function main() {
   const pool = getPool();
   await runMigrations(pool);
@@ -721,6 +742,7 @@ async function main() {
   await seedMentalHealth(pool);
   await seedDialysis(pool);
   await seedFertility(pool);
+  await seedPalliative(pool);
   await seedPatientAndAvailability(pool);
   await seedAuthUsers(pool);
   await seedContent(pool);
@@ -729,7 +751,7 @@ async function main() {
   await seedReviews(pool);
   const counts = await populateVectors(pool);
   const rc = (await pool.query(`SELECT count(*)::int AS n FROM reviews WHERE deleted_at IS NULL`)).rows[0].n;
-  console.log(`Demo seed complete. Doctors: ${counts.doctors}, Hospitals: ${counts.hospitals}, Departments: ${DEMO_HOSPITALS.length * DEPTS.length}, Facilities: ${DEMO_FACILITIES.length}, Labs: ${DEMO_LABS.length} (${LAB_TESTS.length} tests each), Pharmacies: ${DEMO_PHARMACIES.length}, BloodBanks: ${DEMO_BLOOD_BANKS.length}, Ambulance: ${DEMO_AMBULANCE.length}, Dental: ${DEMO_DENTAL.length}, EyeCentres: ${DEMO_EYE.length}, Physio: ${DEMO_PHYSIO.length}, MentalHealth: ${DEMO_MENTAL.length}, Dialysis: ${DEMO_DIALYSIS.length}, Fertility: ${DEMO_FERTILITY.length}, Reviews: ${rc}.`);
+  console.log(`Demo seed complete. Doctors: ${counts.doctors}, Hospitals: ${counts.hospitals}, Departments: ${DEMO_HOSPITALS.length * DEPTS.length}, Facilities: ${DEMO_FACILITIES.length}, Labs: ${DEMO_LABS.length} (${LAB_TESTS.length} tests each), Pharmacies: ${DEMO_PHARMACIES.length}, BloodBanks: ${DEMO_BLOOD_BANKS.length}, Ambulance: ${DEMO_AMBULANCE.length}, Dental: ${DEMO_DENTAL.length}, EyeCentres: ${DEMO_EYE.length}, Physio: ${DEMO_PHYSIO.length}, MentalHealth: ${DEMO_MENTAL.length}, Dialysis: ${DEMO_DIALYSIS.length}, Fertility: ${DEMO_FERTILITY.length}, Palliative: ${DEMO_PALLIATIVE.length}, Reviews: ${rc}.`);
 }
 
 main()

@@ -22,7 +22,8 @@ const DIRECTORY = [
   { href: 'physiotherapy', ml: 'ഫിസിയോതെറാപ്പി', en: 'Physiotherapy' },
   { href: 'mental-health-centres', ml: 'മാനസികാരോഗ്യ കേന്ദ്രങ്ങൾ', en: 'Mental Health' },
   { href: 'dialysis', ml: 'ഡയാലിസിസ്', en: 'Dialysis' },
-  { href: 'fertility', ml: 'ഫെർട്ടിലിറ്റി', en: 'Fertility' }
+  { href: 'fertility', ml: 'ഫെർട്ടിലിറ്റി', en: 'Fertility' },
+  { href: 'palliative-care', ml: 'പാലിയേറ്റീവ് കെയർ', en: 'Palliative Care' }
 ];
 
 // Top-level links (besides Home logo + Emergency button).

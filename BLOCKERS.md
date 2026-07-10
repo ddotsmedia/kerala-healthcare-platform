@@ -622,3 +622,18 @@ Quick status of every `[NEEDS DECISION]` ever logged (this section is additive; 
 - [OK] Build "Compiled successfully", 0 errors. seed-demo.js + fertility.js node --check pass. Files <400 lines.
 ### Not done / pending
 - [PENDING DEPLOY] VPS: git pull + docker build + pnpm db:migrate (to 54) + pnpm db:seed:demo (loads 3 centres). Commands in docs/phases/P-A11.md.
+
+## Session: 2026-07-10 — P-A12 Palliative Care Directory
+### Feature
+- [OK] Migration 0055 palliative_centres (spec 0051; sequential). New provider type. Migrations 54 -> 55 on deploy.
+- [OK] lib/palliative.js: searchPalliative (district/type/service via @> array/home-visits/term, paginated; orders free-of-cost first), getPalliativeBySlug, nearbyPalliative, allPalliativeSlugs.
+- [OK] UI: packages/ui PalliativeCard (WARM rose/amber palette, not clinical teal). schema.js palliativeSchema (MedicalOrganization, PalliativeCare, areaServed=coverage_districts).
+- [OK] Pages: /[locale]/palliative-care (warm gradient hero + dignity copy "you are not alone", type tabs All/Hospital Unit/Home Care/NGO/Hospice, district + home-visit filter, rose CTAs), /[locale]/palliative-care/[slug] (warm header, services grid, coverage area, DONATION panel when accepts_donations, nearby, MedicalOrganization+MedicalWebPage+BreadcrumbList JSON-LD, disclaimer).
+- [OK] API: GET /api/palliative-care, GET /api/palliative-care/[slug]. Added to navbar Directory dropdown. Sitemap: /palliative-care + /palliative-care/[slug] both locales.
+- [OK] Seed: 3 centres (Pain&Palliative Society KKD ngo, Karunya Home Care EKM, Shanti Hospice TVM), varied services/coverage/free/donations, ON CONFLICT DO NOTHING.
+### Assumptions / decisions
+- [ASSUMPTION] Warm palette = rose-50/100/600 + amber accents (spec: "not the standard teal") applied to card + both pages. Service filter via array containment (services @> ARRAY[s]) + GIN index. No linked-provider section (palliative is centre/team-based; no dedicated specialty).
+### Verified (local)
+- [OK] Build "Compiled successfully", 0 errors. seed-demo.js + palliative.js node --check pass. Files <400 lines.
+### Not done / pending
+- [PENDING DEPLOY] VPS: git pull + docker build + pnpm db:migrate (to 55) + pnpm db:seed:demo (loads 3 centres). Commands in docs/phases/P-A12.md.

@@ -317,6 +317,30 @@ function fertilitySchema(f, locale) {
   };
 }
 
+/** MedicalOrganization structured data for a palliative-care centre. */
+function palliativeSchema(p, locale) {
+  const region = p.district_en || p.district_ml || 'Kerala';
+  const phones = Array.isArray(p.phone) ? p.phone : (p.phone ? [p.phone] : []);
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'MedicalOrganization',
+    name: p.name_en || p.name_ml,
+    url: `${SITE}/${locale}/palliative-care/${p.slug}`,
+    medicalSpecialty: 'PalliativeCare',
+    telephone: phones[0] || undefined,
+    email: p.email || undefined,
+    address: {
+      '@type': 'PostalAddress',
+      streetAddress: p.address_en || p.address_ml || undefined,
+      addressRegion: region, addressCountry: 'IN'
+    },
+    areaServed: (Array.isArray(p.coverage_districts) && p.coverage_districts.length) ? p.coverage_districts : region,
+    ...(p.lat != null && p.lng != null
+      ? { geo: { '@type': 'GeoCoordinates', latitude: p.lat, longitude: p.lng } }
+      : {})
+  };
+}
+
 /** MedicalWebPage wrapper — every health-context page. */
 function medicalWebPageSchema(title, description, url) {
   return {
@@ -348,4 +372,4 @@ function jobPostingSchema(job, locale) {
   };
 }
 
-export { physicianSchema, hospitalSchema, labSchema, pharmacySchema, bloodBankSchema, ambulanceSchema, dentalSchema, eyeCentreSchema, physioSchema, mentalHealthSchema, dialysisSchema, fertilitySchema, medicalWebPageSchema, jobPostingSchema, SITE };
+export { physicianSchema, hospitalSchema, labSchema, pharmacySchema, bloodBankSchema, ambulanceSchema, dentalSchema, eyeCentreSchema, physioSchema, mentalHealthSchema, dialysisSchema, fertilitySchema, palliativeSchema, medicalWebPageSchema, jobPostingSchema, SITE };
