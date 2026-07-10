@@ -697,3 +697,18 @@ Quick status of every `[NEEDS DECISION]` ever logged (this section is additive; 
 - [OK] Build "Compiled successfully", 0 errors. seed-demo.js + equipment.js node --check pass. Files <400 lines.
 ### Not done / pending
 - [PENDING DEPLOY] VPS: git pull + docker build + pnpm db:migrate (to 58) + pnpm db:seed:demo (loads 3 suppliers). Commands in docs/phases/P-A16.md.
+
+## Session: 2026-07-10 — P-C1 Health Tracker (Track C)
+### Feature
+- [OK] Migration 0059 health_metrics (spec 0070; sequential) + idx_health_metrics_user_type. Patient-owned daily metrics. Migrations 58 -> 59 on deploy.
+- [OK] lib/metricConfig.js (PURE, client-safe): 12 metric types, units, NORMAL bands, RANGE_TEXT, CARDS catalogue, isOutOfRange(). lib/healthMetrics.js (server): addMetric (validated), listMetrics(days), statsFor (latest/trend/min/max/avg), getTrackerData.
+- [OK] API: POST /api/patient/health-metrics { metric_type,value,unit,notes,recorded_at }; GET ?type=&days=30 -> readings + stats meta. currentPatientId-gated (401 otherwise).
+- [OK] UI: components/tracker — Sparkline (pure inline SVG line chart, out-of-range points red, NO charting lib), MetricCard (client; single/bp/sugar/mood kinds, latest+trend, normal range, out-of-range red highlight, inline add), HealthTracker (client; card grid + 7/30-day toggle, POST then router.refresh()). Mood = 1-5 emoji picker; BP = systolic+diastolic (2 posts); sugar = fasting/PP select.
+- [OK] Page: /[locale]/patient/health-tracker (auth guard, getTrackerData, non-dismissable disclaimer "personal monitoring only... do not self-diagnose or adjust medications"). Patient dashboard: "📈 Health Tracker" tile added.
+### Assumptions / decisions
+- [ASSUMPTION] Normal bands chosen for highlight: sys 90-130, dia 60-85, fasting 70-100, PP 70-140, HR 60-100, SpO2 >=95, sleep 6-9, temp 36.1-37.5, HbA1c <5.7. weight/steps/mood have no band (no red). Add flow refreshes server data (router.refresh) rather than optimistic client stats — keeps statsFor server-side; metricConfig kept pure so client imports don't pull getPool.
+- [ASSUMPTION] Auth = currentPatientId (session user), same as PHR. No seed (user-generated data).
+### Verified (local)
+- [OK] Build "Compiled successfully", 0 errors (no getPool leak into client bundle). healthMetrics.js + metricConfig.js node --check pass. Files <400 lines.
+### Not done / pending
+- [PENDING DEPLOY] VPS: git pull + docker build + pnpm db:migrate (to 59). No seed. Verify /ml/patient/health-tracker (login-gated). Commands in docs/phases/P-C1.md.

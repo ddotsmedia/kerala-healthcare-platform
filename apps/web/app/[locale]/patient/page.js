@@ -47,11 +47,18 @@ export default async function PatientDashboard(props) {
         </Link>
       </div>
 
-      <Link href={`/${locale}/patient/health-records`}
-        className="flex items-center justify-between rounded-xl border border-brand bg-teal-50 p-4 hover:bg-teal-100">
-        <span className="font-semibold text-brand">📋 {locale === 'ml' ? 'ആരോഗ്യ രേഖകൾ' : 'Health Records'}</span>
-        <span className="text-brand">→</span>
-      </Link>
+      <div className="grid gap-3 sm:grid-cols-2">
+        <Link href={`/${locale}/patient/health-records`}
+          className="flex items-center justify-between rounded-xl border border-brand bg-teal-50 p-4 hover:bg-teal-100">
+          <span className="font-semibold text-brand">📋 {locale === 'ml' ? 'ആരോഗ്യ രേഖകൾ' : 'Health Records'}</span>
+          <span className="text-brand">→</span>
+        </Link>
+        <Link href={`/${locale}/patient/health-tracker`}
+          className="flex items-center justify-between rounded-xl border border-brand bg-teal-50 p-4 hover:bg-teal-100">
+          <span className="font-semibold text-brand">📈 {locale === 'ml' ? 'ഹെൽത്ത് ട്രാക്കർ' : 'Health Tracker'}</span>
+          <span className="text-brand">→</span>
+        </Link>
+      </div>
 
       <section>
         <h2 className="mb-2 text-sm font-semibold text-gray-700">{t(locale, 'upcoming')}</h2>
