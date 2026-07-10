@@ -23,7 +23,8 @@ const DIRECTORY = [
   { href: 'mental-health-centres', ml: 'മാനസികാരോഗ്യ കേന്ദ്രങ്ങൾ', en: 'Mental Health' },
   { href: 'dialysis', ml: 'ഡയാലിസിസ്', en: 'Dialysis' },
   { href: 'fertility', ml: 'ഫെർട്ടിലിറ്റി', en: 'Fertility' },
-  { href: 'palliative-care', ml: 'പാലിയേറ്റീവ് കെയർ', en: 'Palliative Care' }
+  { href: 'palliative-care', ml: 'പാലിയേറ്റീവ് കെയർ', en: 'Palliative Care' },
+  { href: 'home-nursing', ml: 'ഹോം നഴ്സിംഗ്', en: 'Home Nursing' }
 ];
 
 // Top-level links (besides Home logo + Emergency button).

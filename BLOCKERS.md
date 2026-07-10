@@ -637,3 +637,19 @@ Quick status of every `[NEEDS DECISION]` ever logged (this section is additive; 
 - [OK] Build "Compiled successfully", 0 errors. seed-demo.js + palliative.js node --check pass. Files <400 lines.
 ### Not done / pending
 - [PENDING DEPLOY] VPS: git pull + docker build + pnpm db:migrate (to 55) + pnpm db:seed:demo (loads 3 centres). Commands in docs/phases/P-A12.md.
+
+## Session: 2026-07-10 — P-A13 Home Nursing Agencies
+### Feature
+- [OK] Migration 0056 home_nursing_agencies (spec 0052; sequential). New provider type. Migrations 55 -> 56 on deploy.
+- [OK] lib/homeNursing.js: searchHomeNursing (district/service via @> array/nurse gender/qualification/term, paginated; registered first), getHomeNursingBySlug, nearbyHomeNursing, allHomeNursingSlugs.
+- [OK] UI: packages/ui HomeNursingCard (services, qualification, best rate, gender). schema.js homeNursingSchema (MedicalBusiness).
+- [OK] Pages: /[locale]/home-nursing (search + district/service/qualification/nurse-gender-radio filters), /[locale]/home-nursing/[slug] (services grid, rates hourly/daily/monthly, coverage area, qualifications, "Request a nurse" CTA).
+- [OK] "Request a nurse" = RequestNurseButton client modal -> POST /api/contact (reuses existing honeypot + rate-limited contact endpoint; message prefilled with agency + care need + phone). No new backend/table.
+- [OK] API: GET /api/home-nursing, GET /api/home-nursing/[slug]. Added to navbar Directory dropdown. Sitemap: /home-nursing + /home-nursing/[slug] both locales.
+- [OK] Seed: 3 agencies (Care At Home EKM, Helping Hands TVM, Family Nursing KKD), varied services/qual/gender/rates/registered, ON CONFLICT DO NOTHING.
+### Assumptions / decisions
+- [ASSUMPTION] "Request a nurse" reuses /api/contact (subject General Enquiry) rather than a new leads table — no schema needed, team gets an email. Service filter via array containment (services @> ARRAY[s]) + GIN index. Nurse gender filter maps to has_male_nurses/has_female_nurses.
+### Verified (local)
+- [OK] Build "Compiled successfully", 0 errors. seed-demo.js + homeNursing.js node --check pass. Files <400 lines.
+### Not done / pending
+- [PENDING DEPLOY] VPS: git pull + docker build + pnpm db:migrate (to 56) + pnpm db:seed:demo (loads 3 agencies). Commands in docs/phases/P-A13.md.

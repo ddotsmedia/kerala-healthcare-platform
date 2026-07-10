@@ -341,6 +341,29 @@ function palliativeSchema(p, locale) {
   };
 }
 
+/** MedicalBusiness structured data for a home nursing agency. */
+function homeNursingSchema(a, locale) {
+  const region = a.district_en || a.district_ml || 'Kerala';
+  const phones = Array.isArray(a.phone) ? a.phone : (a.phone ? [a.phone] : []);
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'MedicalBusiness',
+    name: a.name_en || a.name_ml,
+    url: `${SITE}/${locale}/home-nursing/${a.slug}`,
+    telephone: phones[0] || undefined,
+    email: a.email || undefined,
+    address: {
+      '@type': 'PostalAddress',
+      streetAddress: a.address_en || a.address_ml || undefined,
+      addressRegion: region, addressCountry: 'IN'
+    },
+    areaServed: (Array.isArray(a.coverage_districts) && a.coverage_districts.length) ? a.coverage_districts : region,
+    ...(a.rating_count > 0
+      ? { aggregateRating: { '@type': 'AggregateRating', ratingValue: Number(a.rating_avg), reviewCount: a.rating_count } }
+      : {})
+  };
+}
+
 /** MedicalWebPage wrapper — every health-context page. */
 function medicalWebPageSchema(title, description, url) {
   return {
@@ -372,4 +395,4 @@ function jobPostingSchema(job, locale) {
   };
 }
 
-export { physicianSchema, hospitalSchema, labSchema, pharmacySchema, bloodBankSchema, ambulanceSchema, dentalSchema, eyeCentreSchema, physioSchema, mentalHealthSchema, dialysisSchema, fertilitySchema, palliativeSchema, medicalWebPageSchema, jobPostingSchema, SITE };
+export { physicianSchema, hospitalSchema, labSchema, pharmacySchema, bloodBankSchema, ambulanceSchema, dentalSchema, eyeCentreSchema, physioSchema, mentalHealthSchema, dialysisSchema, fertilitySchema, palliativeSchema, homeNursingSchema, medicalWebPageSchema, jobPostingSchema, SITE };

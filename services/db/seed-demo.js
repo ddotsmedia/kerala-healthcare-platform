@@ -725,6 +725,28 @@ async function seedPalliative(pool) {
   }
 }
 
+// name_ml, name_en, slug, district_code, coverage[], services[], qual, male, female, min_hrs, hourly, daily, monthly, registered
+const DEMO_HOME_NURSING = [
+  ['കെയർ അറ്റ് ഹോം', 'Care At Home Nursing', 'care-at-home-nursing-ernakulam', 'EKM', ['Ernakulam', 'Kottayam'], ['general_nursing', 'elderly_care', 'post_surgical', 'wound_care', 'physiotherapy'], 'GNM', true, true, 8, 150, 1000, 25000, true],
+  ['ഹെൽപ്പിംഗ് ഹാൻഡ്‌സ്', 'Helping Hands Home Care', 'helping-hands-home-care-thiruvananthapuram', 'TVM', ['Thiruvananthapuram'], ['general_nursing', 'elderly_care', 'baby_care', 'palliative'], 'BSc', false, true, 12, 120, 900, 22000, true],
+  ['ഫാമിലി നഴ്സിംഗ് സർവീസ്', 'Family Nursing Service', 'family-nursing-service-kozhikode', 'KKD', ['Kozhikode', 'Malappuram'], ['general_nursing', 'icu_care', 'elderly_care', 'wound_care'], 'ANM', true, true, 24, null, 800, 20000, false]
+];
+
+async function seedHomeNursing(pool) {
+  for (const a of DEMO_HOME_NURSING) {
+    await pool.query(
+      `INSERT INTO home_nursing_agencies
+         (name_ml,name_en,slug,district_id,coverage_districts,services,nurse_qualification,
+          has_male_nurses,has_female_nurses,minimum_booking_hours,hourly_rate_inr,daily_rate_inr,
+          monthly_rate_inr,is_registered,verification_status,rating_avg,rating_count)
+       SELECT $1,$2,$3,di.id,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,'verified',4.30,18
+         FROM districts di WHERE di.code=$14
+       ON CONFLICT (slug) DO NOTHING`,
+      [a[0], a[1], a[2], a[4], a[5], a[6], a[7], a[8], a[9], a[10], a[11], a[12], a[13], a[3]]
+    );
+  }
+}
+
 async function main() {
   const pool = getPool();
   await runMigrations(pool);
@@ -743,6 +765,7 @@ async function main() {
   await seedDialysis(pool);
   await seedFertility(pool);
   await seedPalliative(pool);
+  await seedHomeNursing(pool);
   await seedPatientAndAvailability(pool);
   await seedAuthUsers(pool);
   await seedContent(pool);
@@ -751,7 +774,7 @@ async function main() {
   await seedReviews(pool);
   const counts = await populateVectors(pool);
   const rc = (await pool.query(`SELECT count(*)::int AS n FROM reviews WHERE deleted_at IS NULL`)).rows[0].n;
-  console.log(`Demo seed complete. Doctors: ${counts.doctors}, Hospitals: ${counts.hospitals}, Departments: ${DEMO_HOSPITALS.length * DEPTS.length}, Facilities: ${DEMO_FACILITIES.length}, Labs: ${DEMO_LABS.length} (${LAB_TESTS.length} tests each), Pharmacies: ${DEMO_PHARMACIES.length}, BloodBanks: ${DEMO_BLOOD_BANKS.length}, Ambulance: ${DEMO_AMBULANCE.length}, Dental: ${DEMO_DENTAL.length}, EyeCentres: ${DEMO_EYE.length}, Physio: ${DEMO_PHYSIO.length}, MentalHealth: ${DEMO_MENTAL.length}, Dialysis: ${DEMO_DIALYSIS.length}, Fertility: ${DEMO_FERTILITY.length}, Palliative: ${DEMO_PALLIATIVE.length}, Reviews: ${rc}.`);
+  console.log(`Demo seed complete. Doctors: ${counts.doctors}, Hospitals: ${counts.hospitals}, Departments: ${DEMO_HOSPITALS.length * DEPTS.length}, Facilities: ${DEMO_FACILITIES.length}, Labs: ${DEMO_LABS.length} (${LAB_TESTS.length} tests each), Pharmacies: ${DEMO_PHARMACIES.length}, BloodBanks: ${DEMO_BLOOD_BANKS.length}, Ambulance: ${DEMO_AMBULANCE.length}, Dental: ${DEMO_DENTAL.length}, EyeCentres: ${DEMO_EYE.length}, Physio: ${DEMO_PHYSIO.length}, MentalHealth: ${DEMO_MENTAL.length}, Dialysis: ${DEMO_DIALYSIS.length}, Fertility: ${DEMO_FERTILITY.length}, Palliative: ${DEMO_PALLIATIVE.length}, HomeNursing: ${DEMO_HOME_NURSING.length}, Reviews: ${rc}.`);
 }
 
 main()

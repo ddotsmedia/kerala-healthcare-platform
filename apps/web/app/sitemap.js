@@ -15,13 +15,14 @@ import { allMentalHealthSlugs } from '@/lib/mentalHealth';
 import { allDialysisSlugs } from '@/lib/dialysis';
 import { allFertilitySlugs } from '@/lib/fertility';
 import { allPalliativeSlugs } from '@/lib/palliative';
+import { allHomeNursingSlugs } from '@/lib/homeNursing';
 import { SITE } from '@/components/landing/LandingParts';
 
 export const dynamic = 'force-dynamic';
 
 export default async function sitemap() {
-  const [specialties, districts, combos, doctors, hospitals, labs, pharmacies, bloodBanks, ambulance, dental, eye, physio, mental, dialysis, fertility, palliative] = await Promise.all([
-    listSpecialties(), listDistricts(), combosWithDoctors(), allDoctorSlugs(), allHospitalSlugs(), allLabSlugs(), allPharmacySlugs(), allBloodBankSlugs(), allAmbulanceSlugs(), allDentalSlugs(), allEyeCentreSlugs(), allPhysioSlugs(), allMentalHealthSlugs(), allDialysisSlugs(), allFertilitySlugs(), allPalliativeSlugs()
+  const [specialties, districts, combos, doctors, hospitals, labs, pharmacies, bloodBanks, ambulance, dental, eye, physio, mental, dialysis, fertility, palliative, homeNursing] = await Promise.all([
+    listSpecialties(), listDistricts(), combosWithDoctors(), allDoctorSlugs(), allHospitalSlugs(), allLabSlugs(), allPharmacySlugs(), allBloodBankSlugs(), allAmbulanceSlugs(), allDentalSlugs(), allEyeCentreSlugs(), allPhysioSlugs(), allMentalHealthSlugs(), allDialysisSlugs(), allFertilitySlugs(), allPalliativeSlugs(), allHomeNursingSlugs()
   ]);
 
   const now = new Date();
@@ -45,6 +46,7 @@ export default async function sitemap() {
     add(`/${locale}/dialysis`, 0.8, 'daily');
     add(`/${locale}/fertility`, 0.8, 'daily');
     add(`/${locale}/palliative-care`, 0.8, 'daily');
+    add(`/${locale}/home-nursing`, 0.8, 'daily');
     add(`/${locale}/specialties`, 0.8);
     add(`/${locale}/districts`, 0.8);
     for (const p of ['about', 'how-it-works', 'for-doctors', 'for-hospitals', 'contact', 'privacy', 'terms', 'disclaimer']) {
@@ -77,6 +79,7 @@ export default async function sitemap() {
     for (const dl of dialysis) if (dl.slug) add(`/${locale}/dialysis/${dl.slug}`, 0.6);
     for (const fc of fertility) if (fc.slug) add(`/${locale}/fertility/${fc.slug}`, 0.6);
     for (const pc of palliative) if (pc.slug) add(`/${locale}/palliative-care/${pc.slug}`, 0.6);
+    for (const hn of homeNursing) if (hn.slug) add(`/${locale}/home-nursing/${hn.slug}`, 0.6);
   }
 
   return out;
