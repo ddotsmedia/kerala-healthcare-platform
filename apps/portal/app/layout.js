@@ -20,6 +20,7 @@ export default function RootLayout({ children }) {
               <a href="/hospital" className="hover:text-brand">Hospital</a>
               <a href="/schedule" className="hover:text-brand">Schedule</a>
               <a href="/schedule/availability" className="hover:text-brand">Availability</a>
+              <a href="/schedule/opd" className="hover:text-brand">OPD</a>
             </nav>
           </header>
           {children}

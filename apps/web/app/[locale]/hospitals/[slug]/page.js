@@ -146,6 +146,9 @@ export default async function HospitalProfile(props) {
             <Link href={`/${locale}/doctors?hospital=${h.slug}`} className="rounded-lg bg-brand px-4 py-2 text-sm font-semibold text-white hover:bg-brand-dark">
               📅 {ml ? 'ഇവിടെ ഡോക്ടറെ കണ്ടെത്തൂ' : 'Find a Doctor Here'}
             </Link>
+            <Link href={`/${locale}/hospitals/${h.slug}/opd`} className="rounded-lg border border-brand px-4 py-2 text-sm font-semibold text-brand hover:bg-teal-50">
+              🗓️ {ml ? 'OPD സമയം' : 'OPD Schedule'}
+            </Link>
             <a href={`https://maps.google.com/?q=${mapsQ}`} target="_blank" rel="noopener noreferrer" className="rounded-lg border border-brand px-4 py-2 text-sm font-semibold text-brand hover:bg-teal-50">
               🗺️ {ml ? 'വഴി കാണിക്കുക' : 'Directions'}
             </a>

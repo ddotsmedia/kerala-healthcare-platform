@@ -666,3 +666,19 @@ Quick status of every `[NEEDS DECISION]` ever logged (this section is additive; 
 - [OK] Build "Compiled successfully", 0 errors. compare.js node --check pass. Files <400 lines. Client (CompareBar/Toggle) + server (CompareTable) components co-exported from @khp/ui, build clean.
 ### Not done / pending
 - [PENDING DEPLOY] VPS: git pull + docker build (NO migration this phase; migrations stay 56). Verify /ml/compare?h=<id1>,<id2>. Commands in docs/phases/P-A14.md.
+
+## Session: 2026-07-10 — P-A15 OPD Schedules
+### Feature (web + portal)
+- [OK] Migration 0057 opd_schedules (spec 0053; sequential). provider_id -> doctors(id), hospital_id -> hospitals(id), day_of_week int[], times, consultation_type, max_tokens, notes, effective dates, is_active. Migrations 56 -> 57 on deploy.
+- [OK] Web read: lib/opd.js hospitalOpd(hospitalId) + providerOpd(providerId) (published+verified joins, effective-date aware).
+- [OK] Web pages: /[locale]/hospitals/[slug]/opd (day-wise 7-section view, "Today's OPD" highlighted via Asia/Kolkata weekday, doctor+specialty+time+token+notes). Doctor profile Hospitals tab now shows OPD timings per hospital + "Full OPD schedule" link. Hospital profile header gets "🗓️ OPD Schedule" button.
+- [OK] Web API: GET /api/hospitals/[id]/opd, GET /api/providers/[id]/opd.
+- [OK] Portal: lib/opd.js (myAffiliatedHospitals, myOpd, addOpd [affiliation-checked], updateOpd, removeOpd — owner-scoped). app/schedule/opd/page.js + actions.js (add via hospital select + day checkboxes + time + type + tokens + notes; enable/disable; remove). "OPD" link added to portal nav.
+- [OK] Seed: seedOpd — 3 OPD schedules for demo doctors (auto-creates hospital_providers affiliation first, NOT EXISTS guard on provider+hospital+start_time). Runs via pnpm db:seed:demo.
+### Assumptions / decisions
+- [ASSUMPTION] provider_id references doctors(id) (spec said healthcare_providers — the platform's provider table IS doctors, per 0012 hospital_providers). Portal OPD management uses SERVER ACTIONS (matches the existing portal availability/schedule pattern) instead of the spec's REST POST/PATCH/DELETE /api/portal/opd — functionally equivalent, owner-scoped, no cross-app auth plumbing. Public GET reads exposed as web /api/hospitals/[id]/opd + /api/providers/[id]/opd.
+- [ASSUMPTION] A doctor can only add OPD at hospitals they are affiliated with (hospital_providers). Seed adds the affiliation automatically for the 3 demo pairs.
+### Verified (local)
+- [OK] Web build + Portal build both "Compiled successfully", 0 errors. seed-demo.js + web/portal opd.js node --check pass. Files <400 lines.
+### Not done / pending
+- [PENDING DEPLOY] VPS: git pull + docker build (web + portal) + pnpm db:migrate (to 57) + pnpm db:seed:demo (loads 3 OPD). Verify /ml/hospitals/amala-hospital-thrissur/opd. Commands in docs/phases/P-A15.md.

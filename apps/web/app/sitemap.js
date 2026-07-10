@@ -68,7 +68,7 @@ export default async function sitemap() {
     for (const d of districts) add(`/${locale}/districts/${districtSlug(d.name_en)}`, 0.8);
     for (const c of combos) add(`/${locale}/doctors/${districtSlug(c.district_name)}/${c.specialty_slug}`, 0.7);
     for (const d of doctors) if (d.slug) add(`/${locale}/doctors/${d.slug}`, 0.6);
-    for (const h of hospitals) if (h.slug) add(`/${locale}/hospitals/${h.slug}`, 0.6);
+    for (const h of hospitals) if (h.slug) { add(`/${locale}/hospitals/${h.slug}`, 0.6); add(`/${locale}/hospitals/${h.slug}/opd`, 0.5, 'weekly'); }
     for (const l of labs) if (l.slug) add(`/${locale}/labs/${l.slug}`, 0.6);
     for (const ph of pharmacies) if (ph.slug) add(`/${locale}/pharmacies/${ph.slug}`, 0.6);
     for (const bb of bloodBanks) if (bb.slug) add(`/${locale}/blood-banks/${bb.slug}`, 0.6);

@@ -747,12 +747,41 @@ async function seedHomeNursing(pool) {
   }
 }
 
+// doctor_slug, hospital_slug, days[], start, end, ctype, max_tokens, notes_en
+const DEMO_OPD = [
+  ['dr-sangeeta-varma-cardiology-thrissur', 'amala-hospital-thrissur', [1, 3, 5], '09:00', '13:00', 'outpatient', 40, 'Cardiology OPD'],
+  ['dr-priya-suresh-cardiology-thrissur', 'amala-hospital-thrissur', [2, 4], '14:00', '17:00', 'outpatient', 30, 'Afternoon clinic'],
+  ['dr-fathima-beevi-dermatology-ernakulam', 'lakeshore-hospital-ernakulam', [1, 2, 3, 4, 5], '10:00', '13:00', 'outpatient', 25, 'Skin & cosmetology OPD']
+];
+
+async function seedOpd(pool) {
+  for (const o of DEMO_OPD) {
+    // Ensure the doctor is affiliated with the hospital.
+    await pool.query(
+      `INSERT INTO hospital_providers (hospital_id, doctor_id, role)
+       SELECT h.id, d.id, 'visiting' FROM hospitals h, doctors d
+        WHERE h.slug = $1 AND d.slug = $2
+       ON CONFLICT (hospital_id, doctor_id) DO NOTHING`, [o[1], o[0]]);
+    await pool.query(
+      `INSERT INTO opd_schedules
+         (provider_id, hospital_id, day_of_week, start_time, end_time, consultation_type, max_tokens, notes_en)
+       SELECT d.id, h.id, $3::int[], $4, $5, $6, $7, $8
+         FROM doctors d, hospitals h
+        WHERE d.slug = $1 AND h.slug = $2
+          AND NOT EXISTS (
+            SELECT 1 FROM opd_schedules o
+             WHERE o.provider_id = d.id AND o.hospital_id = h.id AND o.start_time = $4::time)`,
+      [o[0], o[1], o[2], o[3], o[4], o[5], o[6], o[7]]);
+  }
+}
+
 async function main() {
   const pool = getPool();
   await runMigrations(pool);
   await seedDoctors(pool);
   await seedHospitals(pool);
   await seedDepartments(pool);
+  await seedOpd(pool);
   await seedFacilities(pool);
   await seedLabs(pool);
   await seedPharmacies(pool);
@@ -774,7 +803,7 @@ async function main() {
   await seedReviews(pool);
   const counts = await populateVectors(pool);
   const rc = (await pool.query(`SELECT count(*)::int AS n FROM reviews WHERE deleted_at IS NULL`)).rows[0].n;
-  console.log(`Demo seed complete. Doctors: ${counts.doctors}, Hospitals: ${counts.hospitals}, Departments: ${DEMO_HOSPITALS.length * DEPTS.length}, Facilities: ${DEMO_FACILITIES.length}, Labs: ${DEMO_LABS.length} (${LAB_TESTS.length} tests each), Pharmacies: ${DEMO_PHARMACIES.length}, BloodBanks: ${DEMO_BLOOD_BANKS.length}, Ambulance: ${DEMO_AMBULANCE.length}, Dental: ${DEMO_DENTAL.length}, EyeCentres: ${DEMO_EYE.length}, Physio: ${DEMO_PHYSIO.length}, MentalHealth: ${DEMO_MENTAL.length}, Dialysis: ${DEMO_DIALYSIS.length}, Fertility: ${DEMO_FERTILITY.length}, Palliative: ${DEMO_PALLIATIVE.length}, HomeNursing: ${DEMO_HOME_NURSING.length}, Reviews: ${rc}.`);
+  console.log(`Demo seed complete. Doctors: ${counts.doctors}, Hospitals: ${counts.hospitals}, Departments: ${DEMO_HOSPITALS.length * DEPTS.length}, Facilities: ${DEMO_FACILITIES.length}, Labs: ${DEMO_LABS.length} (${LAB_TESTS.length} tests each), Pharmacies: ${DEMO_PHARMACIES.length}, BloodBanks: ${DEMO_BLOOD_BANKS.length}, Ambulance: ${DEMO_AMBULANCE.length}, Dental: ${DEMO_DENTAL.length}, EyeCentres: ${DEMO_EYE.length}, Physio: ${DEMO_PHYSIO.length}, MentalHealth: ${DEMO_MENTAL.length}, Dialysis: ${DEMO_DIALYSIS.length}, Fertility: ${DEMO_FERTILITY.length}, Palliative: ${DEMO_PALLIATIVE.length}, HomeNursing: ${DEMO_HOME_NURSING.length}, OPD: ${DEMO_OPD.length}, Reviews: ${rc}.`);
 }
 
 main()

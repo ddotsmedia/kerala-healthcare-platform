@@ -5,6 +5,7 @@ import { notFound } from 'next/navigation';
 import { resolveLocale, t } from '@/lib/i18n';
 import { getDoctorBySlug, searchDoctors } from '@/lib/providers';
 import { doctorHospitals, doctorAvailability } from '@/lib/profile';
+import { providerOpd } from '@/lib/opd';
 import { reviewSummary, listApprovedReviews } from '@/lib/reviews';
 import { physicianSchema, medicalWebPageSchema, SITE } from '@/lib/schema';
 import { Avatar, ModeIcons, Chip, StatusBadge, ProfileBreadcrumb, SectionCard, MODE_META } from '@/components/profile/ProfileParts';
@@ -42,13 +43,19 @@ export default async function DoctorProfile(props) {
   const d = await getDoctorBySlug(params.slug);
   if (!d) notFound();
 
-  const [hospitals, availability, similarRaw, revSummary, revInitial] = await Promise.all([
+  const [hospitals, availability, opd, similarRaw, revSummary, revInitial] = await Promise.all([
     doctorHospitals(d.id),
     doctorAvailability(d.id),
+    providerOpd(d.id),
     searchDoctors({ specialtyId: d.specialty_id, districtId: d.district_id, page: 1, limit: 4 }),
     reviewSummary('doctor', d.id),
     listApprovedReviews('doctor', d.id, 1)
   ]);
+  const OPD_DAYS = ml
+    ? ['ഞായർ', 'തിങ്കൾ', 'ചൊവ്വ', 'ബുധൻ', 'വ്യാഴം', 'വെള്ളി', 'ശനി']
+    : ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+  const opdByHospital = opd.reduce((m, o) => { (m[o.hospital_id] ||= []).push(o); return m; }, {});
+  const opdLine = (o) => `${(Array.isArray(o.day_of_week) ? o.day_of_week : []).map((i) => OPD_DAYS[i]).join(', ')} · ${String(o.start_time).slice(0, 5)}–${String(o.end_time).slice(0, 5)}${o.max_tokens != null ? ` · ${o.max_tokens} ${ml ? 'ടോക്കൺ' : 'tokens'}` : ''}`;
   const similar = similarRaw.filter((x) => x.id !== d.id).slice(0, 3);
 
   const specialty = ml ? d.specialty_ml : d.specialty_en;
@@ -104,6 +111,13 @@ export default async function DoctorProfile(props) {
             {ml ? h.name_ml : h.name_en}
           </Link>
           {(h.address_ml || h.address_en) && <p className="text-xs text-gray-500">{ml ? (h.address_ml || h.address_en) : (h.address_en || h.address_ml)}</p>}
+          {opdByHospital[h.id] && (
+            <div className="mt-2 space-y-1 border-t border-gray-100 pt-2">
+              <p className="text-xs font-semibold text-gray-600">🗓️ {ml ? 'OPD സമയം' : 'OPD timings'}</p>
+              {opdByHospital[h.id].map((o) => <p key={o.id} className="text-xs text-gray-700">{opdLine(o)}</p>)}
+              <Link href={`/${locale}/hospitals/${h.slug}/opd`} className="text-xs font-medium text-brand hover:underline">{ml ? 'മുഴുവൻ OPD ഷെഡ്യൂൾ →' : 'Full OPD schedule →'}</Link>
+            </div>
+          )}
         </li>
       ))}
       {availability.length > 0 && (
