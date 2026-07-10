@@ -727,3 +727,18 @@ Quick status of every `[NEEDS DECISION]` ever logged (this section is additive; 
 - [OK] Web build "Compiled successfully", 0 errors (whatsapp.js pure -> safe in client bundle). whatsapp.js + notify.js node --check pass. Link smoke: wa.me/91<num> + ref encoded; null when no number; share has no recipient. Files <400 lines.
 ### Not done / pending
 - [PENDING DEPLOY] VPS: git pull + docker build + pnpm db:migrate (to 60). No seed. Verify WhatsApp button on /ml/patient dashboard (login-gated). Commands in docs/phases/P-C2.md.
+
+## Session: 2026-07-10 — P-C3 Prescription Upload & Storage
+### Feature
+- [OK] Migration 0061 prescriptions (spec 0072; sequential) + idx_prescriptions_user. medications jsonb (array), file_url text (base64 data URI), doctor_id -> doctors(id). Migrations 60 -> 61 on deploy.
+- [OK] lib/prescriptions.js: list (search doctor/hospital/medication via ILIKE incl medications::text), get, getFile, create (cleanMeds), update (metadata + meds), delete (soft). MAX_FILE_KB=2048, FILE_TYPES jpg/png/pdf. Metadata queries never select the blob (has_file boolean only).
+- [OK] API: GET/POST /api/patient/prescriptions (POST = multipart/form-data; file -> base64 data URI in file_url; type + <=2MB validated), PATCH/DELETE /[id], GET /[id]/file (decodes data URI -> binary Response, owner-scoped, private no-store). currentPatientId-gated.
+- [OK] UI: components/prescriptions — MedicationsEditor (rows add/edit/remove), UploadPrescription (client modal, drag-drop zone + metadata + meds, POST multipart), PrescriptionCard (doctor/date/meds count/thumbnail), EditPrescription (edit + delete). Pages: /[locale]/patient/prescriptions (list + search + upload) + /[id] (meds list, image <img> / PDF <iframe> preview via /file route, edit). Patient dashboard "💊 Prescriptions" tile.
+### Assumptions / decisions
+- [ASSUMPTION] File stored as base64 data URI in prescriptions.file_url (spec-mandated, <=2MB, jpg/png/pdf) — NOTE: this differs from the earlier PHR decision (base64 rejected there); prescriptions spec explicitly requires it. [MIGRATE TO S3/R2 when H3 (S3 storage) is built] — move file_url to an object-store URL, drop the inline data URI. medications = jsonb array (spec said jsonb[]).
+- [ASSUMPTION] doctor_id FK -> doctors(id) (spec said healthcare_providers = the doctors table). Upload/edit currently capture doctor_name free-text (no doctor_id linkage UI yet).
+### Verified (local)
+- [OK] Build "Compiled successfully", 0 errors (no getPool in client bundle). prescriptions.js node --check pass. Files <400 lines.
+### Not done / pending
+- [PENDING DEPLOY] VPS: git pull + docker build + pnpm db:migrate (to 61). No seed. Verify /ml/patient/prescriptions (login-gated). Commands in docs/phases/P-C3.md.
+- [FUTURE] H3 S3/R2: migrate base64 prescription files to object storage; POST should upload to S3 and store the URL; /file route redirects/streams from S3.
