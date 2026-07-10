@@ -6,3 +6,4 @@ export { sendEmail } from './email.js';
 export { logNotification } from './log.js';
 export { otpEmailTemplate } from './templates/otp-email.js';
 export { isQuietHours } from './quiet-hours.js';
+export { generateWhatsAppReminderLink, shareAppointmentLink } from './whatsapp.js';

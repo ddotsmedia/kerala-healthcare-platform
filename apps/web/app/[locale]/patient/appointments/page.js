@@ -6,6 +6,7 @@ import { resolveLocale, t } from '@/lib/i18n';
 import { currentPatientId, listMyAppointments } from '@/lib/appointments';
 import { fmtDate, fmtTime } from '@/lib/format';
 import { EmptyState } from '@khp/ui';
+import AppointmentWhatsApp from '@/components/appointments/AppointmentWhatsApp';
 
 export const dynamic = 'force-dynamic';
 const STATUSES = ['confirmed', 'completed', 'cancelled', 'no_show'];
@@ -34,14 +35,16 @@ export default async function PatientAppointments(props) {
       {list.length === 0 ? <EmptyState message={t(locale, 'no_results')} /> : (
         <div className="grid gap-3">
           {list.map((a) => (
-            <Link key={a.id} href={`/${locale}/patient/appointments/${a.id}`}
-              className="flex items-center justify-between rounded-xl border border-gray-200 bg-white p-4 shadow-sm hover:shadow-md">
-              <div>
-                <p className="font-medium">{a.provider_name}</p>
-                <p className="text-xs text-gray-500">{fmtDate(a.slot_date)} · {fmtTime(a.slot_start)} · {t(locale, 'booking_ref')} {a.booking_ref}</p>
-              </div>
-              <span className="text-xs text-gray-400">{a.status}</span>
-            </Link>
+            <div key={a.id} className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
+              <Link href={`/${locale}/patient/appointments/${a.id}`} className="flex items-center justify-between hover:opacity-80">
+                <div>
+                  <p className="font-medium">{a.provider_name}</p>
+                  <p className="text-xs text-gray-500">{fmtDate(a.slot_date)} · {fmtTime(a.slot_start)} · {t(locale, 'booking_ref')} {a.booking_ref}</p>
+                </div>
+                <span className="text-xs text-gray-400">{a.status}</span>
+              </Link>
+              {a.status === 'confirmed' && <AppointmentWhatsApp appointment={a} locale={locale} />}
+            </div>
           ))}
         </div>
       )}

@@ -6,6 +6,7 @@ import { resolveLocale, t } from '@/lib/i18n';
 import { currentPatientId, listMyAppointments } from '@/lib/appointments';
 import { fmtDate, fmtTime, today } from '@/lib/format';
 import { EmptyState } from '@khp/ui';
+import AppointmentWhatsApp from '@/components/appointments/AppointmentWhatsApp';
 
 export const dynamic = 'force-dynamic';
 export async function generateMetadata(props) {
@@ -14,16 +15,18 @@ export async function generateMetadata(props) {
   return { title: `${t(locale, 'my_appointments')} · ${t(locale, 'site')}` };
 }
 
-function Row({ locale, a }) {
+function Row({ locale, a, whatsapp = false }) {
   return (
-    <Link href={`/${locale}/patient/appointments/${a.id}`}
-      className="flex items-center justify-between rounded-xl border border-gray-200 bg-white p-4 shadow-sm hover:shadow-md">
-      <div>
-        <p className="font-medium">{a.provider_name}</p>
-        <p className="text-xs text-gray-500">{fmtDate(a.slot_date)} · {fmtTime(a.slot_start)} · {a.consultation_mode}</p>
-      </div>
-      <span className="text-xs text-gray-400">{a.status}</span>
-    </Link>
+    <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
+      <Link href={`/${locale}/patient/appointments/${a.id}`} className="flex items-center justify-between hover:opacity-80">
+        <div>
+          <p className="font-medium">{a.provider_name}</p>
+          <p className="text-xs text-gray-500">{fmtDate(a.slot_date)} · {fmtTime(a.slot_start)} · {a.consultation_mode}</p>
+        </div>
+        <span className="text-xs text-gray-400">{a.status}</span>
+      </Link>
+      {whatsapp && <AppointmentWhatsApp appointment={a} locale={locale} />}
+    </div>
   );
 }
 
@@ -63,7 +66,7 @@ export default async function PatientDashboard(props) {
       <section>
         <h2 className="mb-2 text-sm font-semibold text-gray-700">{t(locale, 'upcoming')}</h2>
         {upcoming.length === 0 ? <EmptyState message={t(locale, 'no_results')} />
-          : <div className="grid gap-3">{upcoming.map((a) => <Row key={a.id} locale={locale} a={a} />)}</div>}
+          : <div className="grid gap-3">{upcoming.map((a) => <Row key={a.id} locale={locale} a={a} whatsapp />)}</div>}
       </section>
 
       <section>

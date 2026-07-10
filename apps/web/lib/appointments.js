@@ -18,9 +18,11 @@ async function listMyAppointments(patientId) {
     const { rows } = await getPool().query(
       `SELECT a.id, a.booking_ref, a.slot_date, a.slot_start, a.slot_end,
               a.consultation_mode, a.status, a.consultation_room,
-              d.display_name AS provider_name, d.slug AS provider_slug
+              d.display_name AS provider_name, d.slug AS provider_slug, d.whatsapp_number,
+              u.full_name AS patient_name
          FROM appointments a
          JOIN doctors d ON d.id = a.provider_id
+         LEFT JOIN users u ON u.id = a.patient_id
         WHERE a.patient_id = $1 AND a.deleted_at IS NULL
         ORDER BY a.slot_date DESC, a.slot_start DESC`,
       [patientId]

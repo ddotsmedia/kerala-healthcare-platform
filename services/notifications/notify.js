@@ -8,6 +8,7 @@ import { sendSms } from './sms.js';
 import { sendEmail } from './email.js';
 import { logNotification } from './log.js';
 import { isQuietHours } from './quiet-hours.js';
+import { generateWhatsAppReminderLink } from './whatsapp.js';
 import { render as confirmed } from './templates/appointment-confirmed.js';
 import { render as reminder } from './templates/appointment-reminder.js';
 import { render as cancelled } from './templates/appointment-cancelled.js';
@@ -28,7 +29,7 @@ function fmtDate(d) {
 async function fetchContext(appointmentId) {
   const { rows } = await getPool().query(
     `SELECT a.id, a.booking_ref, a.slot_date, a.slot_start, a.consultation_mode,
-            a.consultation_room, d.display_name AS provider_name,
+            a.consultation_room, d.display_name AS provider_name, d.whatsapp_number,
             u.full_name AS patient_name, u.locale
        FROM appointments a
        JOIN doctors d ON d.id = a.provider_id
@@ -39,16 +40,23 @@ async function fetchContext(appointmentId) {
   const a = rows[0];
   if (!a) return null;
   const room = a.consultation_room;
+  const locale = a.locale || 'ml';
   return {
     appointmentId: a.id,
     booking_ref: a.booking_ref,
     slot_date: fmtDate(a.slot_date),
     slot_start: String(a.slot_start).slice(0, 5),
     provider_name: a.provider_name,
+    patient_name: a.patient_name,
     consultation_mode: a.consultation_mode,
     consultation_room: room,
     roomUrl: room ? `${process.env.NEXT_PUBLIC_APP_URL || ''}/consult/${room}` : null,
-    locale: a.locale || 'ml'
+    waLink: generateWhatsAppReminderLink({
+      provider_name: a.provider_name, patient_name: a.patient_name, slot_date: a.slot_date,
+      slot_start: a.slot_start, consultation_mode: a.consultation_mode, booking_ref: a.booking_ref,
+      whatsapp_number: a.whatsapp_number
+    }, locale),
+    locale
   };
 }
 
@@ -93,6 +101,7 @@ async function sendReminders(window) {
   if (isQuietHours()) return { sent: 0, skipped: 'quiet_hours' };
   const pool = getPool();
   const flag = window === '2h' ? 'reminder_2h_sent' : 'reminder_24h_sent';
+  const waFlag = window === '2h' ? 'whatsapp_reminder_2h_sent' : 'whatsapp_reminder_24h_sent';
   const due = window === '2h'
     ? `(slot_date + slot_start) BETWEEN now() AND now() + interval '2 hours'`
     : `slot_date = (current_date + 1)`;
@@ -103,7 +112,7 @@ async function sendReminders(window) {
   let sent = 0;
   for (const r of rows) {
     await notifyAppointmentEvent('reminder', r.id, { window });
-    await pool.query(`UPDATE appointments SET ${flag} = true, updated_at = now() WHERE id = $1`, [r.id]);
+    await pool.query(`UPDATE appointments SET ${flag} = true, ${waFlag} = true, updated_at = now() WHERE id = $1`, [r.id]);
     sent++;
   }
   return { sent };

@@ -712,3 +712,18 @@ Quick status of every `[NEEDS DECISION]` ever logged (this section is additive; 
 - [OK] Build "Compiled successfully", 0 errors (no getPool leak into client bundle). healthMetrics.js + metricConfig.js node --check pass. Files <400 lines.
 ### Not done / pending
 - [PENDING DEPLOY] VPS: git pull + docker build + pnpm db:migrate (to 59). No seed. Verify /ml/patient/health-tracker (login-gated). Commands in docs/phases/P-C1.md.
+
+## Session: 2026-07-10 — P-C2 WhatsApp Appointment Reminders
+### Feature (no WhatsApp Business API — wa.me deep links only)
+- [OK] Migration 0060 appointments += whatsapp_reminder_24h_sent + whatsapp_reminder_2h_sent (spec 0071; sequential). Migrations 59 -> 60 on deploy.
+- [OK] services/notifications/whatsapp.js (PURE, client-safe): generateWhatsAppReminderLink(appt, locale) -> wa.me/<doctor number>?text=<prefilled ml/en reminder> (null if doctor has no number); shareAppointmentLink -> wa.me/?text= (no recipient, family share); normalizeNumber (10-digit -> +91). Exported from @khp/notifications + subpath.
+- [OK] lib/appointments.listMyAppointments now selects d.whatsapp_number + u.full_name (patient_name) for link building.
+- [OK] UI: components/appointments/AppointmentWhatsApp (server; renders "Remind Doctor" [green, if number] + "Share with family" wa.me anchors). Shown on confirmed appts on patient dashboard upcoming rows + patient appointments list. Cards restructured (Link no longer wraps the wa.me anchors — avoids nested-anchor invalid HTML).
+- [OK] Reminder integration: notify.js fetchContext adds whatsapp_number + builds waLink; appointment-reminder template appends "Tap to send a WhatsApp reminder to your doctor: <link>" to the 24h/2h email/SMS body. sendReminders sets whatsapp_reminder_{24h,2h}_sent alongside the existing reminder flags.
+### Assumptions / decisions
+- [ASSUMPTION] wa.me link uses the doctor's public whatsapp_number (0034) — plain, not the encrypted mobile. Numbers normalised to 91XXXXXXXXXX. 2h in-app-notification-with-link (spec) is covered by (a) the always-visible dashboard "Remind Doctor" button on upcoming appts and (b) the waLink already embedded in the 2h reminder email/SMS — did NOT add a separate transient notifications row to avoid duplication.
+- [ASSUMPTION] Reminder recipient still via DEMO_NOTIFY_TO (encrypted patient email/phone undecryptable here) — unchanged from existing pipeline. The wa.me link itself needs no patient contact.
+### Verified (local)
+- [OK] Web build "Compiled successfully", 0 errors (whatsapp.js pure -> safe in client bundle). whatsapp.js + notify.js node --check pass. Link smoke: wa.me/91<num> + ref encoded; null when no number; share has no recipient. Files <400 lines.
+### Not done / pending
+- [PENDING DEPLOY] VPS: git pull + docker build + pnpm db:migrate (to 60). No seed. Verify WhatsApp button on /ml/patient dashboard (login-gated). Commands in docs/phases/P-C2.md.
