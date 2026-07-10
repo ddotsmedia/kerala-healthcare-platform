@@ -32,11 +32,13 @@ function cleanResults(results) {
   return out;
 }
 
-async function listLabReports(userId, q) {
+async function listLabReports(userId, q, memberId) {
   if (!userId) return [];
   const values = [userId];
   let where = 'user_id = $1 AND deleted_at IS NULL';
-  if (q) { values.push(`%${q}%`); where += ` AND (lab_name ILIKE $2 OR report_type ILIKE $2 OR ordered_by_doctor ILIKE $2)`; }
+  values.push(memberId || null);
+  where += ` AND family_member_id IS NOT DISTINCT FROM $${values.length}`;
+  if (q) { values.push(`%${q}%`); where += ` AND (lab_name ILIKE $${values.length} OR report_type ILIKE $${values.length} OR ordered_by_doctor ILIKE $${values.length})`; }
   return run(`SELECT ${META_COLS}, (file_url IS NOT NULL) AS has_file
                 FROM lab_reports WHERE ${where} ORDER BY report_date DESC, created_at DESC`, values);
 }
@@ -60,13 +62,13 @@ async function createLabReport(userId, b) {
   const rows = await run(
     `INSERT INTO lab_reports
        (user_id, lab_name, report_date, report_type, file_url, file_name, file_type, file_size_kb,
-        results, notes, ordered_by_doctor)
-     VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9::jsonb,$10,$11)
+        results, notes, ordered_by_doctor, family_member_id)
+     VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9::jsonb,$10,$11,$12)
      RETURNING ${META_COLS}`,
     [userId, b.lab_name || null, b.report_date, b.report_type || null, b.file_data_uri || null,
      b.file_name || null, b.file_type || null, b.file_size_kb || null,
      JSON.stringify(cleanResults(b.results)), b.notes ? String(b.notes).slice(0, 1000) : null,
-     b.ordered_by_doctor || null]);
+     b.ordered_by_doctor || null, b.family_member_id || null]);
   return rows[0] || null;
 }
 

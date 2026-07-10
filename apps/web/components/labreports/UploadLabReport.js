@@ -9,7 +9,7 @@ import ResultsEditor from './ResultsEditor';
 const MAX_KB = 2048;
 const ACCEPT = ['image/jpeg', 'image/png', 'application/pdf'];
 
-export default function UploadLabReport({ locale = 'ml' }) {
+export default function UploadLabReport({ locale = 'ml', memberId = '' }) {
   const ml = locale === 'ml';
   const router = useRouter();
   const [open, setOpen] = useState(false);
@@ -35,6 +35,7 @@ export default function UploadLabReport({ locale = 'ml' }) {
     if (file) fd.append('file', file);
     for (const k of ['lab_name', 'report_date', 'report_type', 'ordered_by_doctor', 'notes']) if (form[k]) fd.append(k, form[k]);
     fd.append('results', JSON.stringify(results));
+    if (memberId) fd.append('family_member_id', memberId);
     try {
       const r = await fetch('/api/patient/lab-reports', { method: 'POST', body: fd });
       if (r.status === 401) { window.location.href = `/${locale}/login`; return; }

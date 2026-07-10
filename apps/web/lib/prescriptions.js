@@ -13,14 +13,16 @@ async function run(text, values) {
   catch (err) { console.error(`prescriptions query failed: ${err.message}`); return []; }
 }
 
-/** List (metadata only — no file blob), optional search by doctor or medication. */
-async function listPrescriptions(userId, q) {
+/** List (metadata only — no file blob). memberId: null/'' = self, else that member. */
+async function listPrescriptions(userId, q, memberId) {
   if (!userId) return [];
   const values = [userId];
   let where = 'user_id = $1 AND deleted_at IS NULL';
+  values.push(memberId || null);
+  where += ` AND family_member_id IS NOT DISTINCT FROM $${values.length}`;
   if (q) {
     values.push(`%${q}%`);
-    where += ` AND (doctor_name ILIKE $2 OR hospital_name ILIKE $2 OR medications::text ILIKE $2)`;
+    where += ` AND (doctor_name ILIKE $${values.length} OR hospital_name ILIKE $${values.length} OR medications::text ILIKE $${values.length})`;
   }
   return run(`SELECT ${META_COLS}, (file_url IS NOT NULL) AS has_file
                 FROM prescriptions WHERE ${where}
@@ -57,13 +59,14 @@ async function createPrescription(userId, b) {
   const rows = await run(
     `INSERT INTO prescriptions
        (user_id, appointment_id, doctor_name, hospital_name, prescribed_date, valid_until,
-        medications, file_url, file_name, file_type, file_size_kb, notes, tags)
-     VALUES ($1,$2,$3,$4,$5,$6,$7::jsonb,$8,$9,$10,$11,$12,$13)
+        medications, file_url, file_name, file_type, file_size_kb, notes, tags, family_member_id)
+     VALUES ($1,$2,$3,$4,$5,$6,$7::jsonb,$8,$9,$10,$11,$12,$13,$14)
      RETURNING ${META_COLS}`,
     [userId, b.appointment_id || null, b.doctor_name || null, b.hospital_name || null,
      b.prescribed_date || null, b.valid_until || null, JSON.stringify(cleanMeds(b.medications)),
      b.file_data_uri || null, b.file_name || null, b.file_type || null, b.file_size_kb || null,
-     b.notes ? String(b.notes).slice(0, 1000) : null, Array.isArray(b.tags) ? b.tags.slice(0, 20) : null]);
+     b.notes ? String(b.notes).slice(0, 1000) : null, Array.isArray(b.tags) ? b.tags.slice(0, 20) : null,
+     b.family_member_id || null]);
   return rows[0] || null;
 }
 

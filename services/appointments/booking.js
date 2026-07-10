@@ -44,7 +44,7 @@ const APPT_COLS = 'id, booking_ref, slot_date, slot_start, slot_end, consultatio
  *   the original appointment instead of booking again.
  * @returns {Promise<{ok:true, appointment:object, replayed?:boolean} | {ok:false, error:string}>}
  */
-async function bookSlot(providerId, patientId, date, startTime, mode, idempotencyKey) {
+async function bookSlot(providerId, patientId, date, startTime, mode, idempotencyKey, familyMemberId) {
   const pool = getPool();
 
   if (idempotencyKey) {
@@ -72,12 +72,12 @@ async function bookSlot(providerId, patientId, date, startTime, mode, idempotenc
     const { rows } = await client.query(
       `INSERT INTO appointments
          (booking_ref, provider_id, patient_id, slot_date, slot_start, slot_end,
-          consultation_mode, status, consultation_room, idempotency_key)
-       VALUES ($1,$2,$3,$4,$5,$6,$7,'confirmed',$8,$9)
+          consultation_mode, status, consultation_room, idempotency_key, family_member_id)
+       VALUES ($1,$2,$3,$4,$5,$6,$7,'confirmed',$8,$9,$10)
        ON CONFLICT (provider_id, slot_date, slot_start) WHERE status = 'confirmed'
        DO NOTHING
        RETURNING ${APPT_COLS}`,
-      [ref, providerId, patientId, date, startTime, slot.end, useMode, room, idempotencyKey || null]
+      [ref, providerId, patientId, date, startTime, slot.end, useMode, room, idempotencyKey || null, familyMemberId || null]
     );
     if (rows.length === 0) {
       await client.query('ROLLBACK');

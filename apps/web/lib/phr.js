@@ -13,9 +13,10 @@ const SEVERITIES = ['mild', 'moderate', 'severe', 'life-threatening'];
 export const isRecordType = (t) => RECORD_TYPES.includes(t);
 
 // ---- records ----
-export function listRecords(userId, type) {
+export function listRecords(userId, type, memberId) {
   const vals = [userId]; let where = 'user_id = $1 AND deleted_at IS NULL';
-  if (type && isRecordType(type)) { vals.push(type); where += ` AND record_type = $2`; }
+  vals.push(memberId || null); where += ` AND family_member_id IS NOT DISTINCT FROM $${vals.length}`;
+  if (type && isRecordType(type)) { vals.push(type); where += ` AND record_type = $${vals.length}`; }
   return run(`SELECT id, record_type, title, description, record_date, file_name, file_size_kb,
                      doctor_name, hospital_name, tags, created_at
                 FROM health_records WHERE ${where} ORDER BY record_date DESC NULLS LAST, created_at DESC`, vals);
@@ -23,11 +24,11 @@ export function listRecords(userId, type) {
 export async function createRecord(userId, b) {
   if (!isRecordType(b.record_type) || !b.title) return null;
   const rows = await run(
-    `INSERT INTO health_records (user_id, record_type, title, description, record_date, file_name, file_size_kb, doctor_name, hospital_name, tags)
-     VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10) RETURNING id`,
+    `INSERT INTO health_records (user_id, record_type, title, description, record_date, file_name, file_size_kb, doctor_name, hospital_name, tags, family_member_id)
+     VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11) RETURNING id`,
     [userId, b.record_type, String(b.title).slice(0, 200), b.description || null, b.record_date || null,
      b.file_name || null, b.file_size_kb || null, b.doctor_name || null, b.hospital_name || null,
-     Array.isArray(b.tags) ? b.tags : null]);
+     Array.isArray(b.tags) ? b.tags : null, b.family_member_id || null]);
   return rows[0]?.id || null;
 }
 export async function updateRecord(id, userId, b) {

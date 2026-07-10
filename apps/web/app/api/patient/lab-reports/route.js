@@ -3,6 +3,7 @@
 import { NextResponse } from 'next/server';
 import { currentPatientId } from '@/lib/appointments';
 import { listLabReports, createLabReport, MAX_FILE_KB, FILE_TYPES } from '@/lib/labReports';
+import { ownsFamilyMember } from '@/lib/family';
 
 export const dynamic = 'force-dynamic';
 
@@ -13,7 +14,7 @@ export async function GET(request) {
   const uid = await currentPatientId();
   if (!uid) return err('unauthenticated', 401);
   const { searchParams } = new URL(request.url);
-  const rows = await listLabReports(uid, searchParams.get('q') || '');
+  const rows = await listLabReports(uid, searchParams.get('q') || '', searchParams.get('member') || null);
   return NextResponse.json({ data: rows, meta: { count: rows.length }, errors: null });
 }
 
@@ -37,13 +38,15 @@ export async function POST(request) {
     }
     b = {
       lab_name: form.get('lab_name'), report_date: form.get('report_date'), report_type: form.get('report_type'),
-      ordered_by_doctor: form.get('ordered_by_doctor'), notes: form.get('notes'), results: safeJson(form.get('results'))
+      ordered_by_doctor: form.get('ordered_by_doctor'), notes: form.get('notes'), results: safeJson(form.get('results')),
+      family_member_id: form.get('family_member_id') || null
     };
   } else {
     b = await request.json().catch(() => ({}));
   }
 
   if (!b.report_date) return err('report_date_required', 400);
+  if (b.family_member_id && !(await ownsFamilyMember(uid, b.family_member_id))) return err('invalid_member', 403);
   const row = await createLabReport(uid, { ...b, ...fileMeta });
   if (!row) return err('create_failed', 400);
   return NextResponse.json({ data: row, meta: null, errors: null }, { status: 201 });

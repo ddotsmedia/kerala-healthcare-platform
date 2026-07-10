@@ -755,3 +755,18 @@ Quick status of every `[NEEDS DECISION]` ever logged (this section is additive; 
 - [OK] Build "Compiled successfully", 0 errors (labMarkers pure -> safe in client; no getPool leak). labReports/labTrends/labMarkers node --check pass. Files <400 lines.
 ### Not done / pending
 - [PENDING DEPLOY] VPS: git pull + docker build + pnpm db:migrate (to 62). No seed. Verify /ml/patient/lab-reports (login-gated). Commands in docs/phases/P-C4.md.
+
+## Session: 2026-07-10 — P-C5 Family Health Profiles
+### Feature
+- [OK] Migration 0063 family_members (spec 0074) + 0064 family_member_id on health_records/prescriptions/lab_reports/appointments (spec 0075; appointments added for the booking link) + indexes. Migrations 62 -> 64 on deploy.
+- [OK] lib/family.js: listFamily (age from DOB), get, ownsFamilyMember (null=self allowed), add (is_minor auto from age<18), update, delete. API GET/POST /api/patient/family + PATCH/DELETE /[id].
+- [OK] Page /[locale]/patient/family: FamilyManager (cards name/relationship/age/blood/minor + inline add form + remove + link to member's health records). Dashboard "👨‍👩‍👧 Family" tile.
+- [OK] PHR family scoping: FamilySwitcher ("Viewing: Self ▼") on health-records, prescriptions, lab-reports pages (navigates ?member=). list functions gained a memberId filter (family_member_id IS NOT DISTINCT FROM $member — null=self); create paths attach family_member_id (ownership-validated in routes via ownsFamilyMember). Upload components (prescription/lab) + PHRDashboard record-create carry memberId.
+- [OK] Booking: bookSlot(...) gained familyMemberId param -> appointments.family_member_id. /book/[doctorSlug] has a "Booking for" selector (Self + family via ?for=), each slot form posts familyMemberId; book action forwards it.
+### Assumptions / decisions
+- [ASSUMPTION] family_member_id added to appointments too (spec 0075 listed only the 3 PHR tables, but the booking section requires the appointment link). Allergies + medications stay account-level (self) — spec only family-links health_records/prescriptions/lab_reports. Lab-report TREND chart shows self-only (hidden in member view) to avoid threading member through the trends endpoint this phase.
+- [ASSUMPTION] Member scoping uses "IS NOT DISTINCT FROM" so ?member absent = self (family_member_id IS NULL). Ownership of any family_member_id on create is validated server-side.
+### Verified (local)
+- [OK] Web + Portal builds both "Compiled successfully", 0 errors. family.js + booking.js node --check pass. Files <400 lines.
+### Not done / pending
+- [PENDING DEPLOY] VPS: git pull + docker build (web + portal) + pnpm db:migrate (to 64). No seed. Verify /ml/patient/family + PHR switcher + book-for-child. Commands in docs/phases/P-C5.md.

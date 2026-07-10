@@ -3,9 +3,11 @@ import { redirect } from 'next/navigation';
 import { resolveLocale } from '@/lib/i18n';
 import { currentPatientId } from '@/lib/appointments';
 import { listPrescriptions } from '@/lib/prescriptions';
+import { listFamily } from '@/lib/family';
 import { EmptyState } from '@khp/ui';
 import PrescriptionCard from '@/components/prescriptions/PrescriptionCard';
 import UploadPrescription from '@/components/prescriptions/UploadPrescription';
+import FamilySwitcher from '@/components/family/FamilySwitcher';
 
 export const dynamic = 'force-dynamic';
 
@@ -24,17 +26,22 @@ export default async function PrescriptionsPage(props) {
   if (!uid) redirect(`/${locale}/login?returnUrl=/${locale}/patient/prescriptions`);
 
   const q = sp.q || '';
-  const list = await listPrescriptions(uid, q);
+  const member = sp.member || '';
+  const [list, family] = await Promise.all([listPrescriptions(uid, q, member || null), listFamily(uid)]);
   const basePath = `/${locale}/patient/prescriptions`;
 
   return (
     <main className="mx-auto max-w-3xl px-4 py-6 space-y-4">
-      <div className="flex items-center justify-between gap-2">
+      <div className="flex flex-wrap items-center justify-between gap-2">
         <h1 className="text-xl font-bold">💊 {ml ? 'പ്രിസ്ക്രിപ്ഷനുകൾ' : 'Prescriptions'}</h1>
-        <UploadPrescription locale={locale} />
+        <div className="flex items-center gap-3">
+          {family.length > 0 && <FamilySwitcher members={family} current={member} basePath={basePath} locale={locale} />}
+          <UploadPrescription locale={locale} memberId={member} />
+        </div>
       </div>
 
       <form action={basePath} method="get">
+        {member && <input type="hidden" name="member" value={member} />}
         <input type="search" name="q" defaultValue={q} placeholder={ml ? 'ഡോക്ടർ അല്ലെങ്കിൽ മരുന്ന് തിരയുക…' : 'Search by doctor or medication…'}
           className="w-full rounded-lg border border-gray-300 px-4 py-2 text-sm focus:border-brand focus:outline-none" />
       </form>

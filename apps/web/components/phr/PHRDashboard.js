@@ -13,7 +13,7 @@ const REC_TYPES = [
 ];
 const inp = 'w-full rounded-lg border border-gray-300 px-3 py-2 text-base';
 
-export default function PHRDashboard({ locale = 'ml', summary, initialAllergies = [], initialMeds = [], initialRecords = [] }) {
+export default function PHRDashboard({ locale = 'ml', summary, memberId = '', initialAllergies = [], initialMeds = [], initialRecords = [] }) {
   const ml = locale === 'ml';
   const [allergies, setAllergies] = useState(initialAllergies);
   const [meds, setMeds] = useState(initialMeds);
@@ -40,7 +40,7 @@ export default function PHRDashboard({ locale = 'ml', summary, initialAllergies 
 
   async function addRecord(e) {
     e.preventDefault(); const f = e.target;
-    const body = { record_type: tab, title: f.title.value, doctor_name: f.doctor_name.value, hospital_name: f.hospital_name.value, record_date: f.record_date.value || null };
+    const body = { record_type: tab, title: f.title.value, doctor_name: f.doctor_name.value, hospital_name: f.hospital_name.value, record_date: f.record_date.value || null, family_member_id: memberId || null };
     const j = await post('/api/phr/records', body);
     if (j.data?.id) { setRecords((r) => [{ id: j.data.id, ...body }, ...r]); f.reset(); }
   }

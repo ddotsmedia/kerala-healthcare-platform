@@ -71,6 +71,11 @@ export default async function PatientDashboard(props) {
           <span className="font-semibold text-brand">🧪 {locale === 'ml' ? 'ലാബ് റിപ്പോർട്ടുകൾ' : 'Lab Reports'}</span>
           <span className="text-brand">→</span>
         </Link>
+        <Link href={`/${locale}/patient/family`}
+          className="flex items-center justify-between rounded-xl border border-brand bg-teal-50 p-4 hover:bg-teal-100">
+          <span className="font-semibold text-brand">👨‍👩‍👧 {locale === 'ml' ? 'കുടുംബം' : 'Family'}</span>
+          <span className="text-brand">→</span>
+        </Link>
       </div>
 
       <section>

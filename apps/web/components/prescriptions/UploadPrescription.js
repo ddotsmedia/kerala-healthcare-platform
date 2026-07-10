@@ -9,7 +9,7 @@ import MedicationsEditor from './MedicationsEditor';
 const MAX_KB = 2048;
 const ACCEPT = ['image/jpeg', 'image/png', 'application/pdf'];
 
-export default function UploadPrescription({ locale = 'ml' }) {
+export default function UploadPrescription({ locale = 'ml', memberId = '' }) {
   const ml = locale === 'ml';
   const router = useRouter();
   const [open, setOpen] = useState(false);
@@ -34,6 +34,7 @@ export default function UploadPrescription({ locale = 'ml' }) {
     if (file) fd.append('file', file);
     for (const k of ['doctor_name', 'hospital_name', 'prescribed_date', 'valid_until', 'notes']) if (form[k]) fd.append(k, form[k]);
     fd.append('medications', JSON.stringify(meds.filter((m) => m.name)));
+    if (memberId) fd.append('family_member_id', memberId);
     try {
       const r = await fetch('/api/patient/prescriptions', { method: 'POST', body: fd });
       if (r.status === 401) { window.location.href = `/${locale}/login`; return; }

@@ -3,10 +3,12 @@ import { redirect } from 'next/navigation';
 import { resolveLocale } from '@/lib/i18n';
 import { currentPatientId } from '@/lib/appointments';
 import { listLabReports } from '@/lib/labReports';
+import { listFamily } from '@/lib/family';
 import { EmptyState } from '@khp/ui';
 import LabReportCard from '@/components/labreports/LabReportCard';
 import LabTrendChart from '@/components/labreports/LabTrendChart';
 import UploadLabReport from '@/components/labreports/UploadLabReport';
+import FamilySwitcher from '@/components/family/FamilySwitcher';
 
 export const dynamic = 'force-dynamic';
 
@@ -25,19 +27,24 @@ export default async function LabReportsPage(props) {
   if (!uid) redirect(`/${locale}/login?returnUrl=/${locale}/patient/lab-reports`);
 
   const q = sp.q || '';
-  const list = await listLabReports(uid, q);
+  const member = sp.member || '';
+  const [list, family] = await Promise.all([listLabReports(uid, q, member || null), listFamily(uid)]);
   const basePath = `/${locale}/patient/lab-reports`;
 
   return (
     <main className="mx-auto max-w-3xl px-4 py-6 space-y-4">
-      <div className="flex items-center justify-between gap-2">
+      <div className="flex flex-wrap items-center justify-between gap-2">
         <h1 className="text-xl font-bold">🧪 {ml ? 'ലാബ് റിപ്പോർട്ടുകൾ' : 'Lab Reports'}</h1>
-        <UploadLabReport locale={locale} />
+        <div className="flex items-center gap-3">
+          {family.length > 0 && <FamilySwitcher members={family} current={member} basePath={basePath} locale={locale} />}
+          <UploadLabReport locale={locale} memberId={member} />
+        </div>
       </div>
 
-      <LabTrendChart locale={locale} />
+      {!member && <LabTrendChart locale={locale} />}
 
       <form action={basePath} method="get">
+        {member && <input type="hidden" name="member" value={member} />}
         <input type="search" name="q" defaultValue={q} placeholder={ml ? 'ലാബ് / തരം / ഡോക്ടർ തിരയുക…' : 'Search lab / type / doctor…'}
           className="w-full rounded-lg border border-gray-300 px-4 py-2 text-sm focus:border-brand focus:outline-none" />
       </form>
