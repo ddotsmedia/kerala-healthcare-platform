@@ -16,6 +16,7 @@ export { default as DialysisCard } from './components/directory/DialysisCard.js'
 export { default as FertilityCard } from './components/directory/FertilityCard.js';
 export { default as PalliativeCard } from './components/directory/PalliativeCard.js';
 export { default as HomeNursingCard } from './components/directory/HomeNursingCard.js';
+export { default as EquipmentCard } from './components/directory/EquipmentCard.js';
 export { default as CompareTable } from './components/compare/CompareTable.js';
 export { default as CompareBar } from './components/compare/CompareBar.js';
 export { default as CompareToggle } from './components/compare/CompareToggle.js';

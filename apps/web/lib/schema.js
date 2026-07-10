@@ -364,6 +364,26 @@ function homeNursingSchema(a, locale) {
   };
 }
 
+/** MedicalBusiness structured data for a medical equipment supplier. */
+function equipmentSchema(e, locale) {
+  const region = e.district_en || e.district_ml || 'Kerala';
+  const phones = Array.isArray(e.phone) ? e.phone : (e.phone ? [e.phone] : []);
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'MedicalBusiness',
+    name: e.name_en || e.name_ml,
+    url: `${SITE}/${locale}/medical-equipment/${e.slug}`,
+    telephone: phones[0] || undefined,
+    email: e.email || undefined,
+    address: {
+      '@type': 'PostalAddress',
+      streetAddress: e.address_en || e.address_ml || undefined,
+      addressRegion: region, addressCountry: 'IN'
+    },
+    areaServed: region
+  };
+}
+
 /** MedicalWebPage wrapper — every health-context page. */
 function medicalWebPageSchema(title, description, url) {
   return {
@@ -395,4 +415,4 @@ function jobPostingSchema(job, locale) {
   };
 }
 
-export { physicianSchema, hospitalSchema, labSchema, pharmacySchema, bloodBankSchema, ambulanceSchema, dentalSchema, eyeCentreSchema, physioSchema, mentalHealthSchema, dialysisSchema, fertilitySchema, palliativeSchema, homeNursingSchema, medicalWebPageSchema, jobPostingSchema, SITE };
+export { physicianSchema, hospitalSchema, labSchema, pharmacySchema, bloodBankSchema, ambulanceSchema, dentalSchema, eyeCentreSchema, physioSchema, mentalHealthSchema, dialysisSchema, fertilitySchema, palliativeSchema, homeNursingSchema, equipmentSchema, medicalWebPageSchema, jobPostingSchema, SITE };

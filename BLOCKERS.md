@@ -682,3 +682,18 @@ Quick status of every `[NEEDS DECISION]` ever logged (this section is additive; 
 - [OK] Web build + Portal build both "Compiled successfully", 0 errors. seed-demo.js + web/portal opd.js node --check pass. Files <400 lines.
 ### Not done / pending
 - [PENDING DEPLOY] VPS: git pull + docker build (web + portal) + pnpm db:migrate (to 57) + pnpm db:seed:demo (loads 3 OPD). Verify /ml/hospitals/amala-hospital-thrissur/opd. Commands in docs/phases/P-A15.md.
+
+## Session: 2026-07-10 — P-A16 Medical Equipment Directory
+### Feature
+- [OK] Migration 0058 medical_equipment_suppliers (spec 0054; sequential). New provider type. Migrations 57 -> 58 on deploy.
+- [OK] lib/equipment.js: searchEquipment (district/type/category via @> array/rental/term, paginated; rental first), getEquipmentBySlug, nearbyEquipment, allEquipmentSlugs.
+- [OK] UI: packages/ui EquipmentCard (type, category badges, service flags). schema.js equipmentSchema (MedicalBusiness).
+- [OK] Pages: /[locale]/medical-equipment (search + category/district/type/rental filters), /[locale]/medical-equipment/[slug] (category grid, services rental/delivery/installation/repair, contact, nearby, MedicalBusiness+MedicalWebPage+BreadcrumbList JSON-LD, use-under-doctor-advice disclaimer).
+- [OK] API: GET /api/medical-equipment, GET /api/medical-equipment/[slug]. Added to navbar Directory dropdown. Sitemap: /medical-equipment + /medical-equipment/[slug] both locales.
+- [OK] Seed: 3 suppliers (MediGear EKM supplier, Health Rentals TVM rental, Care Ortho KKD), varied categories/services, ON CONFLICT DO NOTHING.
+### Assumptions / decisions
+- [ASSUMPTION] Category filter via array containment (equipment_categories @> ARRAY[c]) + GIN index. No rating field in spec schema (omitted from card/sort). Disclaimer adds "consult a doctor before using medical equipment".
+### Verified (local)
+- [OK] Build "Compiled successfully", 0 errors. seed-demo.js + equipment.js node --check pass. Files <400 lines.
+### Not done / pending
+- [PENDING DEPLOY] VPS: git pull + docker build + pnpm db:migrate (to 58) + pnpm db:seed:demo (loads 3 suppliers). Commands in docs/phases/P-A16.md.
