@@ -20,7 +20,8 @@ const DIRECTORY = [
   { href: 'dental', ml: 'ഡെന്റൽ', en: 'Dental' },
   { href: 'eye-hospitals', ml: 'നേത്ര ആശുപത്രികൾ', en: 'Eye Hospitals' },
   { href: 'physiotherapy', ml: 'ഫിസിയോതെറാപ്പി', en: 'Physiotherapy' },
-  { href: 'mental-health-centres', ml: 'മാനസികാരോഗ്യ കേന്ദ്രങ്ങൾ', en: 'Mental Health' }
+  { href: 'mental-health-centres', ml: 'മാനസികാരോഗ്യ കേന്ദ്രങ്ങൾ', en: 'Mental Health' },
+  { href: 'dialysis', ml: 'ഡയാലിസിസ്', en: 'Dialysis' }
 ];
 
 // Top-level links (besides Home logo + Emergency button).

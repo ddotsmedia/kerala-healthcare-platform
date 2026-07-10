@@ -592,3 +592,18 @@ Quick status of every `[NEEDS DECISION]` ever logged (this section is additive; 
 - [OK] Build "Compiled successfully", 0 errors. seed-demo.js + mentalHealth.js node --check pass. Files <400 lines.
 ### Not done / pending
 - [PENDING DEPLOY] VPS: git pull + docker build + pnpm db:migrate (to 52) + pnpm db:seed:demo (loads 3 centres). Commands in docs/phases/P-A9.md.
+
+## Session: 2026-07-10 — P-A10 Dialysis Centres
+### Feature
+- [OK] Migration 0053 dialysis_centres (spec 0049; sequential). New provider type. Migrations 52 -> 53 on deploy.
+- [OK] lib/dialysis.js: searchDialysis (district/HD/PD/govt-scheme/shift via jsonb @>/term, paginated), getDialysisBySlug (+hospital join), nearbyDialysis, allDialysisSlugs.
+- [OK] UI: packages/ui DialysisCard (machines, shift chips, type + govt badges). schema.js dialysisSchema (MedicalClinic, Nephrology).
+- [OK] Pages: /[locale]/dialysis (search + district/HD/PD/govt/shift filters), /[locale]/dialysis/[slug] (dialysis types HD/PD/HDF, shift schedule table, machine count, sessions/week, fee, govt scheme PMJAY, hospital link, nearby, MedicalClinic+MedicalWebPage+BreadcrumbList JSON-LD, disclaimer).
+- [OK] API: GET /api/dialysis, GET /api/dialysis/[slug]. Added to navbar Directory dropdown. Sitemap: /dialysis + /dialysis/[slug] both locales.
+- [OK] Seed: 3 centres (Lakeshore EKM govt+HD/PD/HDF, Govt-Hospital KKD free, Care Kidney TVM), shift_timings JSONB, ON CONFLICT DO NOTHING.
+### Assumptions / decisions
+- [ASSUMPTION] Shift filter matches shift_timings JSONB via containment (@> [{"shift":"morning"}]). List orders govt-scheme first, then machine_count. Type filter checkboxes are HD + PD (HDF shown on profile).
+### Verified (local)
+- [OK] Build "Compiled successfully", 0 errors. seed-demo.js + dialysis.js node --check pass. Files <400 lines.
+### Not done / pending
+- [PENDING DEPLOY] VPS: git pull + docker build + pnpm db:migrate (to 53) + pnpm db:seed:demo (loads 3 centres). Commands in docs/phases/P-A10.md.

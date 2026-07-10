@@ -262,6 +262,31 @@ function mentalHealthSchema(m, locale) {
   };
 }
 
+/** MedicalClinic structured data for a dialysis centre. */
+function dialysisSchema(c, locale) {
+  const region = c.district_en || c.district_ml || 'Kerala';
+  const phones = Array.isArray(c.phone) ? c.phone : (c.phone ? [c.phone] : []);
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'MedicalClinic',
+    name: c.name_en || c.name_ml,
+    url: `${SITE}/${locale}/dialysis/${c.slug}`,
+    medicalSpecialty: 'Nephrology',
+    telephone: phones[0] || undefined,
+    email: c.email || undefined,
+    address: {
+      '@type': 'PostalAddress',
+      streetAddress: c.address_en || c.address_ml || undefined,
+      addressRegion: region, addressCountry: 'IN'
+    },
+    areaServed: region,
+    ...(c.lat != null && c.lng != null
+      ? { geo: { '@type': 'GeoCoordinates', latitude: c.lat, longitude: c.lng } }
+      : {}),
+    availableService: { '@type': 'MedicalProcedure', name: 'Dialysis' }
+  };
+}
+
 /** MedicalWebPage wrapper — every health-context page. */
 function medicalWebPageSchema(title, description, url) {
   return {
@@ -293,4 +318,4 @@ function jobPostingSchema(job, locale) {
   };
 }
 
-export { physicianSchema, hospitalSchema, labSchema, pharmacySchema, bloodBankSchema, ambulanceSchema, dentalSchema, eyeCentreSchema, physioSchema, mentalHealthSchema, medicalWebPageSchema, jobPostingSchema, SITE };
+export { physicianSchema, hospitalSchema, labSchema, pharmacySchema, bloodBankSchema, ambulanceSchema, dentalSchema, eyeCentreSchema, physioSchema, mentalHealthSchema, dialysisSchema, medicalWebPageSchema, jobPostingSchema, SITE };

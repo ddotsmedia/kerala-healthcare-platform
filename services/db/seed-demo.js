@@ -660,6 +660,27 @@ async function seedMentalHealth(pool) {
   }
 }
 
+// name_ml, name_en, slug, district_code, hospital_slug|null, machines, sessions_wk, shifts[], hd, pd, hdf, govt, fee
+const DEMO_DIALYSIS = [
+  ['ലേക്ഷോർ ഡയാലിസിസ്', 'Lakeshore Dialysis Centre', 'lakeshore-dialysis-ernakulam', 'EKM', 'lakeshore-hospital-ernakulam', 20, 336, [{ shift: 'morning', time: '07:00-11:00' }, { shift: 'afternoon', time: '12:00-16:00' }, { shift: 'evening', time: '17:00-21:00' }], true, true, true, true, 1500],
+  ['ജനറൽ ആശുപത്രി ഡയാലിസിസ്', 'General Hospital Dialysis Unit', 'general-hospital-dialysis-kozhikode', 'KKD', 'general-hospital-kozhikode', 15, 252, [{ shift: 'morning', time: '06:00-10:00' }, { shift: 'afternoon', time: '11:00-15:00' }], true, false, false, true, 0],
+  ['കെയർ കിഡ്‌നി സെന്റർ', 'Care Kidney Centre', 'care-kidney-centre-thiruvananthapuram', 'TVM', null, 10, 168, [{ shift: 'morning', time: '07:00-11:00' }, { shift: 'evening', time: '16:00-20:00' }], true, true, false, false, 1200]
+];
+
+async function seedDialysis(pool) {
+  for (const d of DEMO_DIALYSIS) {
+    await pool.query(
+      `INSERT INTO dialysis_centres
+         (name_ml,name_en,slug,district_id,hospital_id,machine_count,sessions_per_week,
+          shift_timings,has_hd,has_pd,has_hdf,accepts_govt_scheme,fee_per_session_inr,verification_status)
+       SELECT $1,$2,$3,di.id,(SELECT id FROM hospitals WHERE slug=$4),$5,$6,$7::jsonb,$8,$9,$10,$11,$12,'verified'
+         FROM districts di WHERE di.code=$13
+       ON CONFLICT (slug) DO NOTHING`,
+      [d[0], d[1], d[2], d[4], d[5], d[6], JSON.stringify(d[7]), d[8], d[9], d[10], d[11], d[12], d[3]]
+    );
+  }
+}
+
 async function main() {
   const pool = getPool();
   await runMigrations(pool);
@@ -675,6 +696,7 @@ async function main() {
   await seedEyeCentres(pool);
   await seedPhysio(pool);
   await seedMentalHealth(pool);
+  await seedDialysis(pool);
   await seedPatientAndAvailability(pool);
   await seedAuthUsers(pool);
   await seedContent(pool);
@@ -683,7 +705,7 @@ async function main() {
   await seedReviews(pool);
   const counts = await populateVectors(pool);
   const rc = (await pool.query(`SELECT count(*)::int AS n FROM reviews WHERE deleted_at IS NULL`)).rows[0].n;
-  console.log(`Demo seed complete. Doctors: ${counts.doctors}, Hospitals: ${counts.hospitals}, Departments: ${DEMO_HOSPITALS.length * DEPTS.length}, Facilities: ${DEMO_FACILITIES.length}, Labs: ${DEMO_LABS.length} (${LAB_TESTS.length} tests each), Pharmacies: ${DEMO_PHARMACIES.length}, BloodBanks: ${DEMO_BLOOD_BANKS.length}, Ambulance: ${DEMO_AMBULANCE.length}, Dental: ${DEMO_DENTAL.length}, EyeCentres: ${DEMO_EYE.length}, Physio: ${DEMO_PHYSIO.length}, MentalHealth: ${DEMO_MENTAL.length}, Reviews: ${rc}.`);
+  console.log(`Demo seed complete. Doctors: ${counts.doctors}, Hospitals: ${counts.hospitals}, Departments: ${DEMO_HOSPITALS.length * DEPTS.length}, Facilities: ${DEMO_FACILITIES.length}, Labs: ${DEMO_LABS.length} (${LAB_TESTS.length} tests each), Pharmacies: ${DEMO_PHARMACIES.length}, BloodBanks: ${DEMO_BLOOD_BANKS.length}, Ambulance: ${DEMO_AMBULANCE.length}, Dental: ${DEMO_DENTAL.length}, EyeCentres: ${DEMO_EYE.length}, Physio: ${DEMO_PHYSIO.length}, MentalHealth: ${DEMO_MENTAL.length}, Dialysis: ${DEMO_DIALYSIS.length}, Reviews: ${rc}.`);
 }
 
 main()
