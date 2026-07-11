@@ -19,6 +19,7 @@ export default function RootLayout({ children }) {
             <nav className="flex gap-4 text-sm">
               <Link href="/verification" className="hover:text-brand">Verification</Link>
               <Link href="/reviews" className="hover:text-brand">Reviews</Link>
+              <Link href="/second-opinion" className="hover:text-brand">2nd Opinion</Link>
               <Link href="/cms" className="hover:text-brand">CMS</Link>
               <Link href="/analytics" className="hover:text-brand">Analytics</Link>
             </nav>

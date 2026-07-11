@@ -785,3 +785,16 @@ Quick status of every `[NEEDS DECISION]` ever logged (this section is additive; 
 - [OK] Web build "Compiled successfully", 0 errors. feedback.js node --check pass; @khp/appointments -> @khp/notifications dep linked (pnpm install). Files <400 lines.
 ### Not done / pending
 - [PENDING DEPLOY] VPS: git pull + docker build + pnpm db:migrate (to 65). Schedule run-feedback.js every 30 min. Verify /ml/feedback/<token>. Commands in docs/phases/P-C6.md.
+
+## Session: 2026-07-11 — P-C7 Second Opinion Feature
+### Feature (web patient + admin)
+- [OK] Migration 0066 second_opinion_requests (spec 0077; sequential). *_doctor_id -> doctors(id), documents = jsonb array of health-record ids. Migrations 65 -> 66 on deploy.
+- [OK] Web lib/secondOpinion.js: createRequest (condition/dx/rx/specialty/district/urgency/documents), listMyRequests (+ matched doctor join), getMyRequest, cancelRequest. API: POST /api/second-opinion, GET /api/second-opinion/my, PATCH /api/second-opinion/[id] (cancel).
+- [OK] Web page /[locale]/second-opinion: educational intro + SecondOpinionForm (condition, existing dx/rx, specialty+district selects, urgency radios, attach PHR records checkboxes) + "My requests" list with status badge + matched-doctor card + Book CTA. Patient dashboard "🩺 Second Opinion" tile.
+- [OK] Admin lib/secondOpinion.js: listRequestsByStatus (urgent-first), statusCounts, suggestDoctors (verified+published by specialty+district, rating-sorted), matchRequest (set matched_doctor_id + status='matched' + in-app notification to patient). Admin page apps/admin/app/second-opinion (status tabs + per-open-request auto-suggest dropdown + Match action) + actions.js. Admin nav "2nd Opinion" link.
+### Assumptions / decisions
+- [ASSUMPTION] Matching is admin-manual with auto-suggest (doctors by specialty+district, rating-desc) — no auto-assign. Patient notified via existing in-app notifications table (type second_opinion_matched). documents = attached PHR record ids (jsonb array). requesting_doctor_id left null (no referring-doctor capture UI this phase). Booking CTA -> existing /book/[doctorSlug]; linking the created appointment back to the request (appointment_id) deferred (patient books normally).
+### Verified (local)
+- [OK] Web + Admin builds both "Compiled successfully", 0 errors. web/admin secondOpinion.js node --check pass. Files <400 lines.
+### Not done / pending
+- [PENDING DEPLOY] VPS: git pull + docker build (web + admin) + pnpm db:migrate (to 66). No seed. Verify /ml/second-opinion + admin /second-opinion. Commands in docs/phases/P-C7.md.
