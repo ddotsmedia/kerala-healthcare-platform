@@ -16,6 +16,15 @@ export async function generateMetadata(props) {
 }
 
 function Row({ locale, a, whatsapp = false }) {
+  const ml = locale === 'ml';
+  // "Join" active from 15 min before the slot until 2h after.
+  let canJoin = false;
+  if (a.consultation_mode === 'video' && a.consultation_room && a.status === 'confirmed') {
+    const start = new Date(`${String(a.slot_date).slice(0, 10)}T${String(a.slot_start).slice(0, 5)}:00`).getTime();
+    const mins = (start - Date.now()) / 60000;
+    canJoin = mins <= 15 && mins >= -120;
+  }
+  const isVideo = a.consultation_mode === 'video' && a.consultation_room && a.status === 'confirmed';
   return (
     <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
       <Link href={`/${locale}/patient/appointments/${a.id}`} className="flex items-center justify-between hover:opacity-80">
@@ -25,6 +34,11 @@ function Row({ locale, a, whatsapp = false }) {
         </div>
         <span className="text-xs text-gray-400">{a.status}</span>
       </Link>
+      {isVideo && (
+        canJoin
+          ? <Link href={`/${locale}/consult/${a.consultation_room}`} className="mt-2 inline-block rounded-lg bg-green-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-green-700">🎥 {ml ? 'വീഡിയോ കോളിൽ ചേരുക' : 'Join Video Call'}</Link>
+          : <span className="mt-2 inline-block rounded-lg bg-gray-200 px-3 py-1.5 text-xs font-medium text-gray-400" title={ml ? 'അപ്പോയിന്റ്മെന്റിന് 15 മിനിറ്റ് മുമ്പ് ലഭ്യമാകും' : 'Available 15 min before the appointment'}>🎥 {ml ? 'വീഡിയോ കോൾ' : 'Video Call'}</span>
+      )}
       {whatsapp && <AppointmentWhatsApp appointment={a} locale={locale} />}
     </div>
   );

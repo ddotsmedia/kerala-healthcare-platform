@@ -798,3 +798,17 @@ Quick status of every `[NEEDS DECISION]` ever logged (this section is additive; 
 - [OK] Web + Admin builds both "Compiled successfully", 0 errors. web/admin secondOpinion.js node --check pass. Files <400 lines.
 ### Not done / pending
 - [PENDING DEPLOY] VPS: git pull + docker build (web + admin) + pnpm db:migrate (to 66). No seed. Verify /ml/second-opinion + admin /second-opinion. Commands in docs/phases/P-C7.md.
+
+## Session: 2026-07-11 — P-C8 Video Consultation (Jitsi)
+### Feature (web + portal)
+- [OK] Migration 0067 appointments += jitsi_room_name, consultation_started_at, consultation_ended_at (spec 0078). Migrations 66 -> 67 on deploy.
+- [OK] services/appointments/video.js: jitsiRoomName (deterministic khp-<room/id>), jitsiUrl, generateJitsiRoom (persists name), generateJWTConfig (null — plain meet.jit.si), startConsultation, endConsultation (doctor end -> status completed). Exported from @khp/appointments. JITSI_HOST env (default meet.jit.si).
+- [OK] Web: lib/consult.js (getConsultAppointment — room -> appointment + viewer role [patient or doctor], authz; startConsult/endConsult authz'd). API POST /api/consult {appointmentId, action:start|end}. Page /[locale]/consult/[roomId]: pre-call checklist (camera/mic/quiet/details) + VideoCall client (loads meet.jit.si/external_api.js at runtime, embeds JitsiMeetExternalAPI in a div, End Call -> mark ended + post-call "Leave a review" for patient; open-in-new-tab fallback).
+- [OK] Patient dashboard: video upcoming appts show "Join Video Call" (green, enabled 15 min before slot until 2h after) else greyed. Portal doctor schedule: "Start Video Call" link (video appts) -> {WEB_URL}/ml/consult/<room>.
+### Assumptions / decisions
+- [ASSUMPTION] Jitsi = plain public meet.jit.si (free, no infra/JWT) per spec; generateJWTConfig returns null (wire 8x8.vc/self-hosted JWT later for production privacy). Room name deterministic from consultation_room so doctor + patient share it. [CSP: embedding needs script-src + frame-src https://meet.jit.si added to the CSP — until then the runtime script load fails gracefully and the UI shows an "Open in new tab" link that always works.]
+- [ASSUMPTION] Join window computed client/server from slot datetime (parsed as local time) — 15 min before to 2h after; server TZ vs IST may shift the boundary slightly (display gate only). Doctor ending the call marks the appointment completed (which also triggers the P-C6 feedback flow).
+### Verified (local)
+- [OK] Web + Portal builds both "Compiled successfully", 0 errors. video.js + consult.js node --check pass. Files <400 lines.
+### Not done / pending
+- [PENDING DEPLOY] VPS: git pull + docker build (web + portal) + pnpm db:migrate (to 67). Add https://meet.jit.si to CSP script-src + frame-src (nginx/Next headers) for the in-page embed; otherwise the new-tab fallback is used. Verify /ml/consult/<room>. Commands in docs/phases/P-C8.md.

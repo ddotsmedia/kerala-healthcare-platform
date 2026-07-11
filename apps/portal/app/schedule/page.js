@@ -9,6 +9,7 @@ export const dynamic = 'force-dynamic';
 export const metadata = { title: "Today's schedule · KHP Portal" };
 
 const fmtTime = (t) => (t ? String(t).slice(0, 5) : '');
+const WEB_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://malayalidoctor.com';
 
 export default async function SchedulePage(props) {
   const searchParams = await props.searchParams;
@@ -36,6 +37,10 @@ export default async function SchedulePage(props) {
                 </div>
                 {a.status === 'confirmed' && (
                   <div className="flex flex-col gap-2">
+                    {a.consultation_mode === 'video' && a.consultation_room && (
+                      <a href={`${WEB_URL}/ml/consult/${a.consultation_room}`} target="_blank" rel="noopener noreferrer"
+                        className="rounded-lg bg-green-600 px-3 py-1.5 text-center text-xs font-medium text-white">🎥 Start Video Call</a>
+                    )}
                     <form action={completeAction}>
                       <input type="hidden" name="id" value={a.id} />
                       <button className="rounded-lg bg-brand px-3 py-1.5 text-xs font-medium text-white">Complete</button>
