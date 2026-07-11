@@ -770,3 +770,18 @@ Quick status of every `[NEEDS DECISION]` ever logged (this section is additive; 
 - [OK] Web + Portal builds both "Compiled successfully", 0 errors. family.js + booking.js node --check pass. Files <400 lines.
 ### Not done / pending
 - [PENDING DEPLOY] VPS: git pull + docker build (web + portal) + pnpm db:migrate (to 64). No seed. Verify /ml/patient/family + PHR switcher + book-for-child. Commands in docs/phases/P-C5.md.
+
+## Session: 2026-07-11 — P-C6 Post-Appointment Feedback
+### Feature
+- [OK] Migration 0065 appointments += feedback_sent_at, feedback_completed_at, feedback_token (+ partial UNIQUE index on token). Migrations 64 -> 65 on deploy.
+- [OK] services/appointments/feedback.js: generateFeedbackToken (24-byte hex), getByFeedbackToken (public token->appointment+doctor), sendFeedbackRequest (completed + not-yet-sent only; generates token, emails patient via feedback-request template, sets feedback_sent_at), sendPendingFeedbackRequests (completed appts >2h past slot, feedback_sent_at NULL), markFeedbackCompleted. Exported from @khp/appointments. run-feedback.js cron entry (every 30 min). @khp/notifications added to @khp/appointments deps.
+- [OK] Email template services/notifications/templates/feedback-request.js (ml+en): "How was your visit?" + 5 star deep-links (/feedback/[token]?rating=N) + "Leave a detailed review" button.
+- [OK] Page /[locale]/feedback/[token] (public, noindex): heading w/ doctor name, FeedbackForm (star picker prefilled from ?rating, what-went-well / improve textareas, anonymous checkbox) -> POST; already-completed shows thanks.
+- [OK] API POST /api/feedback/[token]: validates token, creates review (entity=doctor, status=pending via createReview, ON CONFLICT one-per-patient), marks feedback_completed_at. Public (token = auth).
+### Assumptions / decisions
+- [ASSUMPTION] "2 hours after appointment" = (slot_date + slot_start) < now()-2h with status='completed' (no completed_at column exists; slot end is a fine proxy). Email recipient uses DEMO_NOTIFY_TO (encrypted patient email undecryptable here) — same as other notifications. Review title = "what went well" (first 200), body = went-well + improve.
+- [ASSUMPTION] Cron scheduling (every 30 min) is a VPS concern (BullMQ/cron), same as run-reminders/run-digest — run-feedback.js is the entry point. Feedback created review respects the existing one-review-per-patient-per-doctor unique constraint (duplicate -> silently marked complete).
+### Verified (local)
+- [OK] Web build "Compiled successfully", 0 errors. feedback.js node --check pass; @khp/appointments -> @khp/notifications dep linked (pnpm install). Files <400 lines.
+### Not done / pending
+- [PENDING DEPLOY] VPS: git pull + docker build + pnpm db:migrate (to 65). Schedule run-feedback.js every 30 min. Verify /ml/feedback/<token>. Commands in docs/phases/P-C6.md.
