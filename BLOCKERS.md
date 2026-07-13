@@ -839,3 +839,16 @@ Quick status of every `[NEEDS DECISION]` ever logged (this section is additive; 
 - [OK] Build "Compiled successfully", 0 errors (no getPool in client bundle). goals.js + goalConfig.js node --check pass. Files <400 lines.
 ### Not done / pending
 - [PENDING DEPLOY] VPS: git pull + docker build + pnpm db:migrate (to 69). No seed. Verify /ml/patient/goals (login-gated). Commands in docs/phases/P-C10.md.
+
+## Session: 2026-07-13 — P-C11 Medication Reminders
+### Feature
+- [OK] Migration 0070 medication_reminders (spec 0081; sequential) + medication_reminder_sends ledger (unique reminder+date+time — cron dedupe). Migrations 69 -> 70 on deploy.
+- [OK] lib/medReminders.js: list/add/update/delete. reminder_times time[] (HH:MM validated), days_of_week int[] (0-6), date range, is_active. API GET/POST /api/patient/medication-reminders + PATCH/DELETE /[id] (toggle via PATCH is_active).
+- [OK] Engine: services/notifications/med-reminders.js sendDueMedicationReminders(windowMin=6) — Asia/Kolkata now, matches active + date-range + weekday + any reminder_time in (now, now+window]; claims each via the ledger (ON CONFLICT DO NOTHING) then emails (med-reminder template ml+en) + inserts in-app notification. run-med-reminders.js cron entry (every 5 min). Exported from @khp/notifications.
+- [OK] UI: RemindersManager (client; list w/ times+days summary + on/off toggle + delete; add form: name, dosage, multiple times, day pills, start/end dates). Page /[locale]/patient/reminders + dashboard "⏰ Med Reminders" tile.
+### Assumptions / decisions
+- [ASSUMPTION] "5 min before" implemented as a cron every 5 min that fires reminders whose time is within the next ~6 min window (Asia/Kolkata); the ledger prevents duplicate sends across overlapping runs. Recipient = DEMO_NOTIFY_TO (encrypted patient email undecryptable here). Near-midnight window wrap is a minor edge (time + interval) — acceptable.
+### Verified (local)
+- [OK] Build "Compiled successfully", 0 errors. medReminders.js + med-reminders.js node --check pass. Files <400 lines.
+### Not done / pending
+- [PENDING DEPLOY] VPS: git pull + docker build + pnpm db:migrate (to 70). Schedule run-med-reminders.js every 5 min (cron/BullMQ). Verify /ml/patient/reminders. Commands in docs/phases/P-C11.md.
