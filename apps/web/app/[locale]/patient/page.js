@@ -100,6 +100,11 @@ export default async function PatientDashboard(props) {
           <span className="font-semibold text-brand">🔁 {locale === 'ml' ? 'റീഫിൽ' : 'Refill'}</span>
           <span className="text-brand">→</span>
         </Link>
+        <Link href={`/${locale}/patient/goals`}
+          className="flex items-center justify-between rounded-xl border border-brand bg-teal-50 p-4 hover:bg-teal-100">
+          <span className="font-semibold text-brand">🎯 {locale === 'ml' ? 'ആരോഗ്യ ലക്ഷ്യങ്ങൾ' : 'Health Goals'}</span>
+          <span className="text-brand">→</span>
+        </Link>
       </div>
 
       <section>

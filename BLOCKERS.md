@@ -824,3 +824,18 @@ Quick status of every `[NEEDS DECISION]` ever logged (this section is additive; 
 - [OK] Web build "Compiled successfully". Portal "Compiled successfully" + 5/5 pages generated (trailing error is the Windows-only .next standalone symlink-copy step — builds clean in Docker, same as web). web/portal refills.js node --check pass. Files <400 lines.
 ### Not done / pending
 - [PENDING DEPLOY] VPS: git pull + docker build (web + portal) + pnpm db:migrate (to 68). No seed. Verify /ml/patient/refill + portal /refills. Commands in docs/phases/P-C9.md.
+
+## Session: 2026-07-13 — P-C10 Health Goals
+### Note
+- [NOTE] User re-sent "execute P-C9" but P-C9 (refills, 4d143c1) was already complete + pushed. Proceeded to next-in-track P-C10 as best default.
+### Feature
+- [OK] Migration 0069 health_goals (spec 0080; sequential) + user/status index. Migrations 68 -> 69 on deploy.
+- [OK] lib/goalConfig.js (PURE): 7 goal types (weight/systolic_bp/blood_sugar/steps/sleep/hba1c/custom) mapped to health-tracker metric types + direction (up/down) + progressPct + isAchieved. lib/goals.js (server): listGoals (auto-syncs current_value from latest matching health_metric + auto-marks achieved), addGoal (start from latest metric), updateGoal, deleteGoal.
+- [OK] API: GET/POST /api/patient/goals, PATCH/DELETE /[id]. currentPatientId-gated.
+- [OK] UI: GoalsManager (client; GoalCard with current-vs-target, direction-aware progress bar, target-date countdown, "Track this metric →" link to health-tracker, 🎉 achieved state; add-goal inline form; delete). Page /[locale]/patient/goals + dashboard "🎯 Health Goals" tile.
+### Assumptions / decisions
+- [ASSUMPTION] Goal progress auto-updates from the health tracker: on each goals load, current_value is set to the latest health_metric of the mapped type and status flips to 'achieved' when the target is met (direction-aware: down for weight/BP/sugar/HbA1c, up for steps/sleep). custom goals have no metric link (current edited manually). goalConfig kept pure so client imports don't pull getPool.
+### Verified (local)
+- [OK] Build "Compiled successfully", 0 errors (no getPool in client bundle). goals.js + goalConfig.js node --check pass. Files <400 lines.
+### Not done / pending
+- [PENDING DEPLOY] VPS: git pull + docker build + pnpm db:migrate (to 69). No seed. Verify /ml/patient/goals (login-gated). Commands in docs/phases/P-C10.md.
