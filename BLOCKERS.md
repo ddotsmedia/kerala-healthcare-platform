@@ -812,3 +812,15 @@ Quick status of every `[NEEDS DECISION]` ever logged (this section is additive; 
 - [OK] Web + Portal builds both "Compiled successfully", 0 errors. video.js + consult.js node --check pass. Files <400 lines.
 ### Not done / pending
 - [PENDING DEPLOY] VPS: git pull + docker build (web + portal) + pnpm db:migrate (to 67). Add https://meet.jit.si to CSP script-src + frame-src (nginx/Next headers) for the in-page embed; otherwise the new-tab fallback is used. Verify /ml/consult/<room>. Commands in docs/phases/P-C8.md.
+
+## Session: 2026-07-13 — P-C9 Prescription Refill Request
+### Feature (web patient + portal)
+- [OK] Migration 0068 refill_requests (spec 0079; sequential). doctor_id -> doctors(id), medications_requested jsonb, original_prescription_id + new_prescription_id -> prescriptions. Migrations 67 -> 68 on deploy.
+- [OK] Web lib/refills.js: listMyDoctors (distinct doctors from the patient's appointments — the refill target), createRefillRequest (cleanMeds), listMyRefillRequests. API GET/POST /api/patient/refill-requests. Page /[locale]/patient/refill: RefillForm (pick a past prescription -> its meds as checkboxes + doctor select [prefilled from rx.doctor_id] + urgency + reason) + "My requests" list (status badge, doctor notes, "View new prescription" when approved). Dashboard "🔁 Refill" tile.
+- [OK] Portal lib/refills.js: listRefills (urgent-first), statusCounts, decideRefill (owner+pending only; approve -> INSERT a new prescriptions row for the patient [user_id=patient, doctor_id, medications=requested, prescribed_date=today], set new_prescription_id + status; reject/dispatch; notify patient in-app refill_<status>). Portal page /refills (status tabs + approve/reject form w/ notes) + actions.js. Portal nav "Refills" link.
+### Assumptions / decisions
+- [ASSUMPTION] doctor_id NOT NULL but P-C3 prescriptions often have null doctor_id (free-text doctor). So the refill form makes the patient pick a doctor from the ones they've had appointments with (prefilled from the chosen prescription's doctor_id when present). Approve creates a real prescriptions row (appears in the patient's PHR + linked via new_prescription_id). Portal decision via server actions (matches OPD/schedule/second-opinion portal pattern) rather than the spec's REST /api/portal/refill-requests — functionally equivalent, owner-scoped. Patient notified via existing notifications table.
+### Verified (local)
+- [OK] Web build "Compiled successfully". Portal "Compiled successfully" + 5/5 pages generated (trailing error is the Windows-only .next standalone symlink-copy step — builds clean in Docker, same as web). web/portal refills.js node --check pass. Files <400 lines.
+### Not done / pending
+- [PENDING DEPLOY] VPS: git pull + docker build (web + portal) + pnpm db:migrate (to 68). No seed. Verify /ml/patient/refill + portal /refills. Commands in docs/phases/P-C9.md.
