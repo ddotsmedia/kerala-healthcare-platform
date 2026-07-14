@@ -796,6 +796,34 @@ async function seedEquipment(pool) {
   }
 }
 
+// title_ml, title_en, slug, summary_ml, summary_en, source, source_url, category, district_code(null=state), importance
+const DEMO_NEWS = [
+  ['സംസ്ഥാനത്ത് ചെങ്കണ്ണ് കേസുകൾ വർധിക്കുന്നു', 'Conjunctivitis cases rising across state', 'conjunctivitis-cases-rising-kerala', 'ജാഗ്രത പാലിക്കാൻ ആരോഗ്യ വകുപ്പിന്റെ നിർദേശം. കൈകൾ ഇടയ്ക്കിടെ കഴുകുക.', 'Health Dept advises caution; wash hands frequently and avoid touching eyes.', 'Kerala Health Department', 'https://dhs.kerala.gov.in', 'outbreak', null, 'breaking'],
+  ['എലിപ്പനി: മഴക്കാലത്ത് ജാഗ്രത നിർദേശം', 'Leptospirosis advisory for monsoon', 'leptospirosis-monsoon-advisory', 'വെള്ളക്കെട്ടിൽ ഇറങ്ങുന്നവർ പ്രതിരോധ ഗുളിക കഴിക്കണം.', 'Those wading through floodwater should take prophylaxis; consult a doctor.', 'Kerala Health Department', 'https://dhs.kerala.gov.in', 'advisory', 'EKM', 'high'],
+  ['ഡെങ്കിപ്പനി പ്രതിരോധം: ഉറവിട നശീകരണം ശക്തമാക്കി', 'Dengue drive: source reduction intensified', 'dengue-source-reduction-drive', 'വീടുകളിൽ കെട്ടിനിൽക്കുന്ന വെള്ളം ഒഴിവാക്കാൻ അഭ്യർത്ഥന.', 'Residents urged to clear stagnant water to curb Aedes mosquito breeding.', 'District Medical Office', null, 'advisory', 'TVM', 'high'],
+  ['സൗജന്യ കാൻസർ സ്ക്രീനിംഗ് ക്യാമ്പ്', 'Free cancer screening camps announced', 'free-cancer-screening-camps', 'ജില്ലാ ആശുപത്രികളിൽ ഈ മാസം സൗജന്യ സ്ക്രീനിംഗ്.', 'Free screening at district hospitals this month; early detection saves lives.', 'Kerala Health Department', null, 'awareness', 'KKD', 'normal'],
+  ['പുതിയ പൊതുജനാരോഗ്യ നയം പ്രഖ്യാപിച്ചു', 'New public health policy announced', 'new-public-health-policy', 'പ്രാഥമികാരോഗ്യ കേന്ദ്രങ്ങൾ ശക്തിപ്പെടുത്തുന്നതിന് ഊന്നൽ.', 'Policy focuses on strengthening primary health centres statewide.', 'Government of Kerala', null, 'policy', null, 'normal'],
+  ['WHO: ആഗോള ക്ഷയരോഗ നിർമാർജന ലക്ഷ്യം', 'WHO sets global TB elimination target', 'who-tb-elimination-target', 'ക്ഷയരോഗ നിർമാർജനത്തിന് പുതിയ മാർഗരേഖ പുറത്തിറക്കി.', 'WHO releases updated guidance toward TB elimination goals.', 'WHO', 'https://who.int', 'research', null, 'normal'],
+  ['ICMR: പോഷകാഹാര പഠനം പുറത്ത്', 'ICMR publishes nutrition study', 'icmr-nutrition-study', 'സമീകൃതാഹാരത്തിന്റെ പ്രാധാന്യം ചൂണ്ടിക്കാട്ടി പഠനം.', 'Study highlights the importance of balanced diet for non-communicable diseases.', 'ICMR', 'https://icmr.gov.in', 'research', null, 'normal'],
+  ['വാക്സിനേഷൻ ഡ്രൈവ്: കുട്ടികൾക്ക് മുൻഗണന', 'Vaccination drive prioritises children', 'child-vaccination-drive', 'അംഗൻവാടികളിൽ പ്രത്യേക വാക്സിനേഷൻ ക്യാമ്പുകൾ.', 'Special immunisation camps at anganwadis; parents urged to participate.', 'Kerala Health Department', null, 'awareness', 'TSR', 'normal'],
+  ['H1N1: ആശുപത്രികളിൽ പ്രത്യേക വാർഡ്', 'H1N1: special wards at hospitals', 'h1n1-special-wards', 'ജലദോഷ ലക്ഷണങ്ങളുള്ളവർ മാസ്ക് ധരിക്കാൻ നിർദേശം.', 'Those with flu symptoms advised to wear masks; special wards readied.', 'Kerala Health Department', null, 'outbreak', 'KTM', 'high'],
+  ['മാനസികാരോഗ്യ ഹെൽപ്‌ലൈൻ വിപുലീകരിച്ചു', 'Mental health helpline expanded', 'mental-health-helpline-expanded', 'ജില്ലാ അടിസ്ഥാനത്തിൽ 24x7 കൗൺസലിംഗ് സേവനം.', 'District-level 24x7 counselling now available; call the DISHA helpline 1056.', 'Kerala Health Department', null, 'awareness', null, 'normal']
+];
+
+async function seedHealthNews(pool) {
+  for (const n of DEMO_NEWS) {
+    await pool.query(
+      `INSERT INTO health_news
+         (title_ml,title_en,slug,summary_ml,summary_en,source,source_url,category,district_id,importance,is_published)
+       SELECT $1,$2,$3,$4,$5,$6,$7,$8,
+              (SELECT id FROM districts WHERE code=$9 AND deleted_at IS NULL),
+              $10,true
+       ON CONFLICT (slug) DO NOTHING`,
+      [n[0], n[1], n[2], n[3], n[4], n[5], n[6], n[7], n[8], n[9]]
+    );
+  }
+}
+
 async function main() {
   const pool = getPool();
   await runMigrations(pool);
@@ -822,6 +850,7 @@ async function main() {
   await seedContent(pool);
   await seedSymptoms(pool);
   await seedJobs(pool);
+  await seedHealthNews(pool);
   await seedReviews(pool);
   const counts = await populateVectors(pool);
   const rc = (await pool.query(`SELECT count(*)::int AS n FROM reviews WHERE deleted_at IS NULL`)).rows[0].n;

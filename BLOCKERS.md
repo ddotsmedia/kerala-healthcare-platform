@@ -883,3 +883,19 @@ Quick status of every `[NEEDS DECISION]` ever logged (this section is additive; 
 
 ### Needs human decision / pending deploy
 - [PENDING DEPLOY] Migrations 0072–0074 (+ earlier 0040–0071 batch) not yet applied to VPS. Run `pnpm db:migrate` on 194.164.151.202 at deploy.
+
+## Session: 2026-07-14 P-D2 Health News Feed
+
+### Assumptions
+- [ASSUMPTION] Migration numbered 0075 (local sequential) though spec labelled it 0085.
+- [ASSUMPTION] Auto-refresh implemented as client NewsAutoRefresh calling router.refresh() every 5 min; page stays server-rendered for SEO.
+- [ASSUMPTION] Admin create/publish via server actions (matches cms pattern); POST /api/admin/news added in admin app (spec fidelity) guarded by requireAdminRole.
+- [ASSUMPTION] Bulk RSS import = manual paste "title_ml | summary_ml | source | category" per line.
+- [ASSUMPTION] District null = state/national; seed uses scalar subquery on districts.code.
+
+### Verified
+- [VERIFIED] apps/web + apps/admin "Compiled successfully". EPERM .next standalone symlink is Windows-only packaging; clean in Docker/VPS.
+- [VERIFIED] NewsArticle + BreadcrumbList JSON-LD on article page; feed has breaking banner, category tabs, district filter, search, pagination; homepage shows breaking banner + latest-news strip.
+
+### Needs human decision / pending deploy
+- [PENDING DEPLOY] Migration 0075 (+ 0072–0074 + earlier batch) not applied to VPS. Run pnpm db:migrate + pnpm db:seed:demo on 194.164.151.202 at deploy.

@@ -6,10 +6,13 @@ import Link from 'next/link';
 import { resolveLocale } from '@/lib/i18n';
 import { searchDoctors, searchHospitals, listDistricts, listSpecialties } from '@/lib/providers';
 import { listPublishedContent } from '@/lib/knowledge';
+import { breakingNews, latestNews } from '@/lib/news';
 import { DoctorCard, HospitalCard } from '@khp/ui';
 import {
   FullBleed, SectionHeading, Hero, StatsBar, HowItWorks, ToolsAndAI, specialtyIcon
 } from '@/components/home/HomeSections';
+import NewsCard from '@/components/news/NewsCard';
+import BreakingBanner from '@/components/news/BreakingBanner';
 
 // Live DB content at request time (providers are cached, so this stays fast).
 export const dynamic = 'force-dynamic';
@@ -32,18 +35,25 @@ export default async function HomePage(props) {
   const locale = resolveLocale(params.locale);
   const ml = locale === 'ml';
 
-  const [specialties, districts, doctors, hospitals, articles] = await Promise.all([
+  const [specialties, districts, doctors, hospitals, articles, breaking, news] = await Promise.all([
     listSpecialties(),
     listDistricts(),
     searchDoctors({ page: 1, limit: 6 }),
     searchHospitals({ page: 1, limit: 4 }),
-    listPublishedContent({ limit: 3 })
+    listPublishedContent({ limit: 3 }),
+    breakingNews(5),
+    latestNews(3)
   ]);
 
   const nm = (r) => (ml ? r.name_ml : r.name_en) || r.name_en;
 
   return (
     <div className="-my-6">
+      {breaking.length > 0 && (
+        <div className="mx-auto max-w-6xl px-4 pt-4">
+          <BreakingBanner items={breaking} locale={locale} />
+        </div>
+      )}
       <Hero locale={locale} />
       <StatsBar locale={locale} />
 
@@ -166,6 +176,21 @@ export default async function HomePage(props) {
           <div className="mt-6 text-center">
             <Link href={`/${locale}/health`} className="text-sm font-semibold text-brand hover:underline">
               {ml ? 'എല്ലാ ലേഖനങ്ങളും →' : 'All articles →'}
+            </Link>
+          </div>
+        </FullBleed>
+      )}
+
+      {/* Latest health news */}
+      {news.length > 0 && (
+        <FullBleed className="bg-gray-50 py-14">
+          <SectionHeading>{ml ? 'ഏറ്റവും പുതിയ ആരോഗ്യ വാർത്തകൾ' : 'Latest Health News'}</SectionHeading>
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+            {news.map((n) => <NewsCard key={n.id} item={n} locale={locale} />)}
+          </div>
+          <div className="mt-6 text-center">
+            <Link href={`/${locale}/news`} className="text-sm font-semibold text-brand hover:underline">
+              {ml ? 'എല്ലാ വാർത്തകളും →' : 'See all news →'}
             </Link>
           </div>
         </FullBleed>

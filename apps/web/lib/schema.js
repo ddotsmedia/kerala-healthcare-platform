@@ -416,6 +416,25 @@ function medicalWebPageSchema(title, description, url) {
   };
 }
 
+/** NewsArticle structured data for a health-news item. */
+function newsArticleSchema(n, locale, url) {
+  const ml = locale === 'ml';
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'NewsArticle',
+    headline: ((ml ? n.title_ml : n.title_en) || n.title_ml || '').slice(0, 110),
+    description: (ml ? n.summary_ml : n.summary_en) || n.summary_ml || undefined,
+    datePublished: n.published_at ? new Date(n.published_at).toISOString() : undefined,
+    dateModified: n.updated_at ? new Date(n.updated_at).toISOString() : undefined,
+    image: n.image_url || undefined,
+    articleSection: n.category || undefined,
+    author: { '@type': 'Organization', name: n.source || 'MalayaliDoctor' },
+    publisher: { '@type': 'Organization', name: 'MalayaliDoctor', url: SITE },
+    isBasedOn: n.source_url || undefined,
+    mainEntityOfPage: url
+  };
+}
+
 /** JobPosting structured data for a job listing. */
 function jobPostingSchema(job, locale) {
   return {
@@ -435,4 +454,4 @@ function jobPostingSchema(job, locale) {
   };
 }
 
-export { physicianSchema, hospitalSchema, labSchema, pharmacySchema, bloodBankSchema, ambulanceSchema, dentalSchema, eyeCentreSchema, physioSchema, mentalHealthSchema, dialysisSchema, fertilitySchema, palliativeSchema, homeNursingSchema, equipmentSchema, qaPageSchema, medicalWebPageSchema, jobPostingSchema, SITE };
+export { physicianSchema, hospitalSchema, labSchema, pharmacySchema, bloodBankSchema, ambulanceSchema, dentalSchema, eyeCentreSchema, physioSchema, mentalHealthSchema, dialysisSchema, fertilitySchema, palliativeSchema, homeNursingSchema, equipmentSchema, qaPageSchema, medicalWebPageSchema, newsArticleSchema, jobPostingSchema, SITE };
