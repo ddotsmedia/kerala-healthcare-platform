@@ -1,5 +1,6 @@
 // Patient appointment detail — info + cancel CTA (reschedule is doctor-managed).
 
+import Link from 'next/link';
 import { notFound, redirect } from 'next/navigation';
 import { resolveLocale, t } from '@/lib/i18n';
 import { currentPatientId, getMyAppointment } from '@/lib/appointments';
@@ -34,6 +35,14 @@ export default async function AppointmentDetail(props) {
           </ProfileField>
         )}
       </div>
+
+      {a.status === 'completed' && (
+        <Link href={`/${locale}/patient/appointments/${a.id}/chat`}
+          className="flex items-center justify-between rounded-xl border border-brand bg-teal-50 p-4 hover:bg-teal-100">
+          <span className="font-semibold text-brand">💬 {locale === 'ml' ? 'ഡോക്ടറുമായി ചാറ്റ്' : 'Chat with doctor'}</span>
+          <span className="text-brand">→</span>
+        </Link>
+      )}
 
       {canCancel ? (
         <form action={cancelAppointmentAction} className="space-y-2 rounded-xl border border-gray-200 bg-white p-4">

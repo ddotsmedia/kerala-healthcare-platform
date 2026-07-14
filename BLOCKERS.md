@@ -852,3 +852,16 @@ Quick status of every `[NEEDS DECISION]` ever logged (this section is additive; 
 - [OK] Build "Compiled successfully", 0 errors. medReminders.js + med-reminders.js node --check pass. Files <400 lines.
 ### Not done / pending
 - [PENDING DEPLOY] VPS: git pull + docker build + pnpm db:migrate (to 70). Schedule run-med-reminders.js every 5 min (cron/BullMQ). Verify /ml/patient/reminders. Commands in docs/phases/P-C11.md.
+
+## Session: 2026-07-14 — P-C12 Doctor-Patient Chat
+### Feature (web patient + portal)
+- [OK] Migration 0071 doctor_patient_messages (spec 0082; sequential) + appointment/created_at index. Migrations 70 -> 71 on deploy.
+- [OK] Web lib/chat.js: getPatientChat (own appointment + status='completed' gate; marks doctor msgs read), sendPatientMessage (notifies doctor in-app). API GET/POST /api/patient/appointments/[id]/chat. Page /[locale]/patient/appointments/[id]/chat + ChatThread (client; bubbles mine/other, composer, 12s polling for new messages). "💬 Chat with doctor" link on the appointment detail page (completed only).
+- [OK] Portal lib/chat.js: getDoctorChat (own appointment + completed; marks patient msgs read), sendDoctorMessage (notifies patient in-app; sender_id = session userId). Page /schedule/appointments/[id]/chat (server-rendered thread + server-action send) + actions.js. "💬 Chat" link on portal schedule for completed appts.
+- [OK] Prominent emergency disclaimer on both sides: "follow-up questions only... book a new appointment or call 112/108 in an emergency." Chat locked (🔒) before completion on both sides.
+### Assumptions / decisions
+- [ASSUMPTION] Chat strictly gated to status='completed' appointments; both parties verified as owner (patient_id / provider_id). Patient side uses client polling (12s) for near-real-time; doctor side uses server render + server-action send + revalidate (matches portal pattern, no websockets — additive, no new packages). Reply inserts a chat_message in-app notification for the counterpart.
+### Verified (local)
+- [OK] Web + Portal builds both "Compiled successfully", 0 errors. web/portal chat.js node --check pass. Files <400 lines.
+### Not done / pending
+- [PENDING DEPLOY] VPS: git pull + docker build (web + portal) + pnpm db:migrate (to 71). No seed. Verify chat on a completed appointment (web + portal). Commands in docs/phases/P-C12.md.

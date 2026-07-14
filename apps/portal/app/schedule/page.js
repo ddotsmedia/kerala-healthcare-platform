@@ -35,6 +35,9 @@ export default async function SchedulePage(props) {
                   <p className="text-xs text-gray-500">{a.consultation_mode} · {a.booking_ref} · {a.status}</p>
                   {a.notes_for_doctor && <p className="mt-1 text-sm text-gray-700">📝 {a.notes_for_doctor}</p>}
                 </div>
+                {a.status === 'completed' && (
+                  <a href={`/schedule/appointments/${a.id}/chat`} className="rounded-lg border border-brand px-3 py-1.5 text-center text-xs font-medium text-brand">💬 Chat</a>
+                )}
                 {a.status === 'confirmed' && (
                   <div className="flex flex-col gap-2">
                     {a.consultation_mode === 'video' && a.consultation_room && (
