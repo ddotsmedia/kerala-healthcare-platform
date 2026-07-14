@@ -30,6 +30,7 @@ const DIRECTORY = [
 
 // Top-level links (besides Home logo + Emergency button).
 const TOP = [
+  { href: 'ask', ml: 'ഡോക്ടറോട് ചോദിക്കൂ', en: 'Ask a Doctor' },
   { href: 'jobs', ml: 'ജോലികൾ', en: 'Jobs' },
   { href: 'health', ml: 'ആരോഗ്യ വിവരം', en: 'Health Info' },
   { href: 'assistant', ml: 'AI അസിസ്റ്റന്റ്', en: 'AI Assistant' }

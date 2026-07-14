@@ -384,6 +384,26 @@ function equipmentSchema(e, locale) {
   };
 }
 
+/** QAPage structured data for a Q&A question + its answers. */
+function qaPageSchema(q, url) {
+  const answers = Array.isArray(q.answers) ? q.answers : [];
+  const accepted = answers.find((a) => a.is_accepted) || answers[0];
+  const toAnswer = (a) => ({
+    '@type': 'Answer', text: a.body, upvoteCount: a.helpful_count || 0,
+    author: { '@type': 'Person', name: a.doctor_name || 'Doctor' },
+    dateCreated: a.created_at ? new Date(a.created_at).toISOString() : undefined
+  });
+  return {
+    '@context': 'https://schema.org', '@type': 'QAPage',
+    mainEntity: {
+      '@type': 'Question', name: q.title, text: q.body, url,
+      answerCount: answers.length,
+      ...(accepted ? { acceptedAnswer: toAnswer(accepted) } : {}),
+      ...(answers.length ? { suggestedAnswer: answers.filter((a) => a !== accepted).map(toAnswer) } : {})
+    }
+  };
+}
+
 /** MedicalWebPage wrapper — every health-context page. */
 function medicalWebPageSchema(title, description, url) {
   return {
@@ -415,4 +435,4 @@ function jobPostingSchema(job, locale) {
   };
 }
 
-export { physicianSchema, hospitalSchema, labSchema, pharmacySchema, bloodBankSchema, ambulanceSchema, dentalSchema, eyeCentreSchema, physioSchema, mentalHealthSchema, dialysisSchema, fertilitySchema, palliativeSchema, homeNursingSchema, equipmentSchema, medicalWebPageSchema, jobPostingSchema, SITE };
+export { physicianSchema, hospitalSchema, labSchema, pharmacySchema, bloodBankSchema, ambulanceSchema, dentalSchema, eyeCentreSchema, physioSchema, mentalHealthSchema, dialysisSchema, fertilitySchema, palliativeSchema, homeNursingSchema, equipmentSchema, qaPageSchema, medicalWebPageSchema, jobPostingSchema, SITE };

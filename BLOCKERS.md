@@ -865,3 +865,21 @@ Quick status of every `[NEEDS DECISION]` ever logged (this section is additive; 
 - [OK] Web + Portal builds both "Compiled successfully", 0 errors. web/portal chat.js node --check pass. Files <400 lines.
 ### Not done / pending
 - [PENDING DEPLOY] VPS: git pull + docker build (web + portal) + pnpm db:migrate (to 71). No seed. Verify chat on a completed appointment (web + portal). Commands in docs/phases/P-C12.md.
+
+## Session: 2026-07-14 P-D1 Doctor Q&A
+
+### Assumptions
+- [ASSUMPTION] Doctors answer only PUBLISHED (moderated) questions; portal defaults to own-specialty queue with a "show all" toggle.
+- [ASSUMPTION] Doctor answers posted via portal server action (answerAction); no separate POST /api/qa/questions/[id]/answers route added (redundant with server action + doctor session auth).
+- [ASSUMPTION] Answer body min length 10 chars; one answer per doctor per question (dup blocked).
+- [ASSUMPTION] "Accepted answer" is an admin-only action on published answers (clears siblings).
+
+### Errors fixed
+- [FIXED] qa_questions/qa_answers lacked moderation-audit columns → added additive migration 0074_qa_moderation.sql (rejection_reason, moderated_by, moderated_at on both tables, IF NOT EXISTS).
+
+### Verified
+- [VERIFIED] apps/web, apps/portal, apps/admin all "Compiled successfully". EPERM on .next standalone symlink is Windows-only packaging; unaffected in Docker/VPS.
+- [VERIFIED] Diagnosis-request filter (qaSafety) enforced both client (AskForm pre-submit) and server (createQuestion) — blocks question with error 'diagnosis_request' (HTTP 422).
+
+### Needs human decision / pending deploy
+- [PENDING DEPLOY] Migrations 0072–0074 (+ earlier 0040–0071 batch) not yet applied to VPS. Run `pnpm db:migrate` on 194.164.151.202 at deploy.
