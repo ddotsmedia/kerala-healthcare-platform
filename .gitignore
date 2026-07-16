@@ -56,3 +56,6 @@ docker-compose.override.yml
 # Misc
 *.tsbuildinfo
 .vercel
+
+# Stray text dumps — never commit (may hold secrets)
+*.txt
