@@ -40,7 +40,8 @@ const TOP = [
 // Secondary links — mobile drawer only (reachable via homepage/footer on desktop).
 const MORE = [
   { href: 'symptoms', ml: 'ലക്ഷണങ്ങൾ', en: 'Symptoms' },
-  { href: 'tools', ml: 'ഹെൽത്ത് ടൂളുകൾ', en: 'Health Tools' }
+  { href: 'tools', ml: 'ഹെൽത്ത് ടൂളുകൾ', en: 'Health Tools' },
+  { href: 'donate-blood', ml: 'രക്തദാനം', en: 'Donate Blood' }
 ];
 
 const HUBS = [

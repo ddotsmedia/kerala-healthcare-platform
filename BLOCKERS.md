@@ -899,3 +899,21 @@ Quick status of every `[NEEDS DECISION]` ever logged (this section is additive; 
 
 ### Needs human decision / pending deploy
 - [PENDING DEPLOY] Migration 0075 (+ 0072–0074 + earlier batch) not applied to VPS. Run pnpm db:migrate + pnpm db:seed:demo on 194.164.151.202 at deploy.
+
+## Session: 2026-07-15 P-D3 Blood Donation Registry
+
+### Assumptions
+- [ASSUMPTION] Migrations numbered 0076/0077 (local sequential) though spec labelled them 0086/0087.
+- [ASSUMPTION] blood_donors.user_id made UNIQUE → register = upsert (one donor profile per user).
+- [ASSUMPTION] Added last_alerted_at column on blood_donors for the "max 1 alert/donor/day" rate limit (WHERE last_alerted_at IS NULL OR < now()-interval '1 day').
+- [ASSUMPTION] Requests auto-expire after 72h (expires_at = now()+72h); active list hides fulfilled/expired.
+- [ASSUMPTION] Alert engine emails only donors with a stored email + notify_by_email; SMS deferred (no gateway wired here). Seeded demo donors have no email → no seed-time sends.
+- [ASSUMPTION] Feature is web/patient-only; navbar link added under mobile "More" (Donate Blood).
+
+### Verified
+- [VERIFIED] apps/web "Compiled successfully". EPERM .next standalone symlink is Windows-only packaging; clean in Docker/VPS.
+- [VERIFIED] Non-dismissable disclaimer on page (community service, not medical advice; 112/108). Parameterised SQL throughout; ON CONFLICT DO NOTHING / DO UPDATE on upserts and seeds.
+
+### Needs human decision / pending deploy
+- [PENDING DEPLOY] Migrations 0076/0077 (+ earlier batch) not applied to VPS. Run pnpm db:migrate + pnpm db:seed:demo on 194.164.151.202 at deploy.
+- [NEEDS DECISION] SMS alert path (notify_by_sms) not implemented — needs Kerala SMS gateway wiring + per-donor daily cap decision.

@@ -824,6 +824,42 @@ async function seedHealthNews(pool) {
   }
 }
 
+// user_full_name, blood_group, district_code, is_available
+const DEMO_DONORS = [
+  ['Demo Patient', 'O+', 'EKM', true],
+  ['Demo Candidate', 'A+', 'TVM', true],
+  ['Demo Editor', 'B+', 'KKD', true]
+];
+// requester_full_name, hospital, blood_group, units, district_code, phone, urgency
+const DEMO_BLOOD_REQUESTS = [
+  ['Demo Admin', 'Lakeshore Hospital', 'O+', 2, 'EKM', '9847000111', 'urgent'],
+  ['Demo Admin', 'Medical Trust Hospital', 'A+', 1, 'TVM', '9847000222', 'high'],
+  ['Demo Admin', 'Baby Memorial Hospital', 'B+', 3, 'KKD', '9847000333', 'urgent']
+];
+
+async function seedBloodRegistry(pool) {
+  for (const d of DEMO_DONORS) {
+    await pool.query(
+      `INSERT INTO blood_donors (user_id, blood_group, district_id, is_available)
+       SELECT u.id, $2, di.id, $4
+         FROM users u, districts di
+        WHERE u.full_name = $1 AND di.code = $3
+       ON CONFLICT (user_id) DO NOTHING`,
+      [d[0], d[1], d[2], d[3]]
+    );
+  }
+  for (const r of DEMO_BLOOD_REQUESTS) {
+    await pool.query(
+      `INSERT INTO blood_requests (requester_id, hospital_name, blood_group, units_needed, district_id, contact_phone, urgency, expires_at)
+       SELECT u.id, $2, $3, $4, di.id, $6, $7, now() + interval '72 hours'
+         FROM users u, districts di
+        WHERE u.full_name = $1 AND di.code = $5
+          AND NOT EXISTS (SELECT 1 FROM blood_requests b WHERE b.contact_phone = $6 AND b.deleted_at IS NULL)`,
+      [r[0], r[1], r[2], r[3], r[4], r[5], r[6]]
+    );
+  }
+}
+
 async function main() {
   const pool = getPool();
   await runMigrations(pool);
@@ -851,6 +887,7 @@ async function main() {
   await seedSymptoms(pool);
   await seedJobs(pool);
   await seedHealthNews(pool);
+  await seedBloodRegistry(pool);
   await seedReviews(pool);
   const counts = await populateVectors(pool);
   const rc = (await pool.query(`SELECT count(*)::int AS n FROM reviews WHERE deleted_at IS NULL`)).rows[0].n;
