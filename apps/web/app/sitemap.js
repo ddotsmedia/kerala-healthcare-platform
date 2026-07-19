@@ -65,6 +65,10 @@ export default async function sitemap() {
     for (const hub of ['womens-health', 'mental-health', 'child-health', 'senior-care', 'vaccination']) {
       add(`/${locale}/${hub}`, 0.6, 'weekly');
     }
+    add(`/${locale}/community`, 0.6, 'daily');
+    for (const cat of ['diabetes', 'heart-health', 'cancer-support', 'mental-health', 'pregnancy', 'child-health', 'general-health']) {
+      add(`/${locale}/community/${cat}`, 0.5, 'weekly');
+    }
 
     for (const s of specialties) add(`/${locale}/specialties/${s.slug}`, 0.8);
     for (const d of districts) add(`/${locale}/districts/${districtSlug(d.name_en)}`, 0.8);

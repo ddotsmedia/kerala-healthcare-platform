@@ -26,7 +26,8 @@ const QUICK = [
   { href: 'child-health', ml: 'ശിശു ആരോഗ്യം', en: 'Child Health' },
   { href: 'senior-care', ml: 'സീനിയർ കെയർ', en: 'Senior Care' },
   { href: 'vaccination', ml: 'വാക്സിനേഷൻ', en: 'Vaccination' },
-  { href: 'patient/health-records', ml: 'ആരോഗ്യ രേഖകൾ', en: 'Health Records' }
+  { href: 'patient/health-records', ml: 'ആരോഗ്യ രേഖകൾ', en: 'Health Records' },
+  { href: 'community', ml: 'കമ്മ്യൂണിറ്റി', en: 'Community' }
 ];
 const SOCIAL = ['📘', '𝕏', '📸', '▶️'];
 

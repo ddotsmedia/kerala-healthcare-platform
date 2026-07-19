@@ -21,6 +21,7 @@ export default function RootLayout({ children }) {
               <Link href="/reviews" className="hover:text-brand">Reviews</Link>
               <Link href="/second-opinion" className="hover:text-brand">2nd Opinion</Link>
               <Link href="/qa" className="hover:text-brand">Q&amp;A</Link>
+              <Link href="/forum" className="hover:text-brand">Forum</Link>
               <Link href="/news" className="hover:text-brand">News</Link>
               <Link href="/cms" className="hover:text-brand">CMS</Link>
               <Link href="/analytics" className="hover:text-brand">Analytics</Link>
