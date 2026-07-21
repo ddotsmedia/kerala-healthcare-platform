@@ -16,12 +16,14 @@ function slugify(title) {
   return `${base}-${randomBytes(3).toString('hex')}`;
 }
 
-const APPROVED = "status = 'approved' AND deleted_at IS NULL";
+// Alias-qualified — joins against users (which also has deleted_at) make a bare
+// column ambiguous.
+const approved = (a) => `${a}.status = 'approved' AND ${a}.deleted_at IS NULL`;
 
 export function listCategories() {
   return run(
     `SELECT c.id, c.slug, c.name_ml, c.name_en, c.description_ml, c.description_en, c.icon,
-            (SELECT count(*) FROM forum_posts p WHERE p.category_id = c.id AND p.${APPROVED})::int AS post_count
+            (SELECT count(*) FROM forum_posts p WHERE p.category_id = c.id AND ${approved('p')})::int AS post_count
        FROM forum_categories c WHERE c.deleted_at IS NULL ORDER BY c.name_en`, []);
 }
 
@@ -40,7 +42,7 @@ export function listPosts(categoryId, { sort = 'latest', page = 1, limit = 20 } 
   const off = (Math.max(1, parseInt(page, 10) || 1) - 1) * lim;
   return run(
     `SELECT ${P_COLS} FROM forum_posts p JOIN users u ON u.id = p.author_id
-      WHERE p.category_id = $1 AND p.${APPROVED} ORDER BY ${order} LIMIT $2 OFFSET $3`,
+      WHERE p.category_id = $1 AND ${approved('p')} ORDER BY ${order} LIMIT $2 OFFSET $3`,
     [categoryId, lim, off]);
 }
 
@@ -49,14 +51,14 @@ export function activeDiscussions(limit = 6) {
   return run(
     `SELECT ${P_COLS}, c.slug AS category_slug, c.name_ml AS category_ml, c.name_en AS category_en
        FROM forum_posts p JOIN users u ON u.id = p.author_id JOIN forum_categories c ON c.id = p.category_id
-      WHERE p.${APPROVED} ORDER BY COALESCE(p.last_reply_at, p.created_at) DESC LIMIT $1`, [limit]);
+      WHERE ${approved('p')} ORDER BY COALESCE(p.last_reply_at, p.created_at) DESC LIMIT $1`, [limit]);
 }
 
 export async function getPostBySlug(slug) {
   const rows = await run(
     `SELECT ${P_COLS}, p.category_id, c.slug AS category_slug, c.name_ml AS category_ml, c.name_en AS category_en
        FROM forum_posts p JOIN users u ON u.id = p.author_id JOIN forum_categories c ON c.id = p.category_id
-      WHERE p.slug = $1 AND p.${APPROVED}`, [slug]);
+      WHERE p.slug = $1 AND ${approved('p')}`, [slug]);
   const post = rows[0];
   if (!post) return null;
   await run(`UPDATE forum_posts SET views = views + 1 WHERE id = $1`, [post.id]);
@@ -64,7 +66,7 @@ export async function getPostBySlug(slug) {
     `SELECT r.id, r.body, r.is_anonymous, r.is_doctor_reply, r.created_at,
             CASE WHEN r.is_anonymous THEN NULL ELSE u.full_name END AS author_name
        FROM forum_replies r JOIN users u ON u.id = r.author_id
-      WHERE r.post_id = $1 AND r.${APPROVED}
+      WHERE r.post_id = $1 AND ${approved('r')}
       ORDER BY r.is_doctor_reply DESC, r.created_at ASC`, [post.id]);
   return post;
 }
