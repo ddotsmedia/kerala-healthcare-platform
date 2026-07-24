@@ -13,6 +13,8 @@ import {
 } from '@/components/home/HomeSections';
 import NewsCard from '@/components/news/NewsCard';
 import BreakingBanner from '@/components/news/BreakingBanner';
+import CampaignBanner from '@/components/campaigns/CampaignBanner';
+import { activeCampaign } from '@/lib/campaigns';
 
 // Live DB content at request time (providers are cached, so this stays fast).
 export const dynamic = 'force-dynamic';
@@ -35,14 +37,15 @@ export default async function HomePage(props) {
   const locale = resolveLocale(params.locale);
   const ml = locale === 'ml';
 
-  const [specialties, districts, doctors, hospitals, articles, breaking, news] = await Promise.all([
+  const [specialties, districts, doctors, hospitals, articles, breaking, news, campaign] = await Promise.all([
     listSpecialties(),
     listDistricts(),
     searchDoctors({ page: 1, limit: 6 }),
     searchHospitals({ page: 1, limit: 4 }),
     listPublishedContent({ limit: 3 }),
     breakingNews(5),
-    latestNews(3)
+    latestNews(3),
+    activeCampaign()
   ]);
 
   const nm = (r) => (ml ? r.name_ml : r.name_en) || r.name_en;
@@ -55,6 +58,7 @@ export default async function HomePage(props) {
         </div>
       )}
       <Hero locale={locale} />
+      <CampaignBanner campaign={campaign} locale={locale} />
       <StatsBar locale={locale} />
 
       {/* Specialties */}

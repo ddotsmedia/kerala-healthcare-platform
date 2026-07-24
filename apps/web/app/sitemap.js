@@ -17,13 +17,14 @@ import { allFertilitySlugs } from '@/lib/fertility';
 import { allPalliativeSlugs } from '@/lib/palliative';
 import { allHomeNursingSlugs } from '@/lib/homeNursing';
 import { allEquipmentSlugs } from '@/lib/equipment';
+import { allCampaignSlugs } from '@/lib/campaigns';
 import { SITE } from '@/components/landing/LandingParts';
 
 export const dynamic = 'force-dynamic';
 
 export default async function sitemap() {
-  const [specialties, districts, combos, doctors, hospitals, labs, pharmacies, bloodBanks, ambulance, dental, eye, physio, mental, dialysis, fertility, palliative, homeNursing, equipment] = await Promise.all([
-    listSpecialties(), listDistricts(), combosWithDoctors(), allDoctorSlugs(), allHospitalSlugs(), allLabSlugs(), allPharmacySlugs(), allBloodBankSlugs(), allAmbulanceSlugs(), allDentalSlugs(), allEyeCentreSlugs(), allPhysioSlugs(), allMentalHealthSlugs(), allDialysisSlugs(), allFertilitySlugs(), allPalliativeSlugs(), allHomeNursingSlugs(), allEquipmentSlugs()
+  const [specialties, districts, combos, doctors, hospitals, labs, pharmacies, bloodBanks, ambulance, dental, eye, physio, mental, dialysis, fertility, palliative, homeNursing, equipment, campaigns] = await Promise.all([
+    listSpecialties(), listDistricts(), combosWithDoctors(), allDoctorSlugs(), allHospitalSlugs(), allLabSlugs(), allPharmacySlugs(), allBloodBankSlugs(), allAmbulanceSlugs(), allDentalSlugs(), allEyeCentreSlugs(), allPhysioSlugs(), allMentalHealthSlugs(), allDialysisSlugs(), allFertilitySlugs(), allPalliativeSlugs(), allHomeNursingSlugs(), allEquipmentSlugs(), allCampaignSlugs()
   ]);
 
   const now = new Date();
@@ -69,6 +70,8 @@ export default async function sitemap() {
     for (const cat of ['diabetes', 'heart-health', 'cancer-support', 'mental-health', 'pregnancy', 'child-health', 'general-health']) {
       add(`/${locale}/community/${cat}`, 0.5, 'weekly');
     }
+
+    for (const c of campaigns) add(`/${locale}/campaigns/${c.slug}`, 0.6, 'weekly');
 
     for (const s of specialties) add(`/${locale}/specialties/${s.slug}`, 0.8);
     for (const d of districts) add(`/${locale}/districts/${districtSlug(d.name_en)}`, 0.8);
