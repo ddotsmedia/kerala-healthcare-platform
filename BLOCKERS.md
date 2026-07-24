@@ -4,6 +4,28 @@
 > Claude Code writes here instead of asking questions.
 > Review this file after each session and resolve NEEDS DECISION items before starting the next phase.
 
+## Session: 2026-07-24 P-D5 Patient Referral System
+
+### Assumptions
+- [ASSUMPTION] Migration numbered 0081 (local sequential) though spec labelled it 0091.
+- [ASSUMPTION] `referral_code` is UNIQUE per row, so one shareable code per *referrer* cannot also key every friend. Resolved: each user gets one canonical row (`referred_user_id` NULL, status 'shared') holding the shareable code; each friend who registers creates a child row with code `<PARENT>-<6hex>` (unique, traceable to parent). Stats count child rows only.
+- [ASSUMPTION] `referred_email` stores the **hashed** email (`hashEmail`), never plaintext — CLAUDE.md requires column-level encryption of email + DPDP 2023. Column stays TEXT per spec.
+- [ASSUMPTION] Referral credited only when `/api/auth/register` actually creates a new user (INSERT ... RETURNING id). Existing-email re-registration earns nothing. Self-referral and unknown codes rejected in `trackRegistration`.
+- [ASSUMPTION] Code alphabet excludes I/O/0/1 (read-aloud safe), length 8.
+- [ASSUMPTION] `appointed` promotion wired in `apps/web/app/api/appointments/book/route.js` (web layer) rather than `services/appointments/booking.js`, to avoid a cross-package import of a web lib.
+- [ASSUMPTION] `reward_type` column created per spec but left unset — no reward policy defined yet.
+- [ASSUMPTION] Entry point added to the patient dashboard quick-links grid (🎁 Refer a Friend). Not added to the public footer (patient-only feature).
+
+### Verified
+- [VERIFIED] Migration count 81; `referrals` table live. apps/web "Compiled successfully"; lint clean. Smoke tests on production: referral link generates + invite banner renders; registration with ref tracked (child row `status=registered`, email stored hashed — no plaintext); stats read joined=1 booked=0; bogus code produced 0 rows.
+- [VERIFIED] Unauth `/ml/patient/referrals` does not leak the referral link/code (renders login) — same behaviour as existing `/ml/patient` and `/ml/patient/family`.
+- [VERIFIED] Prod smoke data soft-deleted afterwards (2 referral rows, 3 test users); protected projects untouched (36 running).
+
+### Needs human decision
+- [NEEDS DECISION] `reward_type` has no defined policy — what do referrer and friend actually receive? Copy currently promises only generic "benefits". Healthcare rule: rewards must not be an inducement relating to treatment; the page carries a note stating benefits apply to platform services only.
+- [PRE-EXISTING] `/api/auth/register` returns 502 `otp_failed` for `@example.com` addresses — Resend 422 rejects test domains. Unrelated to P-D5 (reproduced with no ref code). Still blocked on the open Resend domain-verification item.
+- [DEPLOY NOTE] Deployed WITHOUT the spec's `compose up -d --build` (that recreate is what corrupts Docker networking on this snap host). Instead: built image → ran `khp-web-v2` on :3012 with `--add-host` → repointed nginx 3001→3012 → reloaded. Old containers (`khp-khp-web-1`, `khp-web-next`) left running and now idle; nginx backup at `malayalidoctor.com.conf.bak.pd5`. Stale containers should be reaped during the pending reboot/maintenance window.
+
 ## Session: 2026-07-23 P-D4 forum fix + VPS Docker-network incident
 
 ### Errors fixed
