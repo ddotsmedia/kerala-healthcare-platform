@@ -11,8 +11,10 @@ const ROLES = [
 
 export default function RegisterPage(props) {
   const params = use(props.params);
+  const search = use(props.searchParams);
   const locale = params.locale === 'en' ? 'en' : 'ml';
   const ml = locale === 'ml';
+  const ref = String(search?.ref || '').trim().slice(0, 20);
   const [role, setRole] = useState('patient');
   const [stage, setStage] = useState('form');
   const [code, setCode] = useState('');
@@ -26,6 +28,7 @@ export default function RegisterPage(props) {
     setBusy(true); setMsg('');
     try {
       const body = { role, name: f.name.value, email: f.email.value, locale };
+      if (ref) body.ref = ref;
       if (role === 'doctor') body.nmc_number = f.nmc_number?.value;
       if (role === 'hospital') body.org_name = f.org_name?.value;
       const r = await fetch('/api/auth/register', {
@@ -57,6 +60,12 @@ export default function RegisterPage(props) {
   return (
     <div className="mx-auto max-w-sm space-y-4 py-6">
       <h1 className="text-xl font-bold">{ml ? 'രജിസ്റ്റർ ചെയ്യുക' : 'Create account'}</h1>
+
+      {ref && stage === 'form' && (
+        <p className="rounded-lg border border-teal-300 bg-teal-50 px-3 py-2 text-xs text-teal-900">
+          🎁 {ml ? 'ഒരു സുഹൃത്ത് നിങ്ങളെ ക്ഷണിച്ചിരിക്കുന്നു.' : 'A friend invited you to MalayaliDoctor.'}
+        </p>
+      )}
 
       {stage === 'form' ? (
         <>

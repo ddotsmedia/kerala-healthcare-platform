@@ -1,10 +1,12 @@
-// POST /api/auth/register { role, name, email, nmc_number?, org_name?, locale? }
+// POST /api/auth/register { role, name, email, nmc_number?, org_name?, locale?, ref? }
 // Creates the account (role) if new, then sends an email OTP to complete sign-in.
 // Doctor/hospital accounts start pending verification (completed in the portal).
+// `ref` is a referral code — credited only when this call creates a new user.
 
 import { NextResponse } from 'next/server';
 import { getPool } from '@khp/db';
 import { hashEmail, requestEmailOtp } from '@khp/auth';
+import { trackRegistration } from '@/lib/referrals';
 import { logger } from '@/lib/logger';
 
 export const dynamic = 'force-dynamic';
@@ -21,11 +23,13 @@ export async function POST(request) {
   }
   try {
     const eh = hashEmail(email);
-    await getPool().query(
+    const { rows } = await getPool().query(
       `INSERT INTO users (role, full_name, email_hash)
-       SELECT $1, $2, $3 WHERE NOT EXISTS (SELECT 1 FROM users WHERE email_hash = $3)`,
+       SELECT $1, $2, $3 WHERE NOT EXISTS (SELECT 1 FROM users WHERE email_hash = $3)
+       RETURNING id`,
       [role, name, eh]
     );
+    if (rows[0] && b.ref) await trackRegistration(b.ref, rows[0].id, eh);
   } catch (err) {
     logger.error('register_user_failed', { error: err.message });
     return NextResponse.json({ data: null, meta: null, errors: ['register_failed'] }, { status: 500 });

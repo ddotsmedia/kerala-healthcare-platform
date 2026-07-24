@@ -5,6 +5,7 @@ import { NextResponse } from 'next/server';
 import { bookSlot } from '@khp/appointments';
 import { currentPatientId } from '@/lib/appointments';
 import { onAppointmentBooked } from '@/lib/appointmentNotify';
+import { markAppointed } from '@/lib/referrals';
 
 export const dynamic = 'force-dynamic';
 
@@ -22,6 +23,9 @@ export async function POST(request) {
     const code = result.error === 'slot_taken' ? 409 : 400;
     return NextResponse.json({ data: null, meta: null, errors: [result.error] }, { status: code });
   }
-  if (!result.replayed) await onAppointmentBooked(result.appointment.id);
+  if (!result.replayed) {
+    await onAppointmentBooked(result.appointment.id);
+    await markAppointed(patientId); // credits the referrer once this patient books
+  }
   return NextResponse.json({ data: result.appointment, meta: { replayed: !!result.replayed }, errors: null }, { status: 201 });
 }

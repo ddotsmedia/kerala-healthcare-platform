@@ -105,6 +105,11 @@ export default async function PatientDashboard(props) {
           <span className="font-semibold text-brand">🎯 {locale === 'ml' ? 'ആരോഗ്യ ലക്ഷ്യങ്ങൾ' : 'Health Goals'}</span>
           <span className="text-brand">→</span>
         </Link>
+        <Link href={`/${locale}/patient/referrals`}
+          className="flex items-center justify-between rounded-xl border border-brand bg-teal-50 p-4 hover:bg-teal-100">
+          <span className="font-semibold text-brand">🎁 {locale === 'ml' ? 'സുഹൃത്തിനെ റഫർ ചെയ്യുക' : 'Refer a Friend'}</span>
+          <span className="text-brand">→</span>
+        </Link>
         <Link href={`/${locale}/patient/reminders`}
           className="flex items-center justify-between rounded-xl border border-brand bg-teal-50 p-4 hover:bg-teal-100">
           <span className="font-semibold text-brand">⏰ {locale === 'ml' ? 'മരുന്ന് ഓർമ്മപ്പെടുത്തൽ' : 'Med Reminders'}</span>
