@@ -4,6 +4,27 @@
 > Claude Code writes here instead of asking questions.
 > Review this file after each session and resolve NEEDS DECISION items before starting the next phase.
 
+## Session: 2026-07-24 P-D6 Health Awareness Campaigns
+
+### Assumptions
+- [ASSUMPTION] Migration numbered 0082 (local sequential) though spec labelled it 0092.
+- [ASSUMPTION] Added `updated_at`/`deleted_at` to campaigns beyond the spec columns — CLAUDE.md DB rule (every table has soft-delete + timestamps).
+- [ASSUMPTION] Homepage banner gates on BOTH `is_active = true` AND today within `[start_date, end_date]` (spec: "only shows during campaign dates"). Seeded active flag alone is not enough.
+- [ASSUMPTION] Seeded the 5 campaigns with their real awareness-date windows in the NEXT occurrence (World Diabetes Day 2026-11-07..21 active; others future-dated, inactive). Consequence: no banner is visible today by design. Verified the banner path by temporarily shifting the diabetes window to include today, confirming the banner, then restoring the real dates.
+- [ASSUMPTION] `content_ml/en` seeded as trusted rich HTML rendered via `dangerouslySetInnerHTML` — content is admin/seed-authored only, never user input.
+- [ASSUMPTION] Featured specialists = `searchDoctors({ specialtyId })` for the campaign's linked specialty; related articles = latest 3 published (no per-condition tagging exists yet).
+- [ASSUMPTION] Campaign landing pages resolve regardless of date/active (so shared links never 404); only the homepage banner is date-gated.
+
+### Verified
+- [VERIFIED] Migration count 82; 5 campaigns seeded; all 5 in sitemap. apps/web "Compiled successfully"; lint clean. Smoke tests on production: campaign page 200 with theme `#0066B3` + Malayalam title + Book-a-screening CTA + MedicalWebPage JSON-LD; banner appears only when a campaign is active AND in-window (temp-shift test), absent otherwise; inactive campaign page still 200.
+- [VERIFIED] Non-dismissable awareness disclaimer on campaign page (no diagnosis, 112/108). Commit e472ea3.
+
+### Errors fixed
+- [FIXED] On this deploy the khp containers had cycled again (redis/admin/portal Exited 255 ~15h prior; postgres IP moved .6→.3, redis had no IP) — the known stopgap fragility. Site was `degraded` (db/redis error) because the live web's pinned `--add-host` IPs were stale. Recovery: freed orphan proxy on :6380, `docker start` redis/admin/portal, launched new `khp-web-v3` on :3013 with the CURRENT IPs (postgres 172.22.0.3, redis 172.22.0.8), repointed nginx → :3013, re-patched portal/admin `/etc/hosts`. Health back to ok; P-D6 shipped in the same move.
+
+### Needs human decision
+- [NEEDS DECISION — ESCALATING] Idle web containers are now stacking with every deploy: `khp-web-v3` (live), plus dead-weight `khp-web-v2`, `khp-khp-web-1`, `khp-web-next`. snap-Docker denies `rm` on running containers so I cannot reap them. Every container cycle also re-randomises IPs and breaks the `--add-host`/`/etc/hosts` pinning, forcing a manual repin each deploy. This is unsustainable — the platform needs the **host reboot + `docker compose up -d` clean rebuild** (working embedded DNS, restart policies, single web container) during a maintenance window. Strongly recommend scheduling it before the next phase. nginx web upstream is currently :3013 (backups: `malayalidoctor.com.conf.bak.pd5`, `.bak.pd6`).
+
 ## Session: 2026-07-24 P-D5 Patient Referral System
 
 ### Assumptions
