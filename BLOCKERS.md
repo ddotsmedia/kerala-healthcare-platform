@@ -4,6 +4,27 @@
 > Claude Code writes here instead of asking questions.
 > Review this file after each session and resolve NEEDS DECISION items before starting the next phase.
 
+## Session: 2026-07-27 P-D7 Health Camps & Community Events
+
+### Assumptions
+- [ASSUMPTION] Migration numbered 0083 (local sequential) though spec labelled it 0093.
+- [ASSUMPTION] Seed event dates are relative (`current_date + N`) so demo events always stay upcoming/visible.
+- [ASSUMPTION] ICS generated inline in `lib/events.js` (`eventToIcs`) + served from `/[locale]/events/[slug]/ics/route.js` — no new npm package (ical libs avoided).
+- [ASSUMPTION] ICS times are floating local (Kerala) — no VTIMEZONE; DTSTART/DTEND without Z. Fallbacks 09:00–17:00 when a row has no start/end time.
+- [ASSUMPTION] `registration_required` + no `registration_url` → CTA becomes "Call to register" using `contact_phone`. Spec's "in-app form" deferred (no schema for registrations; `current_registrations` left as display-only).
+- [ASSUMPTION] Filters implemented as server-rendered query-param links (type, district, when=week|month, free=1|0), matching the jobs/health pages.
+- [ASSUMPTION] Event JSON-LD includes free `offers` (price 0 INR) only when `is_free`. Nav entry added to footer as "Health Camps".
+
+### Verified
+- [VERIFIED] Migration 83; 5 events seeded. apps/web "Compiled successfully"; lint clean. Live smoke: `/ml/events` 200; free filter excludes paid CME (0) and "all" includes it (1); ICS download `Content-Type: text/calendar` + attachment filename, 5 key VCAL lines; Event JSON-LD present on detail; type/district/when filters 200. Commit 7de0386.
+- [VERIFIED] Non-dismissable note on both pages (organiser-confirm, not medical advice, 112/108).
+
+### Errors fixed — IMPORTANT (regression discovered)
+- [FIXED] **nginx has been served from a NON-symlinked regular file** `sites-enabled/malayalidoctor.com.conf`, which is a SEPARATE copy from `sites-available/…`. Every nginx repoint since P-D5 edited `sites-available` (the wrong file) and silently no-op'd. On this deploy the live `sites-enabled` file was found still pointing at **:3001 = khp-khp-web-1 (P-D4-era container)**. Net effect: after the P-D6 host cycle reverted the live upstream to :3001, the public site was serving an OLD build — so **P-D5 referrals UI and P-D6 campaign pages were not reliably reaching real users** in that window (DB-level smoke tests still passed, which masked it). Fixed by editing the real `sites-enabled` file → :3014 (v4, contains all P-D4→P-D7 code); verified the FULL route matrix live (doctors, community, referrals, campaigns, events, ICS all 200). sites-available and sites-enabled are now identical.
+
+### Needs human decision — RE-ESCALATING (now urgent)
+- [NEEDS DECISION] The deploy model on this host is now actively unsafe: (1) snap-Docker blocks container swaps → I stack a new `khp-web-vN` each phase (now `khp-khp-web-1`, `khp-web-next`, `khp-web-v2/v3/v4` — 5 web containers, only v4 live); (2) container cycles re-randomise IPs and break the `--add-host`/`/etc/hosts` pinning; (3) nginx `sites-enabled` is a regular file that host cycles can revert to a stale upstream, silently serving old builds. This trio caused a real (masked) regression this session. **Strongly recommend a maintenance-window host reboot + clean `docker compose up -d`** (single web container, working DNS, restart policies) BEFORE the next phase — and make `sites-enabled/malayalidoctor.com.conf` a symlink to `sites-available` so config edits are authoritative. nginx web upstream currently :3014; backups `…conf.bak.pd5/6/7`.
+
 ## Session: 2026-07-24 P-D6 Health Awareness Campaigns
 
 ### Assumptions
