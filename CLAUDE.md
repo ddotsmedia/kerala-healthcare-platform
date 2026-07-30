@@ -232,6 +232,26 @@ pnpm db:seed:demo     # seed demo data (ONLY this — never db:seed)
 
 ---
 
+## Deployment & Infrastructure (VPS 194.164.151.202)
+
+- **Deploy with `infra/scripts/deploy.sh`.** It uses the snap-Docker–safe recreate:
+  `docker update --restart=no` → kill PID → `docker rm` → `docker compose up -d --no-deps --build`.
+  This is required because snap-packaged Docker on this host **denies
+  `docker stop/kill/rm/restart` on running containers**; a plain `compose up`
+  recreate fails with "permission denied".
+- **Never use port-incrementing / parallel-container workarounds** (`khp-web-vN`
+  on a spare port). They leave orphaned containers and stale IP pins.
+- **Never kill/rm postgres or redis** — datastores stay running across deploys.
+- **nginx config is authoritative in `sites-available/malayalidoctor.com.conf`.**
+  `sites-enabled/malayalidoctor.com.conf` is a **symlink** to it. Edit only the
+  `sites-available` file, run `nginx -t`, then `systemctl reload nginx`.
+  (Previously `sites-enabled` was a divergent regular copy — edits to
+  `sites-available` silently no-op'd and a host cycle reverted the live upstream
+  to a stale build. The symlink prevents that class of regression.)
+- App upstreams are fixed: web `127.0.0.1:3001`, portal `:3002`, admin `:8081`.
+
+---
+
 ## Phase Status
 
 Update this section at the end of each phase.

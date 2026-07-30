@@ -4,6 +4,15 @@
 > Claude Code writes here instead of asking questions.
 > Review this file after each session and resolve NEEDS DECISION items before starting the next phase.
 
+## Session: 2026-07-28 Deploy method + nginx symlink fix
+
+### Resolved (supersedes prior deploy-churn NEEDS DECISION items)
+- [RESOLVED] **Deploy method corrected in `infra/scripts/deploy.sh`.** App containers now recreate the snap-Docker–safe way: `docker update --restart=no` → kill PID → `docker rm` → `docker compose up -d --no-deps --build <svc>`. Removing the restart policy first kills the auto-restart race; `docker rm` is permitted once the container is STOPPED; the old container being gone lets `compose up` do a clean CREATE (not a snap-blocked recreate). Applied to khp-web/khp-portal/khp-admin only — **postgres/redis are never killed**. This retires the `khp-web-vN` port-incrementing workaround (do not use it again).
+- [RESOLVED] **nginx config authority fixed.** `sites-available/malayalidoctor.com.conf` is now the single authoritative file; `sites-enabled/malayalidoctor.com.conf` is a **symlink** to it (previously a divergent regular copy, which is why P-D5/P-D6 repoints silently no-op'd and a host cycle reverted the live upstream to a stale build — see P-D7 log below). Edit only `sites-available`, then `nginx -t` && `systemctl reload nginx`. Documented in CLAUDE.md → "Deployment & Infrastructure".
+
+### Still open
+- [NEEDS DECISION] The stacked idle web containers from earlier port-incrementing (`khp-khp-web-1`, `khp-web-next`, `khp-web-v2/v3/v4`) remain until a maintenance-window `docker compose up -d` rebuild reaps them. The corrected deploy.sh prevents new ones; the existing pile still wants one clean reboot/rebuild pass.
+
 ## Session: 2026-07-27 P-D7 Health Camps & Community Events
 
 ### Assumptions
