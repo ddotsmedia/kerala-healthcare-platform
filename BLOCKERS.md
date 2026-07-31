@@ -4,6 +4,21 @@
 > Claude Code writes here instead of asking questions.
 > Review this file after each session and resolve NEEDS DECISION items before starting the next phase.
 
+## Session: 2026-07-31 P-D9 Google Ads Landing Pages
+
+### Assumptions
+- [ASSUMPTION] No schema change (per spec). Migration count stays 83.
+- [ASSUMPTION] Spec named two folders `[specialty]-doctor-[district]` and `[role]-jobs-[district]`, but Next.js allows only ONE param per path segment. Implemented as a single `app/[locale]/find/[slug]/page.js` that parses the compound slug: split on `-doctor-` → specialty+district landing; on `-jobs-` → role+district landing.
+- [ASSUMPTION] Landing pages are `robots: noindex, follow` and excluded from the sitemap — they duplicate the canonical `/specialties` + `/districts` + `/doctors?…` listings, so indexing them would cannibalise SEO. Ads don't need indexing. (If organic indexing of these is later wanted, remove the robots flag and add to sitemap.)
+- [ASSUMPTION] UTM/gclid preserved two ways: `lib/utm.js` appends utm params to every CTA (`/book/[slug]`, `/jobs/[slug]`, search, alert links) server-side; `components/landing/UtmCapture.js` (client) also persists a 30-day `khp_utm` cookie so attribution survives even if a downstream link drops the query. No schema, so UTM is not written to the booking row.
+- [ASSUMPTION] Jobs role → free-text search term (`searchJobs({ term })`); trust "reviews" signal = approved doctor reviews for the specialty+district via new `countReviews()` in lib/landing.js.
+
+### Verified
+- [VERIFIED] apps/web "Compiled successfully"; lint clean. Live smoke: doctor landing `/ml/find/cardiology-doctor-ernakulam` 200 (ml+en); jobs landing `/ml/find/mbbs-jobs-ernakulam` 200; Book CTA → `/ml/book/<slug>`, Apply + Set-alert CTAs present; UTM preserved on book/search/alert links (`?utm_source=google&utm_campaign=…`); `robots noindex, follow`; 0 `/find/` URLs in sitemap. Deployed via deploy.sh snap-safe recreate; health db/redis ok; protected 41. Commit 9de6702.
+
+### Observations (pre-existing, not P-D9)
+- [PRE-EXISTING] `notFound()` on `export const dynamic = 'force-dynamic'` pages returns HTTP **200** with the 404 UI (confirmed identical on /campaigns, /doctors, /events, /hospitals bogus slugs). Platform-wide Next 15.5 behaviour, not introduced here. Minor SEO nicety (soft-404); worth a dedicated fix later (shared not-found handling or a status shim) rather than per-page. The find landing matches the existing pattern.
+
 ## Session: 2026-07-31 P-D8 Social Sharing Enhancement
 
 ### Assumptions
