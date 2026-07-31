@@ -4,6 +4,22 @@
 > Claude Code writes here instead of asking questions.
 > Review this file after each session and resolve NEEDS DECISION items before starting the next phase.
 
+## Session: 2026-07-31 P-D10 Organ Donation Awareness
+
+### Assumptions
+- [ASSUMPTION] Migration numbered 0084 (local sequential) though spec labelled it 0094.
+- [ASSUMPTION] Pledge is PUBLIC (spec: user_id nullable). `createPledge` attaches user_id when a session exists, else NULL. Public write → rate-limited **5/hr per IP** (stricter than the generic 20/min, since it is an unauthenticated insert). Validates name (≥2 chars) + at least one organ from the allow-list.
+- [ASSUMPTION] `organs_pledged` stored as `text[]` per spec (kidney|liver|heart|lungs|cornea|all); "all" is exclusive in the UI.
+- [ASSUMPTION] Live counter via `PledgeSection` client state — server renders the initial `pledgeCount()`, POST response returns the new count, UI updates without reload.
+- [ASSUMPTION] Myths/facts as native `<details>` accordions (no client JS, accessible).
+- [ASSUMPTION] Pledge is framed throughout as an awareness pledge, NOT legal donor registration; non-dismissable note + KNOS official-registration link on success and page.
+
+### Verified
+- [VERIFIED] Migration 84; `organ_donation_pledges` live. apps/web "Compiled successfully"; lint clean. Live smoke: page 200 (ml+en) with KNOS/myths/pledge sections + KNOS link; pledge POST stores row (user_id NULL) and returns incremented count; no-name/no-organs → 400; rate limit yields 429 after 5/hr; smoke rows soft-deleted (counter back to 0); organ-donation in sitemap. Deployed via deploy.sh snap-safe recreate; health db/redis ok; protected 41. Commit 4850649.
+
+### Needs human decision
+- [NEEDS DECISION] **Verify the official KNOS URL.** Used `https://knos.org.in/` for the "Kerala Network of Organ Sharing". Kerala's govt organ-sharing programme is also known as **Mrithasanjeevani**; the authoritative current URL should be confirmed by a human before promoting this page, since linking a healthcare audience to the wrong/defunct site is a trust risk. Single constant `KNOS_URL` in `lib/organDonation.js` — one-line change if it differs.
+
 ## Session: 2026-07-31 P-D9 Google Ads Landing Pages
 
 ### Assumptions
