@@ -44,6 +44,17 @@ export function countDoctors({ specialtyId, districtId } = {}) {
     num(`SELECT count(*)::int AS n FROM doctors WHERE ${where.join(' AND ')}`, values));
 }
 
+/** Approved doctor reviews for a specialty/district (landing trust signal). */
+export function countReviews({ specialtyId, districtId } = {}) {
+  const where = [`r.entity_type = 'doctor'`, `r.status = 'approved'`, `r.deleted_at IS NULL`, `d.deleted_at IS NULL`];
+  const values = [];
+  if (specialtyId) { values.push(specialtyId); where.push(`d.specialty_id = $${values.length}`); }
+  if (districtId) { values.push(districtId); where.push(`d.district_id = $${values.length}`); }
+  return cached(`landing:cr:${specialtyId || ''}:${districtId || ''}`, TTL.providers, () =>
+    num(`SELECT count(*)::int AS n FROM reviews r JOIN doctors d ON d.id = r.entity_id
+          WHERE ${where.join(' AND ')}`, values));
+}
+
 export function countHospitals({ districtId } = {}) {
   const where = [PUB]; const values = [];
   if (districtId) { values.push(districtId); where.push(`district_id = $${values.length}`); }
