@@ -68,6 +68,7 @@ export default async function sitemap() {
       add(`/${locale}/${hub}`, 0.6, 'weekly');
     }
     add(`/${locale}/organ-donation`, 0.6, 'weekly');
+    add(`/${locale}/medical-tourism`, 0.6, 'weekly');
     add(`/${locale}/community`, 0.6, 'daily');
     for (const cat of ['diabetes', 'heart-health', 'cancer-support', 'mental-health', 'pregnancy', 'child-health', 'general-health']) {
       add(`/${locale}/community/${cat}`, 0.5, 'weekly');
