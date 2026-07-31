@@ -19,6 +19,7 @@ import { allHomeNursingSlugs } from '@/lib/homeNursing';
 import { allEquipmentSlugs } from '@/lib/equipment';
 import { allCampaignSlugs } from '@/lib/campaigns';
 import { allEventSlugs } from '@/lib/events';
+import { allVideoSlugs } from '@/lib/videos';
 import { SITE } from '@/components/landing/LandingParts';
 
 export const dynamic = 'force-dynamic';
@@ -27,6 +28,7 @@ export default async function sitemap() {
   const [specialties, districts, combos, doctors, hospitals, labs, pharmacies, bloodBanks, ambulance, dental, eye, physio, mental, dialysis, fertility, palliative, homeNursing, equipment, campaigns, events] = await Promise.all([
     listSpecialties(), listDistricts(), combosWithDoctors(), allDoctorSlugs(), allHospitalSlugs(), allLabSlugs(), allPharmacySlugs(), allBloodBankSlugs(), allAmbulanceSlugs(), allDentalSlugs(), allEyeCentreSlugs(), allPhysioSlugs(), allMentalHealthSlugs(), allDialysisSlugs(), allFertilitySlugs(), allPalliativeSlugs(), allHomeNursingSlugs(), allEquipmentSlugs(), allCampaignSlugs(), allEventSlugs()
   ]);
+  const videos = await allVideoSlugs();
 
   const now = new Date();
   const out = [];
@@ -69,6 +71,8 @@ export default async function sitemap() {
     }
     add(`/${locale}/organ-donation`, 0.6, 'weekly');
     add(`/${locale}/medical-tourism`, 0.6, 'weekly');
+    add(`/${locale}/videos`, 0.7, 'weekly');
+    for (const v of videos) add(`/${locale}/videos/${v.slug}`, 0.5, 'monthly');
     add(`/${locale}/community`, 0.6, 'daily');
     for (const cat of ['diabetes', 'heart-health', 'cancer-support', 'mental-health', 'pregnancy', 'child-health', 'general-health']) {
       add(`/${locale}/community/${cat}`, 0.5, 'weekly');
