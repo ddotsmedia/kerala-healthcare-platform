@@ -4,6 +4,21 @@
 > Claude Code writes here instead of asking questions.
 > Review this file after each session and resolve NEEDS DECISION items before starting the next phase.
 
+## Session: 2026-07-31 P-D11 Medical Tourism Section
+
+### Assumptions
+- [ASSUMPTION] No schema change (per spec). Migration count stays 84.
+- [ASSUMPTION] Cost-comparison figures are hardcoded **approximate indicative USD ranges** in `components/tourism/MedicalTourismParts.js`, explicitly labelled "not a quotation" on the page — avoids implying a real price commitment (healthcare/trust). A human should sanity-check the ranges before promoting.
+- [ASSUMPTION] "Featured hospitals for international patients" = `searchHospitals({ limit: 4 })` (top verified hospitals). No international-patient / NABH-JCI flag exists in the schema, so these are general verified hospitals, not filtered by accreditation.
+- [ASSUMPTION] Medical-visa link → `https://indianvisaonline.gov.in/` (official Indian e-Visa portal). Accommodation is a "Partner hotels coming soon" placeholder per spec. Contact CTAs link the existing `/[locale]/contact` page.
+- [ASSUMPTION] Page split into `page.js` + `MedicalTourismParts.js` (WhyGrid/TreatmentGrid/CostTable + data) to stay well under the 400-line limit.
+
+### Verified
+- [VERIFIED] apps/web "Compiled successfully"; lint clean. Live smoke: `/ml/medical-tourism` + `/en` 200; 4 featured hospital cards render (real slugs); cost table renders (CABG/knee, UK/US/GCC columns); why-Kerala + accommodation placeholder + official visa link + Contact CTA present; medical-tourism in sitemap. Non-dismissable "general info, not medical advice/quote" note. Deployed via deploy.sh snap-safe recreate; health db/redis ok; protected 41. Commit 4effda2.
+
+### Needs human decision
+- [NEEDS DECISION] Cost ranges + "featured hospitals for international patients" are generic. If this section is promoted, consider (a) a human review of the USD ranges, and (b) a real "accepts international patients / accreditation" flag on hospitals to curate the featured list meaningfully.
+
 ## Session: 2026-07-31 P-D10 Organ Donation Awareness
 
 ### Assumptions
