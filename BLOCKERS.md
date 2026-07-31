@@ -4,6 +4,22 @@
 > Claude Code writes here instead of asking questions.
 > Review this file after each session and resolve NEEDS DECISION items before starting the next phase.
 
+## Session: 2026-07-31 P-D8 Social Sharing Enhancement
+
+### Assumptions
+- [ASSUMPTION] No schema change (per spec). Migration count stays 83.
+- [ASSUMPTION] OG images generated as **SVG** (1200x630) via `/api/og/{doctor,hospital,article}/[slug]` using `lib/ogImage.js` — no raster package (satori/@vercel/og would be new deps, forbidden). Spec explicitly allowed "SVG/HTML image".
+- [ASSUMPTION] Deployed via the corrected `deploy.sh` snap-safe recreate (build → update --restart=no → kill PID → rm → compose up --no-deps --build khp-web). No port juggling; single container on :3001; restart=unless-stopped preserved.
+- [ASSUMPTION] ShareBar (`components/share/ShareBar.js`) covers WhatsApp (wa.me), Facebook (sharer.php), X (intent/tweet), Copy-link (clipboard). Print via `components/share/PrintButton.js` added to prescription + lab-report detail pages (`print:hidden`).
+- [ASSUMPTION] Share messages centralised in `lib/shareCards.js` (doctor/hospital/article, ml+en) matching the spec's copy.
+- [ASSUMPTION] Replaced the article page's old WhatsApp+Copy row and left the doctor/hospital `ShareButton` (native-share) in place alongside the new ShareBar.
+
+### Verified
+- [VERIFIED] apps/web "Compiled successfully"; lint clean. Live smoke: all 3 OG routes 200 `image/svg+xml` with `width="1200" height="630"`; page HTML carries `og:image` → `/api/og/...` and `twitter:card=summary_large_image`; ShareBar (WhatsApp+Facebook) renders on doctor/hospital/article; health db/redis ok; protected 41. Commit 0d74495.
+
+### Needs human decision
+- [NEEDS DECISION] **SVG OG images may not preview on all crawlers.** WhatsApp/Facebook/Twitter often require a raster (PNG/JPG) for the link-preview thumbnail and can skip SVG `og:image`. The cards are valid and correct, but to guarantee rich previews everywhere we'd need server-side raster rendering — which needs a package (e.g. `@vercel/og`/`satori` + resvg) that the "no new npm packages" rule currently forbids. Options: (a) accept SVG (works in many contexts, zero deps), (b) approve a raster OG package, (c) pre-generate static PNG cards. Left as SVG per spec.
+
 ## Session: 2026-07-28 Deploy method + nginx symlink fix
 
 ### Resolved (supersedes prior deploy-churn NEEDS DECISION items)
