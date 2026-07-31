@@ -10,6 +10,8 @@ import { hospitalSchema, medicalWebPageSchema, SITE } from '@/lib/schema';
 import { StatusBadge, Chip, ProfileBreadcrumb, SectionCard } from '@/components/profile/ProfileParts';
 import Tabs from '@/components/profile/Tabs';
 import ShareButton, { CopyButton } from '@/components/profile/ShareButton';
+import ShareBar from '@/components/share/ShareBar';
+import { hospitalShareText } from '@/lib/shareCards';
 import { DoctorCard, HospitalCard, ReviewsSection } from '@khp/ui';
 
 export const dynamic = 'force-dynamic';
@@ -37,10 +39,16 @@ export async function generateMetadata(props) {
   const h = await getHospitalBySlug(params.slug);
   if (!h) return { title: t(locale, 'hospitals') };
   const name = h.name_en || h.name_ml;
+  const title = `${name} — ${h.district_en || 'Kerala'}, Kerala | MalayaliDoctor`.slice(0, 65);
+  const description = `${name} in ${h.district_en || 'Kerala'} — departments, services, doctors. Verified on MalayaliDoctor.`.slice(0, 160);
+  const url = `${SITE}/${locale}/hospitals/${h.slug}`;
+  const ogImage = `${SITE}/api/og/hospital/${h.slug}`;
   return {
-    title: `${name} — ${h.district_en || 'Kerala'}, Kerala | MalayaliDoctor`.slice(0, 65),
-    description: `${name} in ${h.district_en || 'Kerala'} — departments, services, doctors. Verified on MalayaliDoctor.`.slice(0, 160),
-    alternates: { canonical: `${SITE}/${locale}/hospitals/${h.slug}` }
+    title,
+    description,
+    alternates: { canonical: url },
+    openGraph: { title, description, url, type: 'website', images: [{ url: ogImage, width: 1200, height: 630 }] },
+    twitter: { card: 'summary_large_image', title, description, images: [ogImage] }
   };
 }
 
@@ -153,6 +161,9 @@ export default async function HospitalProfile(props) {
               🗺️ {ml ? 'വഴി കാണിക്കുക' : 'Directions'}
             </a>
             <ShareButton locale={locale} title={name} />
+          </div>
+          <div className="pt-2">
+            <ShareBar locale={locale} message={hospitalShareText({ name, district }, locale)} />
           </div>
         </div>
       </SectionCard>

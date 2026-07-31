@@ -5,6 +5,7 @@ import { resolveLocale } from '@/lib/i18n';
 import { currentPatientId } from '@/lib/appointments';
 import { getPrescription } from '@/lib/prescriptions';
 import EditPrescription from '@/components/prescriptions/EditPrescription';
+import PrintButton from '@/components/share/PrintButton';
 
 export const dynamic = 'force-dynamic';
 const fmtDate = (d) => (d ? String(d).slice(0, 10) : '');
@@ -30,9 +31,12 @@ export default async function PrescriptionDetail(props) {
 
   return (
     <main className="mx-auto max-w-2xl px-4 py-6 space-y-5">
-      <nav className="text-xs text-gray-500">
-        <Link href={`/${locale}/patient/prescriptions`} className="hover:text-brand">{ml ? 'പ്രിസ്ക്രിപ്ഷനുകൾ' : 'Prescriptions'}</Link> › <span className="text-gray-700">{p.doctor_name || (ml ? 'വിശദാംശം' : 'Detail')}</span>
-      </nav>
+      <div className="flex items-center justify-between gap-2">
+        <nav className="text-xs text-gray-500">
+          <Link href={`/${locale}/patient/prescriptions`} className="hover:text-brand">{ml ? 'പ്രിസ്ക്രിപ്ഷനുകൾ' : 'Prescriptions'}</Link> › <span className="text-gray-700">{p.doctor_name || (ml ? 'വിശദാംശം' : 'Detail')}</span>
+        </nav>
+        <PrintButton locale={locale} />
+      </div>
 
       <header className="rounded-xl border border-gray-200 bg-white p-5">
         <h1 className="text-xl font-bold text-gray-900">{p.doctor_name || (ml ? 'പ്രിസ്ക്രിപ്ഷൻ' : 'Prescription')}</h1>

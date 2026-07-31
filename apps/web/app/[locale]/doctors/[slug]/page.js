@@ -11,6 +11,8 @@ import { physicianSchema, medicalWebPageSchema, SITE } from '@/lib/schema';
 import { Avatar, ModeIcons, Chip, StatusBadge, ProfileBreadcrumb, SectionCard, MODE_META } from '@/components/profile/ProfileParts';
 import Tabs from '@/components/profile/Tabs';
 import ShareButton from '@/components/profile/ShareButton';
+import ShareBar from '@/components/share/ShareBar';
+import { doctorShareText } from '@/lib/shareCards';
 import BookingWidget from '@/components/profile/BookingWidget';
 import { DoctorCard, LanguagePills, ReviewsSection } from '@khp/ui';
 import WhatsAppButton from '@/components/whatsapp/WhatsAppButton';
@@ -29,10 +31,16 @@ export async function generateMetadata(props) {
   if (!d) return { title: t(locale, 'doctors') };
   const sp = d.specialty_en || d.specialty_ml || '';
   const di = d.district_en || 'Kerala';
+  const title = `${d.display_name} — ${sp} in ${di} | MalayaliDoctor`.slice(0, 65);
+  const description = `Book an appointment with ${d.display_name}, ${sp} in ${di}, Kerala. Verified profile on MalayaliDoctor.`.slice(0, 160);
+  const url = `${SITE}/${locale}/doctors/${d.slug}`;
+  const ogImage = `${SITE}/api/og/doctor/${d.slug}`;
   return {
-    title: `${d.display_name} — ${sp} in ${di} | MalayaliDoctor`.slice(0, 65),
-    description: `Book an appointment with ${d.display_name}, ${sp} in ${di}, Kerala. Verified profile on MalayaliDoctor.`.slice(0, 160),
-    alternates: { canonical: `${SITE}/${locale}/doctors/${d.slug}` }
+    title,
+    description,
+    alternates: { canonical: url },
+    openGraph: { title, description, url, type: 'profile', images: [{ url: ogImage, width: 1200, height: 630 }] },
+    twitter: { card: 'summary_large_image', title, description, images: [ogImage] }
   };
 }
 
@@ -166,6 +174,10 @@ export default async function DoctorProfile(props) {
                   ? `നമസ്കാരം, ഞാൻ MalayaliDoctor.com വഴി ${d.display_name}-നെ കാണാൻ അപ്പോയ്ന്റ്മെന്റ് ആഗ്രഹിക്കുന്നു. ${url}`
                   : `Hello, I'd like to book an appointment with ${d.display_name} via MalayaliDoctor.com. ${url}`} />
               <ShareButton locale={locale} title={d.display_name} />
+            </div>
+            <div className="pt-2">
+              <ShareBar locale={locale}
+                message={doctorShareText({ name: d.display_name, specialty, district }, locale)} />
             </div>
           </div>
         </div>

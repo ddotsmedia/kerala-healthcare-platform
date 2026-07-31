@@ -6,6 +6,7 @@ import { currentPatientId } from '@/lib/appointments';
 import { getLabReport } from '@/lib/labReports';
 import { markerByKey, bandFor, isOutOfRange } from '@/lib/labMarkers';
 import EditLabReport from '@/components/labreports/EditLabReport';
+import PrintButton from '@/components/share/PrintButton';
 
 export const dynamic = 'force-dynamic';
 const fmtDate = (d) => (d ? String(d).slice(0, 10) : '');
@@ -32,9 +33,12 @@ export default async function LabReportDetail(props) {
 
   return (
     <main className="mx-auto max-w-2xl px-4 py-6 space-y-5">
-      <nav className="text-xs text-gray-500">
-        <Link href={`/${locale}/patient/lab-reports`} className="hover:text-brand">{ml ? 'ലാബ് റിപ്പോർട്ടുകൾ' : 'Lab Reports'}</Link> › <span className="text-gray-700">{r.lab_name || fmtDate(r.report_date)}</span>
-      </nav>
+      <div className="flex items-center justify-between gap-2">
+        <nav className="text-xs text-gray-500">
+          <Link href={`/${locale}/patient/lab-reports`} className="hover:text-brand">{ml ? 'ലാബ് റിപ്പോർട്ടുകൾ' : 'Lab Reports'}</Link> › <span className="text-gray-700">{r.lab_name || fmtDate(r.report_date)}</span>
+        </nav>
+        <PrintButton locale={locale} />
+      </div>
 
       <header className="rounded-xl border border-gray-200 bg-white p-5">
         <h1 className="text-xl font-bold text-gray-900">{r.lab_name || (ml ? 'ലാബ് റിപ്പോർട്ട്' : 'Lab report')}</h1>

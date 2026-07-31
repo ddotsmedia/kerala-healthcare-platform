@@ -6,7 +6,8 @@ import { resolveLocale, t } from '@/lib/i18n';
 import { getPublishedContent, relatedContent, contentDoctors } from '@/lib/knowledge';
 import { medicalWebPageSchema, SITE } from '@/lib/schema';
 import ArticleCard, { catLabel } from '@/components/health/ArticleCard';
-import { CopyButton } from '@/components/profile/ShareButton';
+import ShareBar from '@/components/share/ShareBar';
+import { articleShareText } from '@/lib/shareCards';
 import KnowledgeDisclaimer from '@/components/KnowledgeDisclaimer';
 import { DoctorCard } from '@khp/ui';
 
@@ -19,7 +20,17 @@ export async function generateMetadata(props) {
   if (!c) return { title: t(locale, 'health') };
   const title = locale === 'ml' ? (c.meta_title_ml || c.title_ml || c.title_en) : (c.meta_title_en || c.title_en);
   const desc = locale === 'ml' ? (c.meta_desc_ml || c.excerpt_ml || '') : (c.meta_desc_en || c.excerpt_en || '');
-  return { title: String(title).slice(0, 60), description: String(desc).slice(0, 160) };
+  const t60 = String(title).slice(0, 60);
+  const d160 = String(desc).slice(0, 160);
+  const url = `${SITE}/${locale}/health/${params.slug}`;
+  const ogImage = `${SITE}/api/og/article/${params.slug}`;
+  return {
+    title: t60,
+    description: d160,
+    alternates: { canonical: url },
+    openGraph: { title: t60, description: d160, url, type: 'article', images: [{ url: ogImage, width: 1200, height: 630 }] },
+    twitter: { card: 'summary_large_image', title: t60, description: d160, images: [ogImage] }
+  };
 }
 
 function buildBody(raw) {
@@ -54,7 +65,6 @@ export default async function ContentPage(props) {
   const readMin = Math.max(1, Math.ceil(rawBody.length / 900));
   const date = c.published_at ? String(c.published_at).slice(0, 10) : '';
   const url = `${SITE}/${locale}/health/${c.slug}`;
-  const waMsg = `${title} — MalayaliDoctor.com: ${url}`;
   const ld = [
     medicalWebPageSchema(title, (ml ? c.excerpt_ml : c.excerpt_en) || '', url),
     {
@@ -78,10 +88,8 @@ export default async function ContentPage(props) {
           {date && <span>{date}</span>}
           <span>{readMin} {ml ? 'മിനിറ്റ് വായന' : 'min read'}</span>
         </div>
-        <div className="flex flex-wrap items-center gap-2 pt-1">
-          <a href={`https://wa.me/?text=${encodeURIComponent(waMsg)}`} target="_blank" rel="noopener noreferrer"
-            className="inline-flex items-center gap-1 rounded-lg bg-[#25D366] px-3 py-1.5 text-xs font-semibold text-white">💬 WhatsApp</a>
-          <CopyButton text={url} locale={locale} />
+        <div className="pt-1">
+          <ShareBar locale={locale} message={articleShareText({ title }, locale)} />
         </div>
       </header>
 
