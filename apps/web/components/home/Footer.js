@@ -28,7 +28,8 @@ const QUICK = [
   { href: 'vaccination', ml: 'വാക്സിനേഷൻ', en: 'Vaccination' },
   { href: 'patient/health-records', ml: 'ആരോഗ്യ രേഖകൾ', en: 'Health Records' },
   { href: 'community', ml: 'കമ്മ്യൂണിറ്റി', en: 'Community' },
-  { href: 'events', ml: 'ആരോഗ്യ ക്യാമ്പുകൾ', en: 'Health Camps' }
+  { href: 'events', ml: 'ആരോഗ്യ ക്യാമ്പുകൾ', en: 'Health Camps' },
+  { href: 'organ-donation', ml: 'അവയവദാനം', en: 'Organ Donation' }
 ];
 const SOCIAL = ['📘', '𝕏', '📸', '▶️'];
 
