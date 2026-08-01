@@ -4,6 +4,25 @@
 > Claude Code writes here instead of asking questions.
 > Review this file after each session and resolve NEEDS DECISION items before starting the next phase.
 
+## Session: 2026-07-31 P-D12 Doctor Educational Videos  (Track D COMPLETE)
+
+### Assumptions
+- [ASSUMPTION] Migration numbered 0085 (local sequential) though spec labelled it 0095.
+- [ASSUMPTION] `doctor_videos.doctor_id` FKs **doctors(id)** — the spec said `healthcare_providers`, which does not exist in this schema (the providers table is `doctors`).
+- [ASSUMPTION] Seeded 3 demo videos attached to existing doctors + their specialty. **`youtube_video_id` values are placeholders** (real-format 11-char IDs) — they may resolve to unrelated/unavailable videos and MUST be replaced with genuine doctor content before promoting the section.
+- [ASSUMPTION] Extended the app CSP (`apps/web/next.config.js`) with `frame-src https://www.youtube-nocookie.com` — required or the privacy-enhanced embed is blocked by `default-src 'self'`. `X-Frame-Options: DENY` is unaffected (it governs others framing us, not us embedding YouTube).
+- [ASSUMPTION] Detail page uses `youtube-nocookie.com/embed/<id>?rel=0`, lazy-loaded, with an 11-char-ID guard that shows "Video unavailable" for bad IDs. Related = same specialty then same category. VideoObject JSON-LD added.
+- [ASSUMPTION] Publishing gated by `is_published`; view_count increments on detail view. Nav added to footer as "Videos".
+
+### Verified
+- [VERIFIED] Migration 85; 3 published videos. apps/web "Compiled successfully"; lint clean. Live smoke: `/ml/videos` + `/en` 200; 3 cards render; detail 200 with youtube-nocookie iframe (valid 11-char id) + VideoObject JSON-LD + doctor-profile link + medical disclaimer; response CSP contains `frame-src https://www.youtube-nocookie.com`; specialty filter → 1 card; category filter 200; 8 /videos URLs in sitemap. Deployed via deploy.sh snap-safe recreate; health db/redis ok; protected 41. Commit 0db1fd5.
+
+### Needs human decision
+- [NEEDS DECISION] Replace the **placeholder demo YouTube IDs** with real doctor-submitted educational videos before this section is promoted (a content-editor task; `doctor_videos` rows, or an admin CMS surface if one is wanted later — none was specced for P-D12).
+
+### Track D status
+- All Track D phases (P-D1 … P-D12) are now implemented and deployed. Standing follow-ups still open across the track: fill `OTP_SMS_API_KEY` (Indian SIM), verify Resend domain for real email delivery, verify the KNOS URL (P-D10), human-review medical-tourism cost ranges (P-D11), replace demo video IDs (P-D12), and the platform-wide soft-404 on force-dynamic notFound() (P-D9).
+
 ## Session: 2026-07-31 P-D11 Medical Tourism Section
 
 ### Assumptions
