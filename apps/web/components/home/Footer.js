@@ -31,7 +31,8 @@ const QUICK = [
   { href: 'events', ml: 'ആരോഗ്യ ക്യാമ്പുകൾ', en: 'Health Camps' },
   { href: 'organ-donation', ml: 'അവയവദാനം', en: 'Organ Donation' },
   { href: 'medical-tourism', ml: 'മെഡിക്കൽ ടൂറിസം', en: 'Medical Tourism' },
-  { href: 'videos', ml: 'വീഡിയോകൾ', en: 'Videos' }
+  { href: 'videos', ml: 'വീഡിയോകൾ', en: 'Videos' },
+  { href: 'medicines', ml: 'മരുന്ന് വിവരങ്ങൾ', en: 'Medicine Info' }
 ];
 const SOCIAL = ['📘', '𝕏', '📸', '▶️'];
 

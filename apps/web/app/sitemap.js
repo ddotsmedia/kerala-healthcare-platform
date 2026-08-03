@@ -20,6 +20,7 @@ import { allEquipmentSlugs } from '@/lib/equipment';
 import { allCampaignSlugs } from '@/lib/campaigns';
 import { allEventSlugs } from '@/lib/events';
 import { allVideoSlugs } from '@/lib/videos';
+import { allMedicineSlugs } from '@/lib/medicines';
 import { SITE } from '@/components/landing/LandingParts';
 
 export const dynamic = 'force-dynamic';
@@ -29,6 +30,7 @@ export default async function sitemap() {
     listSpecialties(), listDistricts(), combosWithDoctors(), allDoctorSlugs(), allHospitalSlugs(), allLabSlugs(), allPharmacySlugs(), allBloodBankSlugs(), allAmbulanceSlugs(), allDentalSlugs(), allEyeCentreSlugs(), allPhysioSlugs(), allMentalHealthSlugs(), allDialysisSlugs(), allFertilitySlugs(), allPalliativeSlugs(), allHomeNursingSlugs(), allEquipmentSlugs(), allCampaignSlugs(), allEventSlugs()
   ]);
   const videos = await allVideoSlugs();
+  const medicines = await allMedicineSlugs();
 
   const now = new Date();
   const out = [];
@@ -73,6 +75,8 @@ export default async function sitemap() {
     add(`/${locale}/medical-tourism`, 0.6, 'weekly');
     add(`/${locale}/videos`, 0.7, 'weekly');
     for (const v of videos) add(`/${locale}/videos/${v.slug}`, 0.5, 'monthly');
+    add(`/${locale}/medicines`, 0.8, 'weekly');
+    for (const md of medicines) add(`/${locale}/medicines/${md.slug}`, 0.6, 'monthly');
     add(`/${locale}/community`, 0.6, 'daily');
     for (const cat of ['diabetes', 'heart-health', 'cancer-support', 'mental-health', 'pregnancy', 'child-health', 'general-health']) {
       add(`/${locale}/community/${cat}`, 0.5, 'weekly');

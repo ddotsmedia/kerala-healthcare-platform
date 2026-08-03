@@ -1,7 +1,7 @@
 // unified.js — merge + rank heterogeneous search results. Pure functions.
 // Verified providers are boosted; locale-matched content is boosted.
 
-const TYPE_BASE = { doctor: 1.0, hospital: 1.0, article: 0.8, disease: 0.9, procedure: 0.7, job: 0.8 };
+const TYPE_BASE = { doctor: 1.0, hospital: 1.0, article: 0.8, disease: 0.9, procedure: 0.7, job: 0.8, medicine: 0.9 };
 
 /**
  * @param {Array<{type,id,title,url,verified?,localeMatch?,rank?}>} items
