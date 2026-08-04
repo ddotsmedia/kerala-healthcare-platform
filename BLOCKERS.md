@@ -4,6 +4,24 @@
 > Claude Code writes here instead of asking questions.
 > Review this file after each session and resolve NEEDS DECISION items before starting the next phase.
 
+## Session: 2026-08-03 P-E1 Medicine Information Centre  (Track E begins)
+
+### Assumptions
+- [ASSUMPTION] Migration numbered 0086 (local sequential) though spec labelled it 0096.
+- [ASSUMPTION] Seeded 32 medicines (spec said ~30) — the requested common drugs plus Paracetamol 650 and ORS. Search uses ILIKE + a `gin_trgm_ops` index on generic_name and a GIN index on the `brand_names` array (pg_trgm already enabled for doctors); brand search via `unnest(brand_names) ILIKE`.
+- [ASSUMPTION] Content is bilingual on the key fields (generic name, uses) with Malayalam falling back to English on the longer sections/arrays; storage + disclaimer handled by the UI, not per-row.
+- [ASSUMPTION] Non-dismissable disclaimer uses the spec's exact wording in a red `role="alert"` banner on every detail page; Drug schema.org JSON-LD added; metadata title is "[Medicine] — Uses, Side Effects, Dosage | MalayaliDoctor".
+- [ASSUMPTION] Medicines added to unified `smartSearch` as type `medicine` (rank weight 0.9). Three API routes built: `/api/medicines`, `/api/medicines/[slug]`, `/api/medicines/search`.
+
+### Verified
+- [VERIFIED] Migration 86; 32 medicines published. apps/web "Compiled successfully"; lint clean. Live smoke: `/ml/medicines` + `/en` 200 with category tabs; `?q=paracetamol` and brand `?q=Crocin` both return paracetamol; autocomplete `dolo` → Paracetamol; detail page Drug JSON-LD present + red `role="alert"` non-dismissable disclaimer + Consult-a-Doctor CTA + correct title; unified `/api/search?q=metformin` includes a `medicine` result; 66 medicine URLs in sitemap; unknown slug → 404. Deployed via deploy.sh snap-safe recreate; health db/redis ok. Commit 50fc98f.
+
+### Needs human decision
+- [NEEDS DECISION — IMPORTANT] Seed rows set `reviewed_by_doctor = true`, but the content has NOT actually been reviewed by a doctor — it is standard educational drug information (WHO/BNF/ICMR-style) authored during the build. The flag is NOT currently surfaced in the UI, so no user sees a false "doctor-reviewed" badge, but the DB claim is inaccurate. Before promoting the section or displaying that badge, have a qualified doctor/pharmacist review the entries and only then rely on `reviewed_by_doctor`. (Also consider labelling the content source per the CLAUDE.md "label AI-generated content" rule.)
+
+### Observations (not caused by this work)
+- [OBSERVATION] Protected container `ayurconnect-redis` has been **Exited (255) for ~2 days** (predates this session). I did not touch ayurconnect and will not start it per the never-touch-protected rule — flagging so its owner can restore it; ayurconnect may be degraded without its redis.
+
 ## Session: 2026-07-31 P-D12 Doctor Educational Videos  (Track D COMPLETE)
 
 ### Assumptions
