@@ -4,6 +4,22 @@
 > Claude Code writes here instead of asking questions.
 > Review this file after each session and resolve NEEDS DECISION items before starting the next phase.
 
+## Session: 2026-08-11 P-E2 Lab Test Guide + host-wide outage recovery
+
+### P-E2 (shipped)
+- [VERIFIED] Migration 87 `lab_test_guides` + 30 seeded tests (JSONB normal_ranges, trigram + abbreviation search). Public `/lab-tests` (name+abbreviation search, live autocomplete, category tabs) + detail `/lab-tests/[slug]` (sections, gender/age normal-ranges table, MedicalTest JSON-LD, NON-DISMISSABLE red disclaimer "abnormal results do not mean disease — discuss with your doctor", Find-a-Lab CTA → /labs). Two API routes; added to unified smartSearch as `lab-test` (weight 0.9). `reviewed_by_doctor` seeded **false** (honest — not doctor-reviewed). Commit 9567846.
+- [FIXED] Migration 0088 sets `medicines.reviewed_by_doctor = false` — corrects the P-E1 seed that inaccurately claimed doctor review. Commit bdbbe4f.
+- [VERIFIED] Live smoke (post-recovery): /ml/lab-tests + /en 200; HbA1c search by abbreviation; MedicalTest JSON-LD; CBC gender-based ranges render; medicine brand search (Crocin→paracetamol) still works; all-track route matrix 200.
+
+### Incident — host-wide Docker overlayfs corruption (NOT caused by this work)
+- [FIXED] Between P-E2 build and its deploy verification, a host-wide event took down ~37 non-khp containers plus all khp containers (`RWLayer unexpectedly nil`, `overlayfs` driver). Likely an unclean host reboot corrupting overlay upper dirs. khp containers were exited/corrupted; portal was already gone.
+- Root data finding: the pre-outage live postgres (which served migrations 81–88 via :5440 and `docker exec`) was NOT persisting to a named volume — its PGDATA lived in the container RW layer, which the corruption destroyed. The durable named volume `khp_khp-postgres-data` was stale at migration **80**. This is the old split-brain (see [[prod-db-identity-5440]]) finally biting.
+- Recovery (khp only; data preserved): `docker rm -f` corrupted khp containers → `docker compose up -d` (re-attached `khp_khp-postgres-data` at 80, postgres+redis+web+portal+admin all healthy) → `pnpm db:migrate` re-applied 0081–0088 (idempotent) rebuilding + re-seeding all Track D/E content (medicines 32, lab tests 30, campaigns 5, events 5, videos 3, referrals/organ tables). **No real data lost** — pre-launch, test data already cleaned. Postgres is now on the durable named volume, so future host cycles will NOT lose data.
+
+### Needs human decision — URGENT (protected projects down)
+- [NEEDS DECISION] The host-wide outage left **~37 non-khp (protected) containers down**: ayurconnect, ddotshop, healthportal, ddotsmedia*, community-app, aitools, and others were only 8/≈40 running. I did NOT touch them (never-touch-protected rule; I also lack their compose configs). Their owners must recreate them (likely `docker compose up -d` per project, volumes should be intact like khp's). If many share the overlayfs corruption, a **host reboot + per-project compose up** may be the cleanest path. This needs the host admin — flagging urgently.
+- [NEEDS DECISION — carried] Have a qualified doctor/pharmacist review the medicine + lab-test content before relying on `reviewed_by_doctor` or promoting those sections.
+
 ## Session: 2026-08-03 P-E1 Medicine Information Centre  (Track E begins)
 
 ### Assumptions
