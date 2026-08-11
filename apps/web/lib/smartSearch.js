@@ -6,6 +6,7 @@ import { searchDoctors, searchHospitals } from './providers.js';
 import { searchJobs } from './jobs.js';
 import { searchMedicines } from './medicines.js';
 import { searchLabTests } from './labTests.js';
+import { searchProcedures } from './procedures.js';
 
 /**
  * @param {string} query
@@ -15,13 +16,14 @@ import { searchLabTests } from './labTests.js';
  */
 async function smartSearch(query, locale = 'ml', typeFilter) {
   if (!query || !query.trim()) return [];
-  const [doctors, hospitals, content, jobs, medicines, labTests] = await Promise.all([
+  const [doctors, hospitals, content, jobs, medicines, labTests, procedures] = await Promise.all([
     searchDoctors({ term: query, limit: 8 }),
     searchHospitals({ term: query, limit: 8 }),
     findRelevantContent(query, 8),
     searchJobs({ term: query, limit: 8 }),
     searchMedicines({ term: query, limit: 8 }),
-    searchLabTests({ term: query, limit: 8 })
+    searchLabTests({ term: query, limit: 8 }),
+    searchProcedures({ term: query, limit: 8 })
   ]);
 
   const items = [
@@ -30,7 +32,8 @@ async function smartSearch(query, locale = 'ml', typeFilter) {
     ...content.map((c) => ({ type: c.type, id: c.id, title: c.title, url: `/${locale}/health/${c.slug}` })),
     ...jobs.map((j) => ({ type: 'job', id: j.id, title: j.title, url: `/${locale}/jobs/${j.slug}` })),
     ...medicines.map((m) => ({ type: 'medicine', id: m.id, title: (locale === 'ml' ? m.generic_name_ml : m.generic_name_en) || m.generic_name_en, url: `/${locale}/medicines/${m.slug}` })),
-    ...labTests.map((t) => ({ type: 'lab-test', id: t.id, title: (locale === 'ml' ? t.name_ml : t.name_en) || t.name_en, url: `/${locale}/lab-tests/${t.slug}` }))
+    ...labTests.map((t) => ({ type: 'lab-test', id: t.id, title: (locale === 'ml' ? t.name_ml : t.name_en) || t.name_en, url: `/${locale}/lab-tests/${t.slug}` })),
+    ...procedures.map((p) => ({ type: 'procedure', id: p.id, title: (locale === 'ml' ? p.name_ml : p.name_en) || p.name_en, url: `/${locale}/procedures/${p.slug}` }))
   ];
 
   const filtered = typeFilter ? items.filter((i) => i.type === typeFilter) : items;

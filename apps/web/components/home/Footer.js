@@ -33,7 +33,8 @@ const QUICK = [
   { href: 'medical-tourism', ml: 'മെഡിക്കൽ ടൂറിസം', en: 'Medical Tourism' },
   { href: 'videos', ml: 'വീഡിയോകൾ', en: 'Videos' },
   { href: 'medicines', ml: 'മരുന്ന് വിവരങ്ങൾ', en: 'Medicine Info' },
-  { href: 'lab-tests', ml: 'ലാബ് ടെസ്റ്റ് ഗൈഡ്', en: 'Lab Test Guide' }
+  { href: 'lab-tests', ml: 'ലാബ് ടെസ്റ്റ് ഗൈഡ്', en: 'Lab Test Guide' },
+  { href: 'procedures', ml: 'നടപടിക്രമങ്ങൾ', en: 'Procedure Library' }
 ];
 const SOCIAL = ['📘', '𝕏', '📸', '▶️'];
 

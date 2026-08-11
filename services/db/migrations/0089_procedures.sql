@@ -1,0 +1,200 @@
+-- 0089_procedures.sql
+-- Medical Procedure Library — educational "what to expect" guides. Additive only.
+-- Educational only; app shows a non-dismissable note. Cost ranges are approximate
+-- indicative INR and clearly labelled as not a quotation.
+
+CREATE TABLE IF NOT EXISTS procedures (
+  id                     uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
+  slug                   varchar(255) UNIQUE NOT NULL,
+  name_ml                text,
+  name_en                text NOT NULL,
+  category               varchar(100),   -- surgery|diagnostic|therapeutic|cosmetic|dental
+  specialty_id           uuid REFERENCES specialties(id),
+  description_ml         text,
+  description_en         text,
+  why_performed_ml       text,
+  why_performed_en       text,
+  preparation_ml         text,
+  preparation_en         text,
+  what_happens_ml        text,
+  what_happens_en        text,
+  duration_minutes_min   integer,
+  duration_minutes_max   integer,
+  anaesthesia_type       varchar(50),    -- none|local|regional|general
+  recovery_ml            text,
+  recovery_en            text,
+  hospital_stay_days_min integer DEFAULT 0,
+  hospital_stay_days_max integer DEFAULT 0,
+  risks_ml               text,
+  risks_en               text,
+  cost_range_min         integer,
+  cost_range_max         integer,
+  "references"           text[],
+  is_published           boolean DEFAULT false,
+  created_at             timestamptz DEFAULT now(),
+  updated_at             timestamptz,
+  deleted_at             timestamptz
+);
+
+CREATE INDEX IF NOT EXISTS idx_procedures_category ON procedures (category) WHERE deleted_at IS NULL;
+CREATE INDEX IF NOT EXISTS idx_procedures_specialty ON procedures (specialty_id) WHERE deleted_at IS NULL;
+CREATE INDEX IF NOT EXISTS idx_procedures_anaesthesia ON procedures (anaesthesia_type) WHERE deleted_at IS NULL;
+CREATE INDEX IF NOT EXISTS idx_procedures_name_trgm ON procedures USING gin (name_en gin_trgm_ops) WHERE deleted_at IS NULL;
+
+INSERT INTO procedures
+  (slug, name_ml, name_en, category, specialty_id, description_en, why_performed_en, preparation_en,
+   what_happens_en, duration_minutes_min, duration_minutes_max, anaesthesia_type, recovery_en,
+   hospital_stay_days_min, hospital_stay_days_max, risks_en, cost_range_min, cost_range_max, "references", is_published)
+VALUES
+  ('cataract-surgery', 'തിമിര ശസ്ത്രക്രിയ', 'Cataract Surgery', 'surgery', (SELECT id FROM specialties WHERE slug='ophthalmology'),
+   'A common day-care operation to remove a clouded lens and replace it with a clear artificial lens.',
+   'To restore vision lost to a cataract (clouding of the eye’s natural lens).',
+   'A few eye-drop medicines beforehand; usually no long fasting for local anaesthesia.',
+   'The clouded lens is removed by phacoemulsification and a foldable intraocular lens is inserted through a tiny incision.',
+   20, 45, 'local', 'Vision improves within days; use protective shield and drops; avoid rubbing the eye.',
+   0, 0, 'Infection, swelling or raised eye pressure (uncommon).', 15000, 60000, ARRAY['AIOS','WHO'], true),
+
+  ('coronary-angioplasty', 'ആൻജിയോപ്ലാസ്റ്റി', 'Coronary Angioplasty', 'surgery', (SELECT id FROM specialties WHERE slug='cardiology'),
+   'A procedure to open a narrowed or blocked heart artery, often with a stent.',
+   'To restore blood flow in a blocked coronary artery, e.g. during or after a heart attack.',
+   'Fasting for a few hours; blood tests and consent; some medicines may be paused or started.',
+   'A thin catheter is passed from the wrist or groin to the heart; a balloon opens the artery and a stent holds it open.',
+   30, 90, 'local', 'Short hospital stay; gradual return to activity; blood-thinning medicines are important.',
+   1, 2, 'Bleeding, artery injury or clotting (uncommon).', 100000, 250000, ARRAY['CSI','ACC/AHA'], true),
+
+  ('knee-replacement', 'കാൽമുട്ട് മാറ്റിവയ്ക്കൽ', 'Knee Replacement', 'surgery', (SELECT id FROM specialties WHERE slug='orthopedics'),
+   'Surgery to replace a damaged knee joint with an artificial implant.',
+   'To relieve pain and restore movement in a knee severely damaged by arthritis or injury.',
+   'Pre-operative tests, fasting before surgery, and planning for physiotherapy.',
+   'The worn joint surfaces are removed and replaced with metal and plastic components.',
+   90, 150, 'regional', 'Physiotherapy starts soon after; walking aids for a few weeks; most recover over 6–12 weeks.',
+   3, 5, 'Infection, clots or implant problems (uncommon).', 150000, 350000, ARRAY['IOA'], true),
+
+  ('appendectomy', 'അപ്പെൻഡിക്സ് ശസ്ത്രക്രിയ', 'Appendectomy', 'surgery', (SELECT id FROM specialties WHERE slug='general-surgery'),
+   'Removal of an inflamed appendix, often as an emergency.',
+   'To treat appendicitis and prevent the appendix from bursting.',
+   'Usually urgent; fasting, IV fluids and antibiotics before surgery.',
+   'The appendix is removed, commonly by keyhole (laparoscopic) surgery through small cuts.',
+   30, 60, 'general', 'Most people go home in 1–2 days and resume normal activity within 1–2 weeks.',
+   1, 2, 'Infection or bleeding (uncommon).', 40000, 120000, ARRAY['ACS'], true),
+
+  ('cholecystectomy', 'പിത്താശയ ശസ്ത്രക്രിയ', 'Gallbladder Removal', 'surgery', (SELECT id FROM specialties WHERE slug='general-surgery'),
+   'Keyhole surgery to remove the gallbladder, usually for gallstones.',
+   'To treat painful gallstones or gallbladder inflammation.',
+   'Fasting before surgery; routine blood tests and an ultrasound.',
+   'The gallbladder is removed laparoscopically through small incisions.',
+   45, 90, 'general', 'Home in 1–2 days; light diet initially; back to routine within 1–2 weeks.',
+   1, 2, 'Bile-duct injury, infection or bleeding (uncommon).', 45000, 130000, ARRAY['ACS'], true),
+
+  ('hysterectomy', 'ഗർഭപാത്രം നീക്കൽ', 'Hysterectomy', 'surgery', (SELECT id FROM specialties WHERE slug='gynecology'),
+   'Surgery to remove the uterus for various gynaecological conditions.',
+   'To treat fibroids, heavy bleeding, prolapse or certain cancers.',
+   'Pre-operative tests, fasting, and discussion of the surgical route.',
+   'The uterus is removed via the abdomen, vagina or laparoscopically depending on the case.',
+   60, 150, 'general', 'Recovery over 4–6 weeks; avoid heavy lifting; follow-up as advised.',
+   2, 4, 'Bleeding, infection or injury to nearby organs (uncommon).', 60000, 180000, ARRAY['FOGSI'], true),
+
+  ('cesarean-section', 'സിസേറിയൻ', 'Caesarean Section', 'surgery', (SELECT id FROM specialties WHERE slug='gynecology'),
+   'A surgical delivery of the baby through an incision in the abdomen and uterus.',
+   'When a vaginal birth is not safe or possible for the mother or baby.',
+   'Fasting if planned; consent; regional anaesthesia is usual so the mother stays awake.',
+   'The obstetrician delivers the baby through a lower-abdominal incision, then closes the layers.',
+   30, 60, 'regional', 'Hospital stay of 3–4 days; wound care and gradual activity; support with feeding.',
+   3, 4, 'Bleeding, infection or clots (uncommon).', 40000, 150000, ARRAY['FOGSI','WHO'], true),
+
+  ('upper-gi-endoscopy', 'എൻഡോസ്കോപ്പി', 'Upper GI Endoscopy', 'diagnostic', (SELECT id FROM specialties WHERE slug='general-physician'),
+   'A thin camera examines the food pipe, stomach and upper intestine.',
+   'To investigate acidity, ulcers, bleeding, swallowing problems or persistent indigestion.',
+   'Fasting for 6 hours before; throat spray or light sedation may be given.',
+   'A flexible endoscope is passed through the mouth to view the upper digestive tract; biopsies can be taken.',
+   10, 20, 'local', 'A short rest until sedation wears off; eat once the throat feels normal.',
+   0, 0, 'Sore throat; rarely bleeding or a tear.', 3000, 12000, ARRAY['ISG'], true),
+
+  ('colonoscopy', 'കോളനോസ്കോപ്പി', 'Colonoscopy', 'diagnostic', (SELECT id FROM specialties WHERE slug='general-surgery'),
+   'A camera examines the large intestine (colon).',
+   'To investigate bleeding, change in bowel habit, or to screen for colon cancer.',
+   'Bowel-cleansing preparation the day before and a clear-liquid diet; fasting as advised.',
+   'A flexible scope is passed through the back passage to view the colon; polyps can be removed.',
+   20, 45, 'local', 'Rest until sedation wears off; mild bloating settles quickly.',
+   0, 0, 'Bloating; rarely bleeding or a tear.', 5000, 15000, ARRAY['ISG'], true),
+
+  ('ivf', 'ഐവിഎഫ്', 'IVF (In Vitro Fertilisation)', 'therapeutic', (SELECT id FROM specialties WHERE slug='gynecology'),
+   'A fertility treatment where eggs are fertilised outside the body and an embryo is placed in the uterus.',
+   'To help couples conceive when other treatments have not succeeded.',
+   'Hormone injections to stimulate the ovaries with monitoring scans and blood tests.',
+   'Eggs are collected under sedation, fertilised in the lab, and an embryo is transferred a few days later.',
+   20, 40, 'local', 'Light activity after egg collection; a pregnancy test follows in about two weeks.',
+   0, 0, 'Ovarian over-stimulation or multiple pregnancy (uncommon).', 90000, 250000, ARRAY['FOGSI','ESHRE'], true),
+
+  ('root-canal', 'റൂട്ട് കനാൽ', 'Root Canal Treatment', 'dental', (SELECT id FROM specialties WHERE slug='dentistry'),
+   'A dental treatment that saves a badly decayed or infected tooth.',
+   'To relieve pain and save a tooth whose pulp (nerve) is infected.',
+   'Usually none; an X-ray of the tooth is taken.',
+   'The infected pulp is removed, the canals are cleaned and sealed, and the tooth is capped.',
+   40, 90, 'local', 'Mild soreness for a day or two; a crown may be advised to protect the tooth.',
+   0, 0, 'Reinfection or tooth fracture (uncommon).', 3000, 12000, ARRAY['IDA'], true),
+
+  ('dental-implant', 'ഡെന്റൽ ഇംപ്ലാന്റ്', 'Dental Implant', 'dental', (SELECT id FROM specialties WHERE slug='dentistry'),
+   'A titanium post placed in the jaw to replace a missing tooth root.',
+   'To replace one or more missing teeth with a stable, natural-looking option.',
+   'A dental X-ray or scan; healthy gums are needed.',
+   'The implant is placed in the jawbone; after healing, a crown is fixed on top.',
+   45, 90, 'local', 'Healing over a few months before the final crown; good oral hygiene is important.',
+   0, 0, 'Infection or implant failure (uncommon).', 20000, 60000, ARRAY['IDA'], true),
+
+  ('lasik', 'ലാസിക്', 'LASIK Eye Surgery', 'cosmetic', (SELECT id FROM specialties WHERE slug='ophthalmology'),
+   'A laser procedure to reduce dependence on glasses or contact lenses.',
+   'To correct short-sight, long-sight or astigmatism in suitable eyes.',
+   'Stop contact lenses beforehand; a detailed eye assessment confirms suitability.',
+   'A laser reshapes the cornea in a few minutes per eye; numbing drops are used.',
+   10, 20, 'none', 'Vision improves within a day or two; use drops and avoid rubbing the eyes.',
+   0, 0, 'Dry eyes or glare, usually temporary.', 30000, 100000, ARRAY['AIOS'], true),
+
+  ('haemodialysis', 'ഡയാലിസിസ്', 'Haemodialysis', 'therapeutic', (SELECT id FROM specialties WHERE slug='general-physician'),
+   'A treatment that filters waste and excess fluid from the blood when the kidneys cannot.',
+   'To support people with advanced kidney failure.',
+   'Access (a fistula or catheter) is prepared; fluid and diet advice is given.',
+   'Blood is passed through a dialysis machine that cleans it and returns it, over a few hours.',
+   180, 240, 'none', 'Sessions are usually needed several times a week; rest after each session.',
+   0, 0, 'Low blood pressure, cramps or access problems.', 1500, 4000, ARRAY['ISN'], true),
+
+  ('chemotherapy-session', 'കീമോതെറാപ്പി', 'Chemotherapy Session', 'therapeutic', (SELECT id FROM specialties WHERE slug='general-surgery'),
+   'A treatment session that uses medicines to target cancer cells.',
+   'To treat many types of cancer, alone or with surgery or radiotherapy.',
+   'Blood tests before each cycle; good hydration and any prescribed pre-medicines.',
+   'Medicines are given, usually into a vein, over a planned time under supervision.',
+   60, 240, 'none', 'Side effects vary; the care team advises on managing them between cycles.',
+   0, 1, 'Nausea, low blood counts, infection risk (managed by the team).', 10000, 100000, ARRAY['NCG India'], true),
+
+  ('mri-scan', 'എംആർഐ സ്കാൻ', 'MRI Scan', 'diagnostic', NULL,
+   'A detailed imaging scan using magnetic fields, without X-rays.',
+   'To produce detailed images of the brain, spine, joints and soft tissues.',
+   'Remove all metal; inform staff of implants, pacemakers or pregnancy.',
+   'You lie still inside the scanner for 20–45 minutes; it is noisy but painless.',
+   20, 45, 'none', 'No recovery needed; you can resume normal activity immediately.',
+   0, 0, 'Generally very safe; not suitable with certain metal implants.', 4000, 15000, ARRAY['ACR'], true),
+
+  ('ct-scan', 'സിടി സ്കാൻ', 'CT Scan', 'diagnostic', NULL,
+   'A fast X-ray-based scan that produces cross-sectional images of the body.',
+   'To investigate injuries, chest/abdomen problems and many other conditions quickly.',
+   'Fasting if contrast dye is used; inform staff of allergies or pregnancy.',
+   'You lie on a table that moves through a ring-shaped scanner for a few minutes.',
+   5, 15, 'none', 'No recovery needed; drink fluids if contrast dye was used.',
+   0, 0, 'Uses X-rays; contrast dye can rarely cause a reaction.', 3000, 12000, ARRAY['ACR'], true),
+
+  ('echocardiogram-proc', 'എക്കോ', 'Echocardiogram', 'diagnostic', (SELECT id FROM specialties WHERE slug='cardiology'),
+   'An ultrasound scan of the heart’s structure and pumping.',
+   'To assess heart failure, valve problems and structural heart issues.',
+   'No special preparation needed.',
+   'A probe with gel is moved over the chest to capture moving images of the heart.',
+   20, 40, 'none', 'No recovery needed; results are interpreted by a cardiologist.',
+   0, 0, 'None; it is a safe, non-invasive test.', 1500, 5000, ARRAY['CSI'], true),
+
+  ('coronary-angiogram', 'ആൻജിയോഗ്രാം', 'Coronary Angiogram', 'diagnostic', (SELECT id FROM specialties WHERE slug='cardiology'),
+   'An X-ray test that shows the heart’s arteries using contrast dye.',
+   'To find narrowings or blockages in the coronary arteries.',
+   'Fasting for a few hours; blood tests and consent; inform staff of dye allergy.',
+   'A catheter is passed from the wrist or groin and dye is injected while X-ray images are taken.',
+   20, 45, 'local', 'Short observation afterwards; keep the puncture site still as advised.',
+   0, 1, 'Bruising, bleeding or dye reaction (uncommon).', 15000, 40000, ARRAY['CSI'], true)
+ON CONFLICT (slug) DO NOTHING;
