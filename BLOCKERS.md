@@ -4,6 +4,20 @@
 > Claude Code writes here instead of asking questions.
 > Review this file after each session and resolve NEEDS DECISION items before starting the next phase.
 
+## Session: 2026-08-13 P-E3 Medical Procedure Library
+
+### Assumptions
+- [ASSUMPTION] Migration 0089 procedures (spec 0098) + 0090 adds ECG as the 20th procedure (0089 seeded 19; ECG was initially dropped as redundant with the lab-test guide, then added back for the spec's explicit "20"). Now 20 published.
+- [ASSUMPTION] `specialty_id` NULL for MRI/CT scans (no radiology specialty exists); related-specialists section renders only when doctors exist for the linked specialty (e.g. empty for orthopedics until an orthopedic doctor is seeded).
+- [ASSUMPTION] Cost ranges are approximate indicative INR, clearly labelled "not a quotation". Timeline is CSS-only (Before → During → Recovery → Follow-up) mapped from preparation/what_happens/recovery/risks fields. Added a non-dismissable red educational note in addition to the cost disclaimer.
+- [ASSUMPTION] Added to unified smartSearch as type `procedure` (pre-existing weight 0.7 in unified.js). Two API routes (/api/procedures, /search). Footer + sitemap wired.
+
+### Verified
+- [VERIFIED] Migrations 89→90; 20 procedures published. apps/web "Compiled successfully"; lint clean. Live smoke: /ml/procedures + /en 200; detail 200 with MedicalProcedure JSON-LD + CSS timeline + cost range + disclaimer; category/anaesthesia/stay filters + search work; unified search returns `procedure`; ecg-procedure 200; 40 procedure URLs in sitemap. Deployed via deploy.sh snap-safe recreate on the now-durable postgres volume; health db/redis ok. Commits f933e4d + (ECG follow-up).
+
+### Note
+- [OBSERVATION] Protected containers from the 2026-08-11 host-wide overlayfs outage are recovering slowly (running count 8 → 12; ~28 still down). Owners appear to be restoring them. khp untouched-and-healthy throughout. The escalation from the P-E2 entry still stands for whoever owns the host.
+
 ## Session: 2026-08-11 P-E2 Lab Test Guide + host-wide outage recovery
 
 ### P-E2 (shipped)
