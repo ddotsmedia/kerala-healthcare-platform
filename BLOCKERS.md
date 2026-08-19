@@ -4,6 +4,19 @@
 > Claude Code writes here instead of asking questions.
 > Review this file after each session and resolve NEEDS DECISION items before starting the next phase.
 
+## Session: 2026-08-19 P-E4 Treatment Journey Guides
+
+### Assumptions
+- [ASSUMPTION] Migration 0091 (spec 0099). Reuses `content_items` with `type='journey_guide'`; adds `journey_steps jsonb[]`. The `content_items` type CHECK excluded 'journey_guide', so it was dropped and re-added with ALL existing values preserved plus the new one (additive in effect — no data/column loss; assumes default constraint name `content_items_type_check`).
+- [ASSUMPTION] Spec said "seed 5 journey guides **via CMS**" — seeded via the migration instead (no admin CMS surface for journeys was in scope). 5 guides (knee replacement, IVF, chemotherapy, dialysis, cardiac bypass), each 5 ordered steps with title/description/duration/icon/tips (bilingual on titles/descriptions; tips in English with ml fallback), mapped to a specialty via `content_item_specialties` for related specialists.
+- [ASSUMPTION] Patient-stories section is a "coming soon" placeholder (spec: future). Related hospitals = general top 2 (hospitals have no specialty link). Journeys are content pages — not added to the autocomplete/unified search (they surface via the health/knowledge content search already covering content_items).
+
+### Verified
+- [VERIFIED] Migration 91; 5 journeys published. apps/web "Compiled successfully"; lint clean. Live smoke: /ml/journeys + /en 200 with 5 cards; all 5 detail pages 200; CSS step timeline renders with per-step durations + tips; MedicalWebPage JSON-LD; specialty filter works; patient-stories placeholder present; 12 journey URLs in sitemap. Deployed via deploy.sh snap-safe recreate on the durable postgres volume; health db/redis ok. Commit 00e200f.
+
+### Note
+- [OBSERVATION] Protected containers from the 2026-08-11 outage continue recovering (running 12 → 18). khp healthy throughout.
+
 ## Session: 2026-08-13 P-E3 Medical Procedure Library
 
 ### Assumptions
