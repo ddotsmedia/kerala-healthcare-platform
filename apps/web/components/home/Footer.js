@@ -35,7 +35,8 @@ const QUICK = [
   { href: 'medicines', ml: 'മരുന്ന് വിവരങ്ങൾ', en: 'Medicine Info' },
   { href: 'lab-tests', ml: 'ലാബ് ടെസ്റ്റ് ഗൈഡ്', en: 'Lab Test Guide' },
   { href: 'procedures', ml: 'നടപടിക്രമങ്ങൾ', en: 'Procedure Library' },
-  { href: 'journeys', ml: 'ചികിത്സാ യാത്രകൾ', en: 'Treatment Journeys' }
+  { href: 'journeys', ml: 'ചികിത്സാ യാത്രകൾ', en: 'Treatment Journeys' },
+  { href: 'first-aid', ml: 'പ്രഥമശുശ്രൂഷ', en: 'First Aid' }
 ];
 const SOCIAL = ['📘', '𝕏', '📸', '▶️'];
 

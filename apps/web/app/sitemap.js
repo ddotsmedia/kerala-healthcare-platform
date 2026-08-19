@@ -70,6 +70,7 @@ export default async function sitemap() {
     add(`/${locale}/health`, 0.7, 'daily');
     add(`/${locale}/symptoms`, 0.6);
     add(`/${locale}/emergency`, 0.6);
+    add(`/${locale}/first-aid`, 0.7, 'monthly');
     add(`/${locale}/tools`, 0.6);
     for (const tool of ['bmi', 'due-date', 'water-intake', 'heart-rate', 'blood-pressure', 'sleep']) {
       add(`/${locale}/tools/${tool}`, 0.5, 'monthly');

@@ -63,6 +63,11 @@ export default async function EmergencyPage(props) {
             </a>
           ))}
         </div>
+        <div className="mx-auto mt-4 max-w-3xl px-4">
+          <Link href={`/${locale}/first-aid`} className="flex items-center justify-center gap-2 rounded-2xl bg-brand px-5 py-4 text-center text-base font-bold text-white hover:bg-brand-dark">
+            🚑 {ml ? 'പ്രഥമശുശ്രൂഷ ഗൈഡ് — എന്ത് ചെയ്യണം?' : 'First Aid Guide — what to do'}
+          </Link>
+        </div>
       </section>
 
       <section className="relative left-1/2 right-1/2 -mx-[50vw] w-screen bg-gray-50 py-10">
