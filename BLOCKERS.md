@@ -4,6 +4,16 @@
 > Claude Code writes here instead of asking questions.
 > Review this file after each session and resolve NEEDS DECISION items before starting the next phase.
 
+## Session: 2026-08-19 P-E5 Disease Encyclopedia (autopilot 1/6)
+
+### Assumptions
+- [ASSUMPTION] Seeded via migration 0092 (additive, ON CONFLICT DO NOTHING) rather than editing seed-prod.sh — tracked + idempotent, same effect. 100 new diseases + 11 categories; total published diseases now 114.
+- [ASSUMPTION] Malayalam-first on disease title/excerpt/symptoms; the longer detail prose (causes/diagnosis/treatment/prevention text, risk/emergency arrays) is English (ml falls back) for this bulk expansion — flag for later Malayalam translation. Not doctor-reviewed (educational; same caveat as P-E1/E2).
+- [ASSUMPTION] Category filter uses content_categories + content_item_categories (11 disease categories seeded). Symptom search matches title + disease_details.symptoms_en/ml arrays.
+
+### Verified
+- [VERIFIED] Migration 92; DB disease count 114 (>100). Compiled + lint clean. Live: /ml/diseases 200; A-Z index with per-letter counts (19 active letters); category filter (cancer → breast-cancer) 200; symptom search (headache → tension-headache); letter filter 200; disease detail (dengue) 200. Deployed via deploy.sh snap-safe recreate; health db/redis ok. Commit 203bc19.
+
 ## Session: 2026-08-19 P-E4 Treatment Journey Guides
 
 ### Assumptions
