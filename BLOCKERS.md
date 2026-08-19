@@ -4,6 +4,10 @@
 > Claude Code writes here instead of asking questions.
 > Review this file after each session and resolve NEEDS DECISION items before starting the next phase.
 
+## Session: 2026-08-19 P-E7 Nutrition Database (autopilot 3/6)
+
+- [VERIFIED] Migration 0093 foods + 50 Kerala foods. /ml/nutrition 200; food cards render; detail (fish-sardine) 200 with macros + NutritionInformation JSON-LD; category filter (fruit → banana/mango/guava); good-for filter (diabetes → bitter-gourd). Added to unified search as `food` (weight 0.7). Footer + sitemap wired. Migration count 93. Commit 72e34e0. Nutrition values approximate/educational (assumption logged).
+
 ## Session: 2026-08-19 P-E6 First Aid Guide (autopilot 2/6)
 
 ### Assumptions
