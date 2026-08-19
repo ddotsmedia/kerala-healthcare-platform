@@ -4,6 +4,12 @@
 > Claude Code writes here instead of asking questions.
 > Review this file after each session and resolve NEEDS DECISION items before starting the next phase.
 
+## Session: 2026-08-19 P-E6 First Aid Guide (autopilot 2/6)
+
+### Assumptions
+- [ASSUMPTION] No schema. 32 situations (spec asked 30+) hardcoded in `components/firstaid/firstAidData.js`; page `/first-aid` makes zero DB calls (works during DB/server issues). Sticky emergency banner 112/108/1056. Linked from the Emergency page + footer + sitemap.
+- [VERIFIED] /ml + /en 200; 32 situations with signs, numbered steps, "do NOT" and tap-to-call; 112/108/1056 above the fold; emergency page links to first-aid. Commit 0a340a9. No migration.
+
 ## Session: 2026-08-19 P-E5 Disease Encyclopedia (autopilot 1/6)
 
 ### Assumptions
