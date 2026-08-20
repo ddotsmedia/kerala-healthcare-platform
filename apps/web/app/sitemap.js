@@ -26,6 +26,7 @@ import { allProcedureSlugs } from '@/lib/procedures';
 import { allJourneySlugs } from '@/lib/journeys';
 import { allFoodSlugs } from '@/lib/nutrition';
 import { allWellnessSlugs } from '@/lib/wellness';
+import { allGuidelineSlugs } from '@/lib/guidelines';
 import { SITE } from '@/components/landing/LandingParts';
 
 export const dynamic = 'force-dynamic';
@@ -41,6 +42,7 @@ export default async function sitemap() {
   const journeys = await allJourneySlugs();
   const foods = await allFoodSlugs();
   const wellness = await allWellnessSlugs();
+  const guidelines = await allGuidelineSlugs();
 
   const now = new Date();
   const out = [];
@@ -98,6 +100,8 @@ export default async function sitemap() {
     for (const fo of foods) add(`/${locale}/nutrition/${fo.slug}`, 0.5, 'monthly');
     add(`/${locale}/wellness`, 0.7, 'weekly');
     for (const wl of wellness) add(`/${locale}/wellness/${wl.slug}`, 0.5, 'monthly');
+    add(`/${locale}/guidelines`, 0.7, 'weekly');
+    for (const gl of guidelines) add(`/${locale}/guidelines/${gl.slug}`, 0.5, 'monthly');
     add(`/${locale}/community`, 0.6, 'daily');
     for (const cat of ['diabetes', 'heart-health', 'cancer-support', 'mental-health', 'pregnancy', 'child-health', 'general-health']) {
       add(`/${locale}/community/${cat}`, 0.5, 'weekly');

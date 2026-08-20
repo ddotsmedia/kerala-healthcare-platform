@@ -38,7 +38,8 @@ const QUICK = [
   { href: 'journeys', ml: 'ചികിത്സാ യാത്രകൾ', en: 'Treatment Journeys' },
   { href: 'first-aid', ml: 'പ്രഥമശുശ്രൂഷ', en: 'First Aid' },
   { href: 'nutrition', ml: 'പോഷകാഹാരം', en: 'Nutrition' },
-  { href: 'wellness', ml: 'വെൽനെസ് & യോഗ', en: 'Wellness & Yoga' }
+  { href: 'wellness', ml: 'വെൽനെസ് & യോഗ', en: 'Wellness & Yoga' },
+  { href: 'guidelines', ml: 'ക്ലിനിക്കൽ മാർഗരേഖകൾ', en: 'Clinical Guidelines' }
 ];
 const SOCIAL = ['📘', '𝕏', '📸', '▶️'];
 
