@@ -71,13 +71,18 @@ async function recordDecision(d) {
         `UPDATE doctors
             SET verification_status = $1,
                 nmc_verified = ($1 = 'verified' AND $2 = true),
+                listing_status = CASE WHEN $1 = 'verified' THEN 'published' ELSE listing_status END,
+                published_at   = CASE WHEN $1 = 'verified' AND published_at IS NULL THEN now() ELSE published_at END,
                 updated_at = now()
           WHERE id = $3`,
         [d.status, !!d.nmcMatch, d.providerId]
       );
     } else {
       await client.query(
-        `UPDATE hospitals SET verification_status = $1, updated_at = now() WHERE id = $2`,
+        `UPDATE hospitals SET verification_status = $1,
+                listing_status = CASE WHEN $1 = 'verified' THEN 'published' ELSE listing_status END,
+                published_at   = CASE WHEN $1 = 'verified' AND published_at IS NULL THEN now() ELSE published_at END,
+                updated_at = now() WHERE id = $2`,
         [d.status, d.providerId]
       );
     }
