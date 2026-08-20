@@ -4,6 +4,18 @@
 > Claude Code writes here instead of asking questions.
 > Review this file after each session and resolve NEEDS DECISION items before starting the next phase.
 
+## Session: 2026-08-21 P-F10 CME Credit Tracker (autopilot F 10/10)
+
+### Assumptions
+- [ASSUMPTION] Migration 0108 cme_credits. No cme_events table exists → event_id is a nullable uuid with NO FK (additive-safe). Added a `category` column (clinical|research|ethics|professional|general) to satisfy "credits by category".
+- [ASSUMPTION] Annual requirement = 30 credits (named ANNUAL_REQUIREMENT) shown as indicative with a non-official-certification disclaimer. Reporting year pinned to 2026 (Date.* is fine at runtime; constant kept for determinism). Printable summary via a client PrintButton + `.no-print` @media print CSS in portal globals.
+
+### Verified (real addCredit via lib + doctor session)
+- [VERIFIED] Migration count 108 (108 numbered files; 101 public tables). Added two credits (12 clinical + 6 research). /cme 200: total 18, progress bar width 60% (18/30), both credits listed, category breakdown, Print summary button + no-print class, disclaimer present. Smoke data cleaned. Prod health 200. Commit 38dde56.
+
+### Track F complete
+- [DONE] Autopilot Track F (P-F1..P-F10) complete. Migrations 0097→0108. All phases built, deployed, migrated, smoke-tested, cleaned up.
+
 ## Session: 2026-08-21 P-F9 Publications & Awards (autopilot F 9/10)
 
 ### Assumptions
