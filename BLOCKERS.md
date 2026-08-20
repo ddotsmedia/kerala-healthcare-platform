@@ -4,6 +4,11 @@
 > Claude Code writes here instead of asking questions.
 > Review this file after each session and resolve NEEDS DECISION items before starting the next phase.
 
+## Session: 2026-08-20 P-E8 Yoga & Wellness (autopilot 4/6)
+
+- [ASSUMPTION] No new table — content_items type='wellness' (widened the type CHECK again, existing values preserved). 6 wellness categories + 10 articles. Detail at /wellness/[slug]; both list and detail carry the mandatory "consult your doctor before starting exercise" disclaimer.
+- [VERIFIED] Migration 0094; wellness 10. /ml + /en /wellness 200; 10 cards; category filter (yoga → 4); detail (pranayama) 200; disclaimer present. Footer + sitemap wired. Migration count 94. Commit 87e4a3c.
+
 ## Session: 2026-08-19 P-E7 Nutrition Database (autopilot 3/6)
 
 - [VERIFIED] Migration 0093 foods + 50 Kerala foods. /ml/nutrition 200; food cards render; detail (fish-sardine) 200 with macros + NutritionInformation JSON-LD; category filter (fruit → banana/mango/guava); good-for filter (diabetes → bitter-gourd). Added to unified search as `food` (weight 0.7). Footer + sitemap wired. Migration count 93. Commit 72e34e0. Nutrition values approximate/educational (assumption logged).
