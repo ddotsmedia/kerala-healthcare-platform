@@ -39,11 +39,13 @@ export default async function SchedulePage(props) {
                   <div className="flex flex-col gap-2">
                     <a href={`/schedule/appointments/${a.id}/chat`} className="rounded-lg border border-brand px-3 py-1.5 text-center text-xs font-medium text-brand">💬 Chat</a>
                     <a href={`/schedule/appointments/${a.id}/prescription`} className="rounded-lg border border-brand px-3 py-1.5 text-center text-xs font-medium text-brand">📝 Rx</a>
+                    <a href={`/schedule/appointments/${a.id}/interpret`} className="rounded-lg border border-brand px-3 py-1.5 text-center text-xs font-medium text-brand">🔬 Lab</a>
                   </div>
                 )}
                 {a.status === 'confirmed' && (
                   <div className="flex flex-col gap-2">
                     <a href={`/schedule/appointments/${a.id}/prescription`} className="rounded-lg border border-brand px-3 py-1.5 text-center text-xs font-medium text-brand">📝 Rx</a>
+                    <a href={`/schedule/appointments/${a.id}/interpret`} className="rounded-lg border border-brand px-3 py-1.5 text-center text-xs font-medium text-brand">🔬 Lab</a>
                     {a.consultation_mode === 'video' && a.consultation_room && (
                       <a href={`${WEB_URL}/ml/consult/${a.consultation_room}`} target="_blank" rel="noopener noreferrer"
                         className="rounded-lg bg-green-600 px-3 py-1.5 text-center text-xs font-medium text-white">🎥 Start Video Call</a>

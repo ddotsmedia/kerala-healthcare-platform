@@ -4,6 +4,7 @@ import { notFound, redirect } from 'next/navigation';
 import { resolveLocale } from '@/lib/i18n';
 import { currentPatientId } from '@/lib/appointments';
 import { getLabReport } from '@/lib/labReports';
+import { sharedInterpretations } from '@/lib/labInterpretations';
 import { markerByKey, bandFor, isOutOfRange } from '@/lib/labMarkers';
 import EditLabReport from '@/components/labreports/EditLabReport';
 import PrintButton from '@/components/share/PrintButton';
@@ -25,6 +26,7 @@ export default async function LabReportDetail(props) {
   if (!uid) redirect(`/${locale}/login`);
   const r = await getLabReport(uid, id);
   if (!r) notFound();
+  const interps = await sharedInterpretations(id, uid);
 
   const results = r.results && typeof r.results === 'object' ? r.results : {};
   const keys = Object.keys(results);
@@ -73,6 +75,30 @@ export default async function LabReportDetail(props) {
           </table>
         )}
       </section>
+
+      {interps.length > 0 && (
+        <section className="space-y-3">
+          <h2 className="text-lg font-bold text-gray-900">{ml ? 'ഡോക്ടറുടെ വിശദീകരണം' : "Doctor's interpretation"}</h2>
+          {interps.map((it) => {
+            const urgent = it.urgency === 'urgent';
+            const soon = it.urgency === 'soon';
+            const tone = urgent ? 'border-red-300 bg-red-50' : soon ? 'border-amber-300 bg-amber-50' : 'border-gray-200 bg-white';
+            const badge = urgent ? 'bg-red-600 text-white' : soon ? 'bg-amber-500 text-white' : 'bg-gray-200 text-gray-700';
+            const label = urgent ? (ml ? 'അടിയന്തിരം' : 'Urgent') : soon ? (ml ? 'ഉടൻ' : 'Soon') : (ml ? 'സാധാരണം' : 'Routine');
+            return (
+              <div key={it.id} className={`rounded-xl border p-4 ${tone}`}>
+                <div className="mb-1 flex items-center justify-between">
+                  <span className="text-sm font-semibold text-gray-800">{it.doctor_name || (ml ? 'ഡോക്ടർ' : 'Doctor')}</span>
+                  <span className={`rounded-full px-2 py-0.5 text-[10px] font-bold uppercase ${badge}`}>{label}</span>
+                </div>
+                <p className={`text-sm ${urgent ? 'font-semibold text-red-800' : 'text-gray-700'}`}>{it.interpretation}</p>
+                {it.recommendations && <p className="mt-2 text-sm text-gray-600"><span className="font-semibold">{ml ? 'ശുപാർശകൾ' : 'Recommendations'}:</span> {it.recommendations}</p>}
+                {it.next_test_date && <p className="mt-2 text-xs text-gray-500">{ml ? 'അടുത്ത പരിശോധന' : 'Next test'}: {fmtDate(it.next_test_date)}</p>}
+              </div>
+            );
+          })}
+        </section>
+      )}
 
       {fileUrl && (
         <section className="rounded-xl border border-gray-200 bg-white p-5">
