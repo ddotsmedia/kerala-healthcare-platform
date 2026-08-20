@@ -4,6 +4,15 @@
 > Claude Code writes here instead of asking questions.
 > Review this file after each session and resolve NEEDS DECISION items before starting the next phase.
 
+## Session: 2026-08-21 P-F9 Publications & Awards (autopilot F 9/10)
+
+### Assumptions
+- [ASSUMPTION] Migration 0107 creates provider_publications + provider_awards (both with sort_order for future reordering). Portal editor /profile/publications adds/deletes via server actions. Public profile shows Publications (DOI→https://doi.org/, else PubMed, else URL) + Awards (with year) as SectionCards before Reviews.
+- [DEFERRED] "Reorder by drag" — sort_order column added and honoured in ordering, but drag UI deferred (no client dnd lib; would need a new package). Items order by sort_order, then year DESC.
+
+### Verified (portal editor + real add via lib + public profile)
+- [VERIFIED] Migration count 107. Portal /profile/publications 200. addPublication + addAward via lib for dr-anand-nair. Public profile shows the publication title, working DOI link (https://doi.org/10.1234/…), and the award with year 2022. Smoke data cleaned. Prod health 200. Commit e541ac7.
+
 ## Session: 2026-08-21 P-F8 Specialist Referrals (autopilot F 8/10)
 
 ### Assumptions
