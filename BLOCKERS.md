@@ -4,6 +4,19 @@
 > Claude Code writes here instead of asking questions.
 > Review this file after each session and resolve NEEDS DECISION items before starting the next phase.
 
+## Session: 2026-08-21 P-F2 Doctor Self-Registration (autopilot F 2/10)
+
+### Assumptions
+- [ASSUMPTION] Migrations 0098/0099 target `doctors` (the real provider table; spec's "healthcare_providers" is a reconcile view). Added self_registered, registration_documents jsonb[], registration_ip, last_profile_update, registration_council, registration_payload; new nmc_verification_checks table.
+- [ASSUMPTION] Made admin approval also PUBLISH the provider (listing_status=published + published_at) in verification.js recordDecision — required for "approve → appears in directory" and the go-live objective. Reject leaves it unlisted.
+- [ASSUMPTION] Documents stored as base64 data URLs in registration_documents (per spec, until S3). Registration rate-limited 5/hr/IP. Best-effort "under review" email (Resend). Never auto-publishes.
+
+### Verified (end-to-end, minted admin JWT)
+- [VERIFIED] Migrations 99. /ml/register/doctor 200. POST /api/register/doctor → doctor created verification_status=pending, listing_status=draft, self_registered=true; provider_verifications(pending) queue row created; admin queue API lists it; admin approve → verified/published and the doctor's /ml/doctors/[slug] returns 200 (in directory); reject route works with {reason}. Commits 7219e1c + 2c1db9c (slug fix: strip "Dr " prefix to avoid dr-dr). Migration count 99.
+
+### Deferred
+- [DEFERRED] Automated NMC registry API/scrape check (nmc_verification_checks row created as 'manual', verified=false — a human verifies in the queue). Reject-reason email delivery depends on the open Resend verification.
+
 ## Session: 2026-08-21 P-F1 Bulk Provider Import (autopilot F 1/10)
 
 ### Assumptions
