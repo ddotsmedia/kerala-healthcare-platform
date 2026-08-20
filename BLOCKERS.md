@@ -4,6 +4,19 @@
 > Claude Code writes here instead of asking questions.
 > Review this file after each session and resolve NEEDS DECISION items before starting the next phase.
 
+## Session: 2026-08-21 P-F5 Patient Management (autopilot F 5/10)
+
+### Assumptions
+- [ASSUMPTION] Migrations 0102 patient_notes, 0103 follow_up_reminders (provider_id→doctors.id, patient_id→users.id). Patient name = users.full_name. Shared records = health_records WHERE is_shared=true.
+- [ASSUMPTION] Doctor-scoped throughout: isMyPatient() guard (an appointment must exist between doctor and patient) gates getPatient/addNote/createFollowUp. Follow-ups page shows next 7 days; complete/dismiss via server actions.
+- [ASSUMPTION] Notes/follow-ups mutate via server actions on the pages; the spec REST routes (/api/portal/patients[/id][/notes], /follow-ups) also implemented for parity.
+
+### Errors fixed
+- [FIXED] `date +/- $param` was ambiguous ("operator is not unique: date + unknown") → follow-ups 500. Cast to `$2::int`. Same latent bug in P-F4 doctorAnalytics (swallowed by try/catch, silently zeroing appointment_count/byMode) — fixed there too. Fix commit 30a79e7.
+
+### Verified (minted doctor session, dr-anand-nair + demo appt)
+- [VERIFIED] Migration count 103. Patient appears in list after booking (Arjun Raj, visits 1, upcoming 1); note POST 201 + visible in GET; follow-up POST 201 + appears in /api/portal/follow-ups; /patients, /patients/[id], /follow-ups all 200. Smoke data cleaned. Prod health 200. Commits 4b51f02, 30a79e7.
+
 ## Session: 2026-08-21 P-F4 Doctor Analytics Dashboard (autopilot F 4/10)
 
 ### Assumptions
