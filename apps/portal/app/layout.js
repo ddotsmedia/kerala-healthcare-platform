@@ -1,4 +1,5 @@
 // Portal root layout — doctor & hospital self-service. Auth lands in Phase 2.
+/* eslint-disable @next/next/no-html-link-for-pages */
 
 import './globals.css';
 
@@ -17,6 +18,8 @@ export default function RootLayout({ children }) {
             <nav className="flex gap-4 text-sm">
               <a href="/profile" className="hover:text-brand">Doctor</a>
               <a href="/analytics" className="hover:text-brand">Analytics</a>
+              <a href="/patients" className="hover:text-brand">Patients</a>
+              <a href="/follow-ups" className="hover:text-brand">Follow-ups</a>
               <a href="/profile/hospitals" className="hover:text-brand">Affiliations</a>
               <a href="/hospital" className="hover:text-brand">Hospital</a>
               <a href="/hospital/doctors" className="hover:text-brand">H-Doctors</a>
