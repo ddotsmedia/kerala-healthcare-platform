@@ -9,6 +9,7 @@ import { doctorHospitals, doctorAvailability } from '@/lib/profile';
 import { logProfileView } from '@/lib/profileViews';
 import { providerOpd } from '@/lib/opd';
 import { reviewSummary, listApprovedReviews } from '@/lib/reviews';
+import { getPublications, getAwards } from '@/lib/publications';
 import { physicianSchema, medicalWebPageSchema, SITE } from '@/lib/schema';
 import { Avatar, ModeIcons, Chip, StatusBadge, ProfileBreadcrumb, SectionCard, MODE_META } from '@/components/profile/ProfileParts';
 import Tabs from '@/components/profile/Tabs';
@@ -56,13 +57,15 @@ export default async function DoctorProfile(props) {
   const ip = (await headers()).get('x-forwarded-for');
   logProfileView(d.id, { ip: ip ? ip.split(',')[0].trim() : null, locale });
 
-  const [hospitals, availability, opd, similarRaw, revSummary, revInitial] = await Promise.all([
+  const [hospitals, availability, opd, similarRaw, revSummary, revInitial, publications, awards] = await Promise.all([
     doctorHospitals(d.id),
     doctorAvailability(d.id),
     providerOpd(d.id),
     searchDoctors({ specialtyId: d.specialty_id, districtId: d.district_id, page: 1, limit: 4 }),
     reviewSummary('doctor', d.id),
-    listApprovedReviews('doctor', d.id, 1)
+    listApprovedReviews('doctor', d.id, 1),
+    getPublications(d.id),
+    getAwards(d.id)
   ]);
   const OPD_DAYS = ml
     ? ['ഞായർ', 'തിങ്കൾ', 'ചൊവ്വ', 'ബുധൻ', 'വ്യാഴം', 'വെള്ളി', 'ശനി']
@@ -214,6 +217,39 @@ export default async function DoctorProfile(props) {
           {ml ? '2 മണിക്കൂർ മുൻപ് വരെ സൗജന്യ റദ്ദാക്കൽ · ഓൺലൈൻ പേയ്മെന്റ് ഉടൻ വരുന്നു' : 'Free cancellation up to 2 hours before · Pay online coming soon'}
         </p>
       </SectionCard>
+
+      {/* SECTION 4b — publications */}
+      {publications.length > 0 && (
+        <SectionCard title={ml ? 'പ്രസിദ്ധീകരണങ്ങൾ' : 'Publications'}>
+          <ul className="space-y-3">
+            {publications.map((p) => {
+              const href = p.url || (p.doi ? `https://doi.org/${p.doi}` : p.pubmed_id ? `https://pubmed.ncbi.nlm.nih.gov/${p.pubmed_id}/` : null);
+              return (
+                <li key={p.id} className="text-sm">
+                  <p className="font-semibold text-gray-900">{p.title}</p>
+                  <p className="text-xs text-gray-500">{[p.journal, p.year, p.type].filter(Boolean).join(' · ')}</p>
+                  {href && <a href={href} target="_blank" rel="noopener noreferrer" className="text-xs font-medium text-brand hover:underline">{p.doi ? `DOI: ${p.doi}` : (ml ? 'ലിങ്ക് →' : 'View →')}</a>}
+                </li>
+              );
+            })}
+          </ul>
+        </SectionCard>
+      )}
+
+      {/* SECTION 4c — awards */}
+      {awards.length > 0 && (
+        <SectionCard title={ml ? 'പുരസ്കാരങ്ങൾ' : 'Awards & recognition'}>
+          <ul className="space-y-3">
+            {awards.map((a) => (
+              <li key={a.id} className="text-sm">
+                <p className="font-semibold text-gray-900">🏆 {a.title}{a.year ? <span className="font-normal text-gray-500"> · {a.year}</span> : null}</p>
+                {a.awarded_by && <p className="text-xs text-gray-500">{a.awarded_by}</p>}
+                {a.description && <p className="text-xs text-gray-600">{a.description}</p>}
+              </li>
+            ))}
+          </ul>
+        </SectionCard>
+      )}
 
       {/* SECTION 5 — reviews */}
       <section className="space-y-3">
