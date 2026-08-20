@@ -4,6 +4,19 @@
 > Claude Code writes here instead of asking questions.
 > Review this file after each session and resolve NEEDS DECISION items before starting the next phase.
 
+## Session: 2026-08-21 P-F4 Doctor Analytics Dashboard (autopilot F 4/10)
+
+### Assumptions
+- [ASSUMPTION] Migration 0101 provider_profile_views (append-only view log; provider_id→doctors.id, users.id FK). No soft-delete columns — high-volume event log, spec-defined shape.
+- [ASSUMPTION] Views logged fire-and-forget from the web doctor profile render (lib/profileViews.js), IP from x-forwarded-for. `search_appearances` shown as "—/coming soon": no search-impression tracking table exists yet.
+- [ASSUMPTION] Portal /analytics resolves the doctor via currentDoctorId() (session→doctors.user_id). Reused appointments (provider_id, slot_date, consultation_mode) and reviews (entity_type='doctor', approved).
+
+### Errors fixed
+- [FIXED] deploy.sh step 3 `source .env.production` aborted: line 28 `EMAIL_FROM_NAME=Kerala Health Portal` was unquoted (spaces → "Health: command not found"). Quoted the value in place (backup .env.production.bak.pf4). This latent env-file bug would break any deploy that sources the env; now fixed.
+
+### Verified (minted doctor session, dr-anand-nair)
+- [VERIFIED] Migration count 101. Logged 3 profile views (3 unique IPs) via web profile → provider_profile_views 0→3. /analytics 200, renders "Your performance", Profile views=3 (correct), SVG chart present. Smoke rows cleaned. Prod health 200, profile 200. Commit 339aee8.
+
 ## Session: 2026-08-21 P-F3 Hospital Admin Portal (autopilot F 3/10)
 
 ### Assumptions
