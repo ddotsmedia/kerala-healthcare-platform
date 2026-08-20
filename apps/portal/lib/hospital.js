@@ -8,9 +8,24 @@
 
 import { getPool } from '@khp/db';
 import { hospitalVectorUpdate } from '@khp/search';
+import { getSession } from './session.js';
 
-/** @returns {string|null} the current hospital's id (Phase 2: from session). */
-function currentHospitalId() {
+/**
+ * The current hospital's id — resolved from the logged-in hospital admin via
+ * hospital_admins; falls back to PORTAL_DEMO_HOSPITAL_ID.
+ * @returns {Promise<string|null>}
+ */
+async function currentHospitalId() {
+  try {
+    const s = await getSession();
+    if (s?.userId) {
+      const r = await getPool().query(
+        `SELECT hospital_id FROM hospital_admins
+          WHERE user_id = $1 AND is_active = true AND deleted_at IS NULL
+          ORDER BY created_at LIMIT 1`, [s.userId]);
+      if (r.rows[0]?.hospital_id) return r.rows[0].hospital_id;
+    }
+  } catch { /* fall through to demo */ }
   return process.env.PORTAL_DEMO_HOSPITAL_ID || null;
 }
 

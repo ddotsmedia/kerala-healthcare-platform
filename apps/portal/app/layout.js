@@ -18,6 +18,8 @@ export default function RootLayout({ children }) {
               <a href="/profile" className="hover:text-brand">Doctor</a>
               <a href="/profile/hospitals" className="hover:text-brand">Affiliations</a>
               <a href="/hospital" className="hover:text-brand">Hospital</a>
+              <a href="/hospital/doctors" className="hover:text-brand">H-Doctors</a>
+              <a href="/hospital/appointments" className="hover:text-brand">H-Appts</a>
               <a href="/schedule" className="hover:text-brand">Schedule</a>
               <a href="/schedule/availability" className="hover:text-brand">Availability</a>
               <a href="/schedule/opd" className="hover:text-brand">OPD</a>

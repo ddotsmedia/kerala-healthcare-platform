@@ -20,7 +20,7 @@ function toNumOrNull(v) {
 }
 
 export async function saveHospitalAction(formData) {
-  const id = currentHospitalId();
+  const id = await currentHospitalId();
   await updateHospital(id, {
     about_ml: formData.get('about_ml'),
     about_en: formData.get('about_en'),
@@ -36,7 +36,7 @@ export async function saveHospitalAction(formData) {
 }
 
 export async function addDepartmentAction(formData) {
-  await addDepartment(currentHospitalId(), {
+  await addDepartment(await currentHospitalId(), {
     name_ml: formData.get('name_ml'),
     name_en: formData.get('name_en')
   });
@@ -44,7 +44,7 @@ export async function addDepartmentAction(formData) {
 }
 
 export async function addServiceAction(formData) {
-  await addService(currentHospitalId(), {
+  await addService(await currentHospitalId(), {
     name_ml: formData.get('name_ml'),
     name_en: formData.get('name_en'),
     available_24x7: formData.get('available_24x7') === 'on'
@@ -53,7 +53,7 @@ export async function addServiceAction(formData) {
 }
 
 export async function addAccreditationAction(formData) {
-  await addAccreditation(currentHospitalId(), {
+  await addAccreditation(await currentHospitalId(), {
     body: formData.get('body'),
     accreditation_no: formData.get('accreditation_no'),
     valid_until: formData.get('valid_until') || null
