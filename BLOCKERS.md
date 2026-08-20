@@ -4,6 +4,15 @@
 > Claude Code writes here instead of asking questions.
 > Review this file after each session and resolve NEEDS DECISION items before starting the next phase.
 
+## Session: 2026-08-21 P-F8 Specialist Referrals (autopilot F 8/10)
+
+### Assumptions
+- [ASSUMPTION] Migration 0106 referral_letters (status sent|acknowledged|completed|declined, urgency routine|soon|urgent). Referral created against an appointment (patient derived from it). searchSpecialists filters published doctors by name/specialty, excluding self.
+- [ASSUMPTION] Refer route /schedule/appointments/[id]/refer (↪ Refer links). Referrals inbox /referrals shows Received (with outcome-update form) + Sent. APIs: POST /referrals, GET /sent, GET /received, PATCH /[id]/outcome. Patient email best-effort (server-action path) via DEMO_NOTIFY_TO.
+
+### Verified (API flow, referrer + temp specialist sessions)
+- [VERIFIED] Migration count 106. Anand POST referral (urgent) → 201; specialist GET /received shows it (from "Dr. Anand Nair", patient "Arjun Raj"); specialist PATCH outcome → 200; referrer GET /sent shows status=completed + outcome. /referrals and /refer?q= pages 200. Smoke used a temp user linked to Dr. Priya (cf765660) to act as specialist; reverted user_id→NULL and deleted temp user after. Prod health 200. Commit df33ab8.
+
 ## Session: 2026-08-21 P-F7 Lab Result Interpretation (autopilot F 7/10)
 
 ### Assumptions
