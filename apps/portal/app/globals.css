@@ -5,3 +5,9 @@
 body {
   @apply bg-gray-50 text-gray-900 antialiased;
 }
+
+@media print {
+  .no-print { display: none !important; }
+  header, nav { display: none !important; }
+  body { background: #fff; }
+}
