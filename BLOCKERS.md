@@ -4,6 +4,20 @@
 > Claude Code writes here instead of asking questions.
 > Review this file after each session and resolve NEEDS DECISION items before starting the next phase.
 
+## Session: 2026-08-21 P-F1 Bulk Provider Import (autopilot F 1/10)
+
+### Assumptions
+- [ASSUMPTION] Import service lives in `apps/admin/lib/import.js` (spec said services/admin/import.js — moved so it resolves via the admin app's `@/lib`; services/ files aren't a workspace package). Hand-rolled CSV parser, no package.
+- [ASSUMPTION] Execute is a synchronous JSON endpoint returning the full result (imported/errors), not SSE — simpler + fully testable; progress SSE deferred (log). Fine for the current row volumes.
+- [ASSUMPTION] Imported providers start `verification_status='pending'`, `listing_status='draft'` (NMC cross-check rule — never auto-publish). Contact fields (phone/email) are pgcrypto-encrypted columns; import leaves them null for now (deferred) rather than storing plaintext.
+- [ASSUMPTION] Doctor reg validation: `^[A-Za-z0-9/-]{4,}$`. Duplicate detection via unique slug + ON CONFLICT DO NOTHING (silent skip).
+
+### Verified (end-to-end, via a minted admin JWT)
+- [VERIFIED] Migration 0097 import_jobs; admin recreated on :8081. Auth guards: /import + template unauth → 307/403. Template CSVs download with correct headers. Upload a 12-row doctor CSV (10 valid + 1 invalid reg + 1 duplicate) → 10 imported (DB delta 10), invalid-reg row logged in the error report CSV, duplicate silently skipped, imports are draft+pending, job-details page 200. Migration count 97. Commit e888242.
+
+### Deferred
+- [DEFERRED] Progress via SSE; contact-field (phone/email) encrypted import; labs import type (schema present, importer covers doctors+hospitals).
+
 ## Session: 2026-08-20 P-E10 Monthly Research Digest (autopilot 6/6) — SEQUENCE COMPLETE
 
 - [ASSUMPTION] No schema change — reused health_news category='research' (no `type` column exists; the spec's type='research_digest' maps to the existing 'research' category). Seeded 3 monthly digests (migration 0096). Future digests via the existing CMS/news pipeline.
