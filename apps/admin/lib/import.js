@@ -72,7 +72,7 @@ async function importDoctorRow(rec) {
   const langs = list(rec.languages); const languages = langs.length ? langs : ['ml'];
   const years = parseInt(rec.experience_years, 10); const yrs = Number.isFinite(years) ? years : null;
   const fee = parseFloat(rec.consultation_fee_inr); const feeVal = Number.isFinite(fee) ? fee : null;
-  const slug = `dr-${slugify(nameEn)}-${spSlug || 'doctor'}-${rec.district_slug || 'kerala'}`.slice(0, 120);
+  const slug = `dr-${slugify(nameEn.replace(/^dr\.?\s+/i, ''))}-${spSlug || 'doctor'}-${rec.district_slug || 'kerala'}`.slice(0, 120);
   const rows = await run(
     `INSERT INTO doctors (first_name, last_name, display_name, slug, nmc_registration_no,
         specialty_id, district_id, languages, years_experience, consultation_fee,

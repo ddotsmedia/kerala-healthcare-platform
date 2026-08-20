@@ -29,7 +29,7 @@ export async function registerDoctor(b, ip) {
   const years = Number.isFinite(+b.experience_years) ? +b.experience_years : null;
   const fee = Number.isFinite(+b.consultation_fee_inr) ? +b.consultation_fee_inr : null;
   const docs = Array.isArray(b.documents) ? b.documents : [];
-  const slug = `dr-${slugify(nameEn)}-${spSlug || 'doctor'}-${diSlug || 'kerala'}`.slice(0, 120);
+  const slug = `dr-${slugify(nameEn.replace(/^dr\.?\s+/i, ''))}-${spSlug || 'doctor'}-${diSlug || 'kerala'}`.slice(0, 120);
 
   const client = await getPool().connect();
   try {
