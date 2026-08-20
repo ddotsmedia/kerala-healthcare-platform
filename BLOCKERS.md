@@ -4,6 +4,11 @@
 > Claude Code writes here instead of asking questions.
 > Review this file after each session and resolve NEEDS DECISION items before starting the next phase.
 
+## Session: 2026-08-20 P-E9 Clinical Guidelines Simplified (autopilot 5/6)
+
+- [ASSUMPTION] content_items type='guideline' (widened CHECK). Added two nullable columns `source_org`/`source_url` (additive — "NO SCHEMA" read as no new table) so the source is cited prominently. 10 guideline summaries.
+- [VERIFIED] Migration 0095; guidelines 10. /ml/guidelines 200; 10 cards; detail (diabetes) 200 with prominent source (RSSDI) + "refer to original for clinical use" disclaimer; ICMR cited on covid. Footer + sitemap wired. Migration count 95. Commit 854e23d.
+
 ## Session: 2026-08-20 P-E8 Yoga & Wellness (autopilot 4/6)
 
 - [ASSUMPTION] No new table — content_items type='wellness' (widened the type CHECK again, existing values preserved). 6 wellness categories + 10 articles. Detail at /wellness/[slug]; both list and detail carry the mandatory "consult your doctor before starting exercise" disclaimer.
