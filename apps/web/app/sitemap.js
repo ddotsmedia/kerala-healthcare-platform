@@ -102,6 +102,7 @@ export default async function sitemap() {
     for (const wl of wellness) add(`/${locale}/wellness/${wl.slug}`, 0.5, 'monthly');
     add(`/${locale}/guidelines`, 0.7, 'weekly');
     for (const gl of guidelines) add(`/${locale}/guidelines/${gl.slug}`, 0.5, 'monthly');
+    add(`/${locale}/research`, 0.7, 'weekly');
     add(`/${locale}/community`, 0.6, 'daily');
     for (const cat of ['diabetes', 'heart-health', 'cancer-support', 'mental-health', 'pregnancy', 'child-health', 'general-health']) {
       add(`/${locale}/community/${cat}`, 0.5, 'weekly');
