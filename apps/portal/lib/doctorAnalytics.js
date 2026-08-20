@@ -27,7 +27,7 @@ export async function getProfileStats(providerId, days = 30) {
           WHERE provider_id=$1 AND viewed_at >= now() - make_interval(days => $2))::int AS unique_visitors,
        (SELECT count(*) FROM appointments
           WHERE provider_id=$1 AND deleted_at IS NULL
-            AND slot_date >= current_date - $2)::int AS appointment_count,
+            AND slot_date >= current_date - $2::int)::int AS appointment_count,
        (SELECT round(avg(rating)::numeric, 1) FROM reviews
           WHERE entity_type='doctor' AND entity_id=$1 AND status='approved' AND deleted_at IS NULL) AS review_avg,
        (SELECT count(*) FROM reviews
@@ -51,7 +51,7 @@ export async function getProfileStats(providerId, days = 30) {
   const byModeRaw = await rows(
     `SELECT consultation_mode AS mode, count(*)::int AS n
        FROM appointments
-      WHERE provider_id=$1 AND deleted_at IS NULL AND slot_date >= current_date - $2
+      WHERE provider_id=$1 AND deleted_at IS NULL AND slot_date >= current_date - $2::int
       GROUP BY 1 ORDER BY 2 DESC`,
     [providerId, d]
   );

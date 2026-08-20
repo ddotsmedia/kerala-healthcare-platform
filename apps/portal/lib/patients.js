@@ -113,7 +113,7 @@ export async function listFollowUps(providerId, days = 7) {
        JOIN users u ON u.id = f.patient_id
       WHERE f.provider_id=$1 AND f.deleted_at IS NULL
         AND f.status IN ('pending','sent')
-        AND f.due_date <= current_date + $2
+        AND f.due_date <= current_date + $2::int
       ORDER BY f.due_date ASC`,
     [providerId, d]
   );
