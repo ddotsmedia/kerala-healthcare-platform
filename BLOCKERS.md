@@ -4,6 +4,15 @@
 > Claude Code writes here instead of asking questions.
 > Review this file after each session and resolve NEEDS DECISION items before starting the next phase.
 
+## Session: 2026-08-21 P-F7 Lab Result Interpretation (autopilot F 7/10)
+
+### Assumptions
+- [ASSUMPTION] Migration 0105 lab_interpretations (urgency routine|soon|urgent, is_shared_with_patient default true). lab_reports has NO per-doctor share flag → a doctor may interpret any lab report of a patient who booked with them (appointment-scoped via getAppointment). Report select also offers a "General (not linked)" option.
+- [ASSUMPTION] Interpret route /schedule/appointments/[id]/interpret (🔬 Lab links on schedule page). Patient sees shared interpretations on the lab-report detail page: urgent = red, soon = amber, routine = grey. Patient email best-effort via DEMO_NOTIFY_TO (encrypted contact not decryptable).
+
+### Verified (portal page + real addInterpretation via node + patient session)
+- [VERIFIED] Migration count 105. Portal interpret page 200 (heading, patient lab report in select, urgency options). addInterpretation created an urgent shared interpretation. Patient lab-report detail 200 shows the interpretation text + recommendations + doctor name, urgent rendered red (bg-red-600 badge). Smoke data cleaned. Prod health 200. Commit f15a581.
+
 ## Session: 2026-08-21 P-F6 Digital Prescriptions (autopilot F 6/10)
 
 ### Assumptions
