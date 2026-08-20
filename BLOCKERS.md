@@ -4,6 +4,15 @@
 > Claude Code writes here instead of asking questions.
 > Review this file after each session and resolve NEEDS DECISION items before starting the next phase.
 
+## Session: 2026-08-20 P-E10 Monthly Research Digest (autopilot 6/6) — SEQUENCE COMPLETE
+
+- [ASSUMPTION] No schema change — reused health_news category='research' (no `type` column exists; the spec's type='research_digest' maps to the existing 'research' category). Seeded 3 monthly digests (migration 0096). Future digests via the existing CMS/news pipeline.
+- [VERIFIED] Migration 0096; 3 research digests. /ml + /en /research 200; 3 digest cards; month grouping (Aug/Jul/Jun 2026); latest digest accessible. Footer + sitemap wired. Migration count 96. Commit 31f3295.
+
+### Autopilot sequence summary (P-E5 → P-E10)
+- Migrations 91 → 96 (P-E6 first-aid was hardcoded, no migration — hence 96, not ~97). All deployed via deploy.sh snap-safe recreate on the durable postgres volume; health db/redis ok after each.
+- Carried-forward for a human: (1) the 2026-08-11 host-wide overlayfs outage — protected containers still partially down (owners restoring; not touched by me); (2) doctor/clinician review of the seeded medical content (medicines, lab tests, diseases, guidelines) before relying on it clinically; (3) Malayalam translation of the English-fallback detail prose in the bulk content seeds.
+
 ## Session: 2026-08-20 P-E9 Clinical Guidelines Simplified (autopilot 5/6)
 
 - [ASSUMPTION] content_items type='guideline' (widened CHECK). Added two nullable columns `source_org`/`source_url` (additive — "NO SCHEMA" read as no new table) so the source is cited prominently. 10 guideline summaries.
