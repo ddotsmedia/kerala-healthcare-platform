@@ -4,7 +4,9 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { resolveLocale, t } from '@/lib/i18n';
 import { getDoctorBySlug, searchDoctors } from '@/lib/providers';
+import { headers } from 'next/headers';
 import { doctorHospitals, doctorAvailability } from '@/lib/profile';
+import { logProfileView } from '@/lib/profileViews';
 import { providerOpd } from '@/lib/opd';
 import { reviewSummary, listApprovedReviews } from '@/lib/reviews';
 import { physicianSchema, medicalWebPageSchema, SITE } from '@/lib/schema';
@@ -50,6 +52,9 @@ export default async function DoctorProfile(props) {
   const ml = locale === 'ml';
   const d = await getDoctorBySlug(params.slug);
   if (!d) notFound();
+
+  const ip = (await headers()).get('x-forwarded-for');
+  logProfileView(d.id, { ip: ip ? ip.split(',')[0].trim() : null, locale });
 
   const [hospitals, availability, opd, similarRaw, revSummary, revInitial] = await Promise.all([
     doctorHospitals(d.id),

@@ -16,6 +16,7 @@ export default function RootLayout({ children }) {
             <h1 className="text-lg font-bold text-brand">KHP Provider Portal</h1>
             <nav className="flex gap-4 text-sm">
               <a href="/profile" className="hover:text-brand">Doctor</a>
+              <a href="/analytics" className="hover:text-brand">Analytics</a>
               <a href="/profile/hospitals" className="hover:text-brand">Affiliations</a>
               <a href="/hospital" className="hover:text-brand">Hospital</a>
               <a href="/hospital/doctors" className="hover:text-brand">H-Doctors</a>
