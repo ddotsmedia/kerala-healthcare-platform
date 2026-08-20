@@ -4,6 +4,19 @@
 > Claude Code writes here instead of asking questions.
 > Review this file after each session and resolve NEEDS DECISION items before starting the next phase.
 
+## Session: 2026-08-21 P-F3 Hospital Admin Portal (autopilot F 3/10)
+
+### Assumptions
+- [ASSUMPTION] Migration 0100 hospital_admins maps user→hospital. `currentHospitalId()` (portal lib/hospital.js) is now async and resolves the hospital from the session via hospital_admins, falling back to PORTAL_DEMO_HOSPITAL_ID; all call sites awaited. Reused existing hospital_providers (affiliations), hospital_departments/services, appointments (has hospital_id).
+- [ASSUMPTION] Relocated the existing profile editor to /hospital/profile; /hospital is now a home overview. Doctor add/remove via server actions; appointments CSV via GET /api/portal/hospital/appointments?format=csv. Analytics uses 30-day appointment data (no profile-view table exists — a "views coming soon" note is shown).
+- [ASSUMPTION] Doctor add is by NMC registration number (addDoctorByReg looks up doctors.nmc_registration_no).
+
+### Verified (minted hospital_admin session)
+- [VERIFIED] Migration 100. hospital_admin (via hospital_admins) → /hospital 200 shows own hospital (Lakeshore Hospital); /hospital/profile, /doctors, /appointments, /analytics all 200; affiliation add/list works; appointments CSV export (text/csv + correct header); analytics 200. Migration count 100. Commit b097afc.
+
+### Deferred
+- [DEFERRED] Some spec API routes (departments/services/analytics as separate REST endpoints) are implemented as server-rendered pages + server actions instead. Profile-view analytics needs a view-tracking table.
+
 ## Session: 2026-08-21 P-F2 Doctor Self-Registration (autopilot F 2/10)
 
 ### Assumptions
