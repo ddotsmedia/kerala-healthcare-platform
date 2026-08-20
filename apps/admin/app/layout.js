@@ -24,6 +24,7 @@ export default function RootLayout({ children }) {
               <Link href="/forum" className="hover:text-brand">Forum</Link>
               <Link href="/news" className="hover:text-brand">News</Link>
               <Link href="/cms" className="hover:text-brand">CMS</Link>
+              <Link href="/import" className="hover:text-brand">Import</Link>
               <Link href="/analytics" className="hover:text-brand">Analytics</Link>
             </nav>
           </header>
