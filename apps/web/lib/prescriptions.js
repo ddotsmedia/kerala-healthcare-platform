@@ -6,7 +6,7 @@ import { getPool } from '@khp/db';
 const MAX_FILE_KB = 2048;
 const FILE_TYPES = { 'image/jpeg': 'jpg', 'image/png': 'png', 'application/pdf': 'pdf' };
 const META_COLS = `id, appointment_id, doctor_name, doctor_id, hospital_name, prescribed_date,
-  valid_until, medications, file_name, file_type, file_size_kb, notes, tags, created_at, updated_at`;
+  valid_until, medications, file_name, file_type, file_size_kb, notes, tags, is_digital, created_at, updated_at`;
 
 async function run(text, values) {
   try { return (await getPool().query(text, values)).rows; }

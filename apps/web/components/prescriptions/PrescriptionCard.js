@@ -15,7 +15,10 @@ export default function PrescriptionCard({ prescription: p, locale = 'ml' }) {
           : <span className="text-2xl">{p.file_type === 'pdf' ? '📄' : '💊'}</span>}
       </div>
       <div className="min-w-0 flex-1">
-        <h3 className="truncate font-semibold text-gray-900">{p.doctor_name || (ml ? 'പ്രിസ്ക്രിപ്ഷൻ' : 'Prescription')}</h3>
+        <h3 className="flex items-center gap-2 truncate font-semibold text-gray-900">
+          <span className="truncate">{p.doctor_name || (ml ? 'പ്രിസ്ക്രിപ്ഷൻ' : 'Prescription')}</span>
+          {p.is_digital ? <span className="shrink-0 rounded-full bg-brand/10 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-brand">{ml ? 'ഡിജിറ്റൽ' : 'Digital'}</span> : null}
+        </h3>
         <div className="mt-0.5 flex flex-wrap gap-x-3 text-xs text-gray-500">
           {p.prescribed_date && <span>📅 {fmtDate(p.prescribed_date)}</span>}
           {p.hospital_name && <span className="truncate">{p.hospital_name}</span>}
