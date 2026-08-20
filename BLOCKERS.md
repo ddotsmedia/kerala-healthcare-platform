@@ -4,6 +4,16 @@
 > Claude Code writes here instead of asking questions.
 > Review this file after each session and resolve NEEDS DECISION items before starting the next phase.
 
+## Session: 2026-08-21 P-F6 Digital Prescriptions (autopilot F 6/10)
+
+### Assumptions
+- [ASSUMPTION] Migration 0104 ALTERs existing prescriptions: +created_by_doctor_id (doctors), +is_digital (default false), +digital_signature. Issued Rx sets is_digital=true, user_id=patient, doctor_id=created_by_doctor_id=provider, prescribed_date=today, valid_until=next-visit.
+- [ASSUMPTION] Write-prescription route is /schedule/appointments/[id]/prescription (doctor-scoped via getAppointment). Dynamic medication rows client-side, submitted as JSON in a hidden field; server action zips into medications jsonb. Reachable via new "📝 Rx" links on the schedule page.
+- [ASSUMPTION] Patient email notification is best-effort sendEmail(DEMO_NOTIFY_TO): encrypted patient contact is not decryptable in app context (existing notify.js uses the same dev override). Digital badge added to PrescriptionCard; is_digital added to the Rx SELECT.
+
+### Verified (real issuePrescription via node + minted sessions)
+- [VERIFIED] Migration count 104. Portal Rx page 200 (form + patient info render). issuePrescription created a 2-med digital Rx (is_digital=t, doctor "Dr. Anand Nair", valid_until set). Patient PHR (patient JWT) 200 shows the Rx with the Digital badge; medication search q=Amlodipine→1 match, bogus→0. Smoke data cleaned. Prod health 200. Commit 73e7966.
+
 ## Session: 2026-08-21 P-F5 Patient Management (autopilot F 5/10)
 
 ### Assumptions
