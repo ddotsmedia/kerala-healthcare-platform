@@ -2,6 +2,7 @@
 
 import { NextResponse } from 'next/server';
 import { smartSearch } from '@/lib/smartSearch';
+import { recordEvent } from '@/lib/analytics';
 
 export const dynamic = 'force-dynamic';
 
@@ -9,5 +10,6 @@ export async function GET(request) {
   const u = new URL(request.url).searchParams;
   const q = u.get('q') || '';
   const results = await smartSearch(q, u.get('locale') || 'ml', u.get('type') || undefined);
+  if (q.trim()) recordEvent({ eventType: 'search', metadata: { q: q.trim().slice(0, 120) } });
   return NextResponse.json({ data: results, meta: { count: results.length, q }, errors: null });
 }

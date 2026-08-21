@@ -7,6 +7,7 @@ import { getDoctorBySlug, searchDoctors } from '@/lib/providers';
 import { headers } from 'next/headers';
 import { doctorHospitals, doctorAvailability } from '@/lib/profile';
 import { logProfileView } from '@/lib/profileViews';
+import { recordEvent } from '@/lib/analytics';
 import { providerOpd } from '@/lib/opd';
 import { reviewSummary, listApprovedReviews } from '@/lib/reviews';
 import { getPublications, getAwards } from '@/lib/publications';
@@ -56,6 +57,7 @@ export default async function DoctorProfile(props) {
 
   const ip = (await headers()).get('x-forwarded-for');
   logProfileView(d.id, { ip: ip ? ip.split(',')[0].trim() : null, locale });
+  recordEvent({ eventType: 'profile_view', entityType: 'doctor', entityId: d.id });
 
   const [hospitals, availability, opd, similarRaw, revSummary, revInitial, publications, awards] = await Promise.all([
     doctorHospitals(d.id),
