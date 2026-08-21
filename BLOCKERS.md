@@ -4,6 +4,19 @@
 > Claude Code writes here instead of asking questions.
 > Review this file after each session and resolve NEEDS DECISION items before starting the next phase.
 
+## Session: 2026-08-21 P-G1 Platform Analytics (autopilot G 1/7)
+
+### Assumptions
+- [ASSUMPTION] Migrations 0109 page_views, 0110 conversion_events (privacy-preserving: no personal data, session-level only). Page views via a client sendBeacon in the web root layout (anonymous per-tab session id in sessionStorage). Conversion events recorded server-side at the reliable points: search (/api/search), profile_view (doctor profile render), booking_started + booking_completed (bookAction). Public POST /api/analytics/{pageview,event}; all writes fire-and-forget.
+- [ASSUMPTION] Analytics service lives in apps/admin/lib/platformAnalytics.js (services/ is not a workspace package). "Bookings completed" in the overview uses conversion_events booking_completed (matches the funnel), not the appointments table. Charts are dependency-free SVG (funnel bars, traffic donut, registration line).
+
+### Errors / blockers
+- [BLOCKER] `bash infra/scripts/seed-prod.sh` was denied by the Claude Code auto-mode classifier. It is an idempotent content seed (articles/WhatsApp) that P-G1 does not depend on and that already ran in earlier phases, so it was skipped safely. If a future phase needs it, the user must allow the command or run it manually.
+
+### Verified (recorded events + admin API/session)
+- [VERIFIED] Migration count 110. 3 page views recorded (beacon 204); funnel events search/profile_view/booking_started/booking_completed each recorded (profile_view came from actually curling the live profile page). Admin GET /overview → pageViews 3 / bookings 1 / activeUsers 1; /funnel → 4 steps with pct; /pages → correct top-pages table; /analytics dashboard 200. Smoke data cleaned. Prod health 200. Commit 5bf9568.
+
+
 ## Session: 2026-08-21 P-F10 CME Credit Tracker (autopilot F 10/10)
 
 ### Assumptions
