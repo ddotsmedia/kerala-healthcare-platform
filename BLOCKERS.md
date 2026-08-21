@@ -4,6 +4,15 @@
 > Claude Code writes here instead of asking questions.
 > Review this file after each session and resolve NEEDS DECISION items before starting the next phase.
 
+## Session: 2026-08-21 P-G2 Search Analytics (autopilot G 2/7)
+
+### Assumptions
+- [ASSUMPTION] Migration 0111 search_logs. Async recordSearchLog wired into /api/search (query + result_count + optional {type}, sid via ?sid=) and the /doctors directory page (query + filters {specialty_id/district_id/mode/language} + result_count = page-1 result length). Admin service apps/admin/lib/searchAnalytics.js; page /analytics/search (linked from the main dashboard).
+- [DEFERRED] Query→click rate: search_logs.clicked_result_id is modelled and getQueryToClickRate computes the rate, but no client click-capture is wired yet (no smart-search dropdown component exists; directory results are plain links). Rate stays 0 until a click beacon is added.
+
+### Verified (fired searches + admin page)
+- [VERIFIED] Migration count 111. 3 searches logged: cardiology (4 results), a zero-result query (0), and a filters-only directory search ({mode:video}, 6 results). Zero-result query identified (1 row). Admin /analytics/search 200 shows the top query, the zero-result query in its action-items table, and filter usage. Smoke data cleaned. Prod health 200. Commit 0cb989e.
+
 ## Session: 2026-08-21 P-G1 Platform Analytics (autopilot G 1/7)
 
 ### Assumptions
