@@ -3,6 +3,7 @@
 
 import { resolveLocale, t } from '@/lib/i18n';
 import { searchDoctors, listDistricts, listSpecialties } from '@/lib/providers';
+import { recordSearchLog } from '@/lib/analytics';
 import {
   DoctorCard, EmptyState, DistrictFilter, SpecialtyFilter,
   ConsultationModeFilter, Pagination
@@ -35,6 +36,16 @@ export default async function DoctorsPage(props) {
   ]);
   const basePath = `/${locale}/doctors`;
   const query = { q: filters.term, district: filters.districtId, specialty: filters.specialtyId, mode: filters.consultationMode, language: filters.language };
+
+  // Log directory searches (query and/or filters) for search analytics — page 1 only.
+  if (page === 1 && (filters.term || filters.specialtyId || filters.districtId || filters.consultationMode || filters.language)) {
+    const usedFilters = {};
+    if (filters.specialtyId) usedFilters.specialty_id = filters.specialtyId;
+    if (filters.districtId) usedFilters.district_id = filters.districtId;
+    if (filters.consultationMode) usedFilters.mode = filters.consultationMode;
+    if (filters.language) usedFilters.language = filters.language;
+    recordSearchLog({ query: filters.term || '(filters only)', locale, resultCount: doctors.length, filters: usedFilters });
+  }
 
   return (
     <div className="space-y-5">

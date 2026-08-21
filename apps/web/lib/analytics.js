@@ -23,6 +23,19 @@ export function recordPageView(p = {}) {
   ).catch((err) => console.error(`recordPageView failed: ${err.message}`));
 }
 
+/** Log a search query + result count for analytics. Fire-and-forget.
+ * @param {{query,locale,resultCount,filters,sessionId}} p */
+export function recordSearchLog(p = {}) {
+  const query = clip(p.query, 500);
+  if (!query || !query.trim()) return;
+  getPool().query(
+    `INSERT INTO search_logs (query, locale, result_count, filters, session_id)
+     VALUES ($1,$2,$3,$4::jsonb,$5)`,
+    [query.trim(), clip(p.locale, 5), Number.isFinite(p.resultCount) ? p.resultCount : 0,
+      p.filters && Object.keys(p.filters).length ? JSON.stringify(p.filters) : null, clip(p.sessionId, 64)]
+  ).catch((err) => console.error(`recordSearchLog failed: ${err.message}`));
+}
+
 /** @param {{eventType,entityType,entityId,sessionId,metadata}} p */
 export function recordEvent(p = {}) {
   if (!EVENT_TYPES.has(p.eventType)) return;
