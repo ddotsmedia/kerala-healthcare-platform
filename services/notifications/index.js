@@ -1,7 +1,7 @@
 // services/notifications — appointment notifications (SMS + email) + audit log.
 
 export { notifyAppointmentEvent, sendReminders } from './notify.js';
-export { sendSms } from './sms.js';
+export { sendSms, sendOtp } from './sms.js';
 export { sendEmail } from './email.js';
 export { logNotification } from './log.js';
 export { otpEmailTemplate } from './templates/otp-email.js';

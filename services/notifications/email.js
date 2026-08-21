@@ -15,6 +15,19 @@ function fromAddress() {
   return name ? `${name} <${addr}>` : addr;
 }
 
+// Resend only delivers from a verified domain. Warn (once) if EMAIL_FROM is not
+// on the verified domain — delivery will then fail with a 403 from Resend.
+let domainWarned = false;
+function checkVerifiedDomain() {
+  const addr = process.env.EMAIL_FROM || '';
+  const verified = process.env.EMAIL_VERIFIED_DOMAIN || 'malayalidoctor.com';
+  const domain = addr.split('@')[1] || '';
+  if (addr && domain && !domain.endsWith(verified) && !domainWarned) {
+    domainWarned = true;
+    console.warn(`[email] EMAIL_FROM domain "${domain}" is not the verified domain "${verified}" — Resend may reject delivery. See docs/operations/RESEND_SETUP.md`);
+  }
+}
+
 /**
  * @param {string} to recipient email
  * @param {string} subject
@@ -27,6 +40,7 @@ async function sendEmail(to, subject, html, text) {
   const key = resendKey();
   const from = fromAddress();
   if (!key || !from) return { status: 'simulated', error: 'no_email_provider' };
+  checkVerifiedDomain();
   try {
     const res = await fetch('https://api.resend.com/emails', {
       method: 'POST',

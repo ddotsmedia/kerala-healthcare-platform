@@ -3,7 +3,7 @@
 // notifications service. Send throttle is per-identity (5 sends / 10 min).
 
 import { getPool } from '@khp/db';
-import { sendSms, sendEmail, otpEmailTemplate } from '@khp/notifications';
+import { sendOtp, sendEmail, otpEmailTemplate } from '@khp/notifications';
 import { pepperedHash, sixDigitCode } from './crypto.js';
 
 const OTP_TTL_MINUTES = 10;
@@ -57,7 +57,7 @@ async function requestOtp(mobile) {
   if (throttled(`otp:mobile:${mh}`)) return { ok: false, channel: 'mobile', error: 'rate_limited' };
   const code = sixDigitCode();
   await storeCode('mobile_hash', mh, pepperedHash(code));
-  const r = await sendSms(mobile, `Kerala Health Portal OTP: ${code} (valid ${OTP_TTL_MINUTES} min)`);
+  const r = await sendOtp(mobile, code);
   if (r.status === 'failed') console.warn(`[otp] SMS delivery failed: ${r.error}`);
   return {
     ok: true,
