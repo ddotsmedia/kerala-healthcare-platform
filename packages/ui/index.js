@@ -42,3 +42,6 @@ export { default as RatingSummary } from './components/reviews/RatingSummary.js'
 export { default as ReviewCard } from './components/reviews/ReviewCard.js';
 export { default as WriteReviewForm } from './components/reviews/WriteReviewForm.js';
 export { default as ReviewsSection } from './components/reviews/ReviewsSection.js';
+
+// Voice search (Web Speech API)
+export { default as VoiceSearch } from './components/VoiceSearch.js';

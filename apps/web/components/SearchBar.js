@@ -1,5 +1,6 @@
 // SearchBar.js — GET form, no client JS required. Submits ?q= to the list page.
 
+import { VoiceSearch } from '@khp/ui';
 import { t } from '@/lib/i18n';
 
 export default function SearchBar({ locale, action, defaultValue }) {
@@ -12,6 +13,7 @@ export default function SearchBar({ locale, action, defaultValue }) {
         placeholder={t(locale, 'search_placeholder')}
         className="min-w-0 flex-1 rounded-lg border border-gray-300 px-4 py-2 text-base focus:border-brand focus:outline-none"
       />
+      <VoiceSearch locale={locale} />
       <button
         type="submit"
         className="shrink-0 rounded-lg bg-brand px-4 py-2 font-medium text-white hover:bg-brand-dark"

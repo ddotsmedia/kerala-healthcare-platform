@@ -3,7 +3,7 @@
 
 import { resolveLocale, t } from '@/lib/i18n';
 import { searchHospitals, listDistricts } from '@/lib/providers';
-import { HospitalCard, EmptyState, DistrictFilter, Pagination, CompareBar } from '@khp/ui';
+import { HospitalCard, EmptyState, DistrictFilter, Pagination, CompareBar, VoiceSearch } from '@khp/ui';
 
 export const dynamic = 'force-dynamic';
 const LIMIT = 20;
@@ -39,8 +39,11 @@ export default async function HospitalsPage(props) {
       </div>
 
       <form action={basePath} method="get" className="space-y-3 rounded-xl border border-gray-200 bg-white p-4">
-        <input type="search" name="q" defaultValue={filters.term} placeholder={t(locale, 'search_placeholder')}
-               className="w-full rounded-lg border border-gray-300 px-4 py-2 text-base focus:border-brand focus:outline-none" />
+        <div className="flex gap-2">
+          <input type="search" name="q" defaultValue={filters.term} placeholder={t(locale, 'search_placeholder')}
+                 className="min-w-0 flex-1 rounded-lg border border-gray-300 px-4 py-2 text-base focus:border-brand focus:outline-none" />
+          <VoiceSearch locale={locale} />
+        </div>
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           <DistrictFilter districts={districts} selected={filters.districtId} locale={locale} />
           <label className="block text-sm">

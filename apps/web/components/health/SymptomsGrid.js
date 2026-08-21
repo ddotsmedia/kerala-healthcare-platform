@@ -3,6 +3,7 @@
 // SymptomsGrid — search + group by body area, urgency-coloured badges.
 import { useState } from 'react';
 import Link from 'next/link';
+import { VoiceSearch } from '@khp/ui';
 
 const AREAS = [
   { key: 'head-neck', icon: '🧠', ml: 'തലയും കഴുത്തും', en: 'Head & Neck' },
@@ -33,9 +34,12 @@ export default function SymptomsGrid({ symptoms = [], locale = 'ml' }) {
 
   return (
     <div className="space-y-6">
-      <input type="search" value={q} onChange={(e) => setQ(e.target.value)}
-        placeholder={ml ? 'ലക്ഷണം തിരയുക…' : 'Search symptoms…'}
-        className="w-full rounded-lg border border-gray-300 px-4 py-2 text-sm focus:border-brand focus:outline-none" />
+      <div className="flex gap-2">
+        <input type="search" value={q} onChange={(e) => setQ(e.target.value)}
+          placeholder={ml ? 'ലക്ഷണം തിരയുക…' : 'Search symptoms…'}
+          className="min-w-0 flex-1 rounded-lg border border-gray-300 px-4 py-2 text-sm focus:border-brand focus:outline-none" />
+        <VoiceSearch locale={locale} onResult={setQ} />
+      </div>
 
       {AREAS.map((area) => {
         const list = byArea(area.key);
