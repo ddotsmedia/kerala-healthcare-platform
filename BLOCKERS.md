@@ -4,6 +4,16 @@
 > Claude Code writes here instead of asking questions.
 > Review this file after each session and resolve NEEDS DECISION items before starting the next phase.
 
+## Session: 2026-08-21 P-H8 Public Partner API (autopilot H 5/6)
+
+### Assumptions
+- [ASSUMPTION] Migration 0115 api_keys. Key hashing uses SHA-256 (hex), NOT bcrypt — the spec said bcrypt, but API keys are high-entropy random tokens (khp_live_<48 hex>), so a fast hash is sufficient and avoids adding a bcrypt npm package (per the no-new-packages rule). Stored: key_hash + key_prefix (for the admin list); plaintext shown once at creation.
+- [ASSUMPTION] Public API at /api/public/v1/{doctors,hospitals,specialties,districts,health-data/diseases/[slug]}. Auth via X-API-Key (withApiKey wrapper); allowed_endpoints scopes a key (empty = all); per-key hourly rate limit via @khp/ratelimit (in-process per web container — acceptable at current scale). Public fields only (no encrypted contact). The web middleware bypasses its generic IP limiter for /api/public so per-key limits apply. usage: last_used_at + request_count tracked fire-and-forget.
+- [ASSUMPTION] Admin /api-keys issues (plaintext shown once via ?created= redirect — admin-only surface), revokes, reactivates, and shows usage. docs/api/PUBLIC_API.md documents auth, endpoints, limits, terms.
+
+### Verified (created keys + full matrix)
+- [VERIFIED] Migration count 115. Auth: no key → 401, bad key → 401, valid → 200. Data: /districts returns ml/en/ta/hi names, /doctors + /specialties return data. Endpoint scoping: a districts-only key gets 200 on /districts, 403 on /doctors. Rate limit: a limit-3 key → 429 once exhausted. Admin: createKey issues, revokeKey → the revoked key then returns 401; admin /api-keys page 200. Test keys cleaned. Prod health 200. Commit f79ac46.
+
 ## Session: 2026-08-21 P-H7 Tamil + Hindi Locales (autopilot H 4/6)
 
 ### Assumptions
