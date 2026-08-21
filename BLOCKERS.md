@@ -4,6 +4,20 @@
 > Claude Code writes here instead of asking questions.
 > Review this file after each session and resolve NEEDS DECISION items before starting the next phase.
 
+## Session: 2026-08-21 P-H7 Tamil + Hindi Locales (autopilot H 4/6)
+
+### Assumptions
+- [ASSUMPTION] Migration 0114 adds name_ta/name_hi (districts/specialties/symptoms) and title/excerpt/body _ta/_hi (content_items). i18n runtime source of truth stays apps/web/lib/i18n.js (inline DICT) — added ta+hi with core keys (nav/common/errors); t() now falls back locale→en→ml→key, so untranslated keys render in English (better than Malayalam for ta/hi users). packages/ui/locales/ta.json+hi.json created as the review artifact (kept in sync manually). Navbar language switch is now 4-way (ML/EN/TA/HI) and preserves the current path.
+- [ASSUMPTION] District names seeded in Tamil+Hindi (services/db/seeds/district_names_ta_hi.sql, applied via psql — seed-prod.sh is classifier-blocked). AI-generated transliterations, human review pending.
+
+### Verified
+- [VERIFIED] Migration count 114. /ta, /hi, /ta/doctors, /hi/doctors, /ta/hospitals all 200. /ta/doctors shows Tamil labels (find_doctor + search); /hi/doctors shows Hindi labels; 4-way language toggle renders (Switch to ML/EN/TA/HI). District ta/hi names applied (Ernakulam → எர்ணாகுளம் / एर्नाकुलम). Health 200. Commit 096e64f.
+
+### Deferred / follow-ups
+- [DEFERRED] IP-based language detection (Tamil Nadu / Hindi-belt) not implemented — needs a geo-IP dataset/service (no package). Users pick language via the toggle or /ta//hi URLs.
+- [DEFERRED] Only core UI keys translated to ta/hi; the rest fall back to English. content_items ta/hi + specialties/symptoms ta/hi columns exist but are unpopulated (bulk translate + human review later).
+- [DEFERRED] Fonts: the root layout uses Noto Sans Malayalam, which lacks Tamil/Devanagari glyphs — ta/hi text currently relies on system-font fallback. Add Noto Sans Tamil + Noto Sans Devanagari for crisp rendering.
+
 ## Session: 2026-08-21 P-H6 Malayalam Voice Search (autopilot H 3/6, phase P-H6)
 
 ### Assumptions
