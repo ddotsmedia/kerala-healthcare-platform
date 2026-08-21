@@ -4,6 +4,15 @@
 > Claude Code writes here instead of asking questions.
 > Review this file after each session and resolve NEEDS DECISION items before starting the next phase.
 
+## Session: 2026-08-21 P-G4 Content Analytics (autopilot G 4/7)
+
+### Assumptions
+- [ASSUMPTION] Migration 0112 adds conversion_events.content_id (nullable uuid, no FK). article_read fired server-side on /health/[slug] (content_items) and /news/[slug]; article_share fired client-side from ShareBar (new contentId prop) on WhatsApp/FB/Twitter share. Added 'article_share' to the allowed event types; recordEvent now accepts contentId.
+- [ASSUMPTION] Content analytics (apps/admin/lib/contentAnalytics.js) join conversion_events→content_items, so top articles/category performance cover CMS content_items only. Admin page /analytics/content; CMS list shows an all-time 👁 view count per item.
+
+### Verified (viewed article + admin/CMS)
+- [VERIFIED] Migration count 112. Viewing /ml/health/healthy-eating-kerala 3× recorded 3 article_read + a share recorded 1 article_share (content_id set). Admin /analytics/content 200 shows the article in Top articles + Category performance. CMS list renders the 👁 view count. Smoke events cleaned. Prod health 200. Commit 2f81448.
+
 ## Session: 2026-08-21 P-G3 Provider Performance Analytics (autopilot G 3/7)
 
 ### Assumptions
