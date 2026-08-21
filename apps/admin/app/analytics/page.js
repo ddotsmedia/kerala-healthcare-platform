@@ -43,7 +43,10 @@ export default async function Analytics() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h2 className="text-base font-semibold">Platform analytics</h2>
-        <a href="/analytics/search" className="text-sm font-semibold text-brand hover:underline">Search analytics →</a>
+        <div className="flex gap-4">
+          <a href="/analytics/providers" className="text-sm font-semibold text-brand hover:underline">Providers →</a>
+          <a href="/analytics/search" className="text-sm font-semibold text-brand hover:underline">Search analytics →</a>
+        </div>
       </div>
 
       {/* Section 1 — Overview */}
