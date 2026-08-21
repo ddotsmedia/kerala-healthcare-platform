@@ -4,5 +4,8 @@
   "private": true,
   "type": "module",
   "main": "index.js",
-  "description": "S3 / Cloudflare R2 object storage via AWS SigV4 (no SDK dependency)."
+  "description": "S3 / Cloudflare R2 object storage via AWS SigV4 (no SDK dependency).",
+  "dependencies": {
+    "@khp/db": "workspace:*"
+  }
 }

@@ -220,7 +220,11 @@ importers:
 
   services/search: {}
 
-  services/storage: {}
+  services/storage:
+    dependencies:
+      '@khp/db':
+        specifier: workspace:*
+        version: link:../db
 
 packages:
 

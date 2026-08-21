@@ -5,7 +5,6 @@
 // the stored reference (private -> "s3:<key>", public photo -> public URL).
 // Idempotent: only rows whose URL still starts with "data:" are processed.
 
-import { getPool } from '@khp/db';
 import { uploadFile, isConfigured } from './index.js';
 
 const parseDataUri = (s) => {
@@ -49,6 +48,7 @@ export async function runMigration() {
     console.log('S3/R2 not configured (set S3_BUCKET, S3_ACCESS_KEY, S3_SECRET_KEY). Nothing to do.');
     return [];
   }
+  const { getPool } = await import('@khp/db'); // deferred: only needed when actually migrating
   const pool = getPool();
   const results = [];
   for (const t of TARGETS) {
