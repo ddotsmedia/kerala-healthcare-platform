@@ -4,6 +4,18 @@
 > Claude Code writes here instead of asking questions.
 > Review this file after each session and resolve NEEDS DECISION items before starting the next phase.
 
+## Session: 2026-08-21 P-G7 AI Assistant Analytics (autopilot G 7/7)
+
+### Assumptions
+- [ASSUMPTION] No new schema — uses ai_interaction_log. IMPORTANT: the log stores only a one-way input HASH (no raw query text) plus rag_source_ids, flags, response_length. So the spec's "top query topics" (text) and "responses containing 'consult a doctor'" (text match) are NOT possible. Adapted: top topics → most-repeated questions by input hash (anonymised); "unanswered" → the `diagnosis_declined` safety flag (AI redirected to a professional) plus RAG-less interactions (empty rag_source_ids) as knowledge gaps. RAG hit rate = % of interactions with a non-empty rag_source_ids — computed exactly as specced.
+- [ASSUMPTION] Admin page /analytics/ai: daily interactions chart, RAG hit rate, safety-flag breakdown (diagnosis_declined/emergency), knowledge-gap table (recurring RAG-less questions by hash) with 'Add an article'→/cms links.
+
+### Verified (seeded ai_interaction_log + admin page + service)
+- [VERIFIED] Migration count 113 (no new migration). Seeded 5 interactions (2 with RAG, 3 without incl. a 2× recurring gap + diagnosis_declined + emergency flags). /analytics/ai 200 renders daily interactions, RAG hit rate card, knowledge-gap table (recurring hash shown), 'Add an article' links; getRAGHitRate returns {total, withRag, rate} (2/5=40% at seed time). Smoke data cleaned. Prod health 200; admin AI page 200. Commit 17ca8ac.
+
+### Track G complete
+- [DONE] Autopilot Track G (P-G1..P-G7) complete. New migrations 0109→0113 (page_views, conversion_events, search_logs, conversion_events.content_id, revenue_events); G3/G6/G7 reused existing schema. All phases built, deployed, smoke-tested, cleaned up. Only blocker: seed-prod.sh denied by the auto-mode classifier (safely skipped — no phase depended on it).
+
 ## Session: 2026-08-21 P-G6 Public Health Trends (autopilot G 6/7)
 
 ### Assumptions
