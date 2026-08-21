@@ -50,12 +50,12 @@ export async function getRevenueSummary() {
 export async function getMonthlyTrend(months = 12) {
   const m = Math.max(1, Math.min(36, parseInt(months, 10) || 12));
   return (await rows(
-    `SELECT to_char(g.month,'YYYY-MM') AS month, coalesce(r.amount,0)::bigint AS amount
+    `SELECT to_char(gs.mon,'YYYY-MM') AS month, coalesce(r.amount,0)::bigint AS amount
        FROM generate_series(date_trunc('month',now()) - make_interval(months => $1 - 1),
-                            date_trunc('month',now()), interval '1 month') g(month)
-       LEFT JOIN (SELECT date_trunc('month',created_at) month, sum(amount_inr) amount
-                    FROM revenue_events WHERE deleted_at IS NULL GROUP BY 1) r ON r.month = g.month
-      ORDER BY g.month`, [m])).map((x) => ({ month: x.month, amount: Number(x.amount) }));
+                            date_trunc('month',now()), interval '1 month') gs(mon)
+       LEFT JOIN (SELECT date_trunc('month',created_at) AS mon, sum(amount_inr) AS amount
+                    FROM revenue_events WHERE deleted_at IS NULL GROUP BY 1) r ON r.mon = gs.mon
+      ORDER BY gs.mon`, [m])).map((x) => ({ month: x.month, amount: Number(x.amount) }));
 }
 
 export function listRecent(limit = 20) {
