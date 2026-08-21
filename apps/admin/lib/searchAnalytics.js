@@ -43,6 +43,24 @@ export function getFilterUsage(days = 30) {
   });
 }
 
+/** Weekly health-trend rollup: top conditions + district-wise search activity. */
+export function getHealthTrends(days = 7) {
+  const d = clampDays(days, 7);
+  return cached(`sa:trends:${d}`, 300, async () => {
+    const conditions = await rows(
+      `SELECT lower(query) AS query, count(*)::int AS searches
+         FROM search_logs WHERE searched_at > now() - make_interval(days => $1)
+           AND query <> '(filters only)' AND length(trim(query)) > 1
+         GROUP BY lower(query) ORDER BY searches DESC LIMIT 10`, [d]);
+    const districts = await rows(
+      `SELECT di.name_en AS district, count(*)::int AS searches
+         FROM search_logs sl JOIN districts di ON di.id = (sl.filters->>'district_id')::uuid
+        WHERE sl.searched_at > now() - make_interval(days => $1) AND sl.filters ? 'district_id'
+        GROUP BY di.name_en ORDER BY searches DESC LIMIT 15`, [d]);
+    return { conditions, districts };
+  });
+}
+
 export function getQueryToClickRate(days = 30) {
   const d = clampDays(days, 30);
   return cached(`sa:ctr:${d}`, 300, async () => {

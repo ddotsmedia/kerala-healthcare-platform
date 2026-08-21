@@ -2,7 +2,7 @@
 
 import { redirect } from 'next/navigation';
 import { requireAdminRole } from '@/lib/auth';
-import { getTopQueries, getZeroResultQueries, getFilterUsage, getQueryToClickRate } from '@/lib/searchAnalytics';
+import { getTopQueries, getZeroResultQueries, getFilterUsage, getQueryToClickRate, getHealthTrends } from '@/lib/searchAnalytics';
 
 export const dynamic = 'force-dynamic';
 export const metadata = { title: 'Search analytics · KHP Admin' };
@@ -11,8 +11,8 @@ const fmtDate = (d) => (d ? new Date(d).toISOString().slice(0, 10) : '');
 
 export default async function SearchAnalytics() {
   if (!(await requireAdminRole())) redirect('/login');
-  const [top, zero, filters, ctr] = await Promise.all([
-    getTopQueries(7, 20), getZeroResultQueries(7, 30), getFilterUsage(30), getQueryToClickRate(30)
+  const [top, zero, filters, ctr, trends] = await Promise.all([
+    getTopQueries(7, 20), getZeroResultQueries(7, 30), getFilterUsage(30), getQueryToClickRate(30), getHealthTrends(7)
   ]);
   const fTotal = Math.max(1, filters.total);
 
@@ -66,6 +66,18 @@ export default async function SearchAnalytics() {
           </div>
         )}
         <p className="mt-2 text-xs text-gray-400">These queries returned no doctors — consider onboarding the missing specialty or providers.</p>
+      </section>
+
+      <section>
+        <div className="mb-2 flex items-center justify-between">
+          <h3 className="text-xs font-semibold uppercase text-gray-500">Health trends — district search activity (7d)</h3>
+          <a href="/ml/health-trends" className="text-xs font-semibold text-brand hover:underline">Public trends page →</a>
+        </div>
+        {trends.districts.length === 0 ? <p className="text-sm text-gray-400">No district-tagged searches yet.</p> : (
+          <div className="flex flex-wrap gap-2">
+            {trends.districts.map((d) => <span key={d.district} className="rounded-full bg-teal-50 px-3 py-1 text-xs text-teal-700">{d.district} <span className="font-semibold">{d.searches}</span></span>)}
+          </div>
+        )}
       </section>
 
       <section>
