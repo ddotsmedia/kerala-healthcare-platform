@@ -19,6 +19,7 @@
     "@khp/notifications": "workspace:*",
     "@khp/ratelimit": "workspace:*",
     "@khp/search": "workspace:*",
+    "@khp/storage": "workspace:*",
     "@khp/ui": "workspace:*",
     "next": "^15.5.0",
     "react": "^18.3.0",

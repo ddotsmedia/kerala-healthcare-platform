@@ -1,6 +1,8 @@
 // GET /api/patient/prescriptions/[id]/file — stream the stored file (owner only).
+import { NextResponse } from 'next/server';
 import { currentPatientId } from '@/lib/appointments';
 import { getPrescriptionFile } from '@/lib/prescriptions';
+import { isStoredRef, getSignedUrl } from '@khp/storage';
 
 export const dynamic = 'force-dynamic';
 
@@ -12,6 +14,13 @@ export async function GET(request, ctx) {
   const { id } = await ctx.params;
   const row = await getPrescriptionFile(uid, id);
   if (!row || !row.file_url) return new Response('Not found', { status: 404 });
+
+  // S3/R2-stored file: redirect the owner to a short-lived signed URL.
+  if (isStoredRef(row.file_url)) {
+    const signed = getSignedUrl(row.file_url, 300);
+    if (signed) return NextResponse.redirect(signed, 302);
+    return new Response('Storage not available', { status: 503 });
+  }
 
   const m = /^data:([^;]+);base64,(.*)$/s.exec(row.file_url);
   if (!m) return new Response('Invalid file', { status: 422 });

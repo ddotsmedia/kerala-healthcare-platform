@@ -123,6 +123,9 @@ importers:
       '@khp/search':
         specifier: workspace:*
         version: link:../../services/search
+      '@khp/storage':
+        specifier: workspace:*
+        version: link:../../services/storage
       '@khp/ui':
         specifier: workspace:*
         version: link:../../packages/ui
@@ -216,6 +219,8 @@ importers:
   services/ratelimit: {}
 
   services/search: {}
+
+  services/storage: {}
 
 packages:
 

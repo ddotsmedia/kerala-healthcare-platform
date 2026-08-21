@@ -4,6 +4,7 @@ import { NextResponse } from 'next/server';
 import { currentPatientId } from '@/lib/appointments';
 import { listLabReports, createLabReport, MAX_FILE_KB, FILE_TYPES } from '@/lib/labReports';
 import { ownsFamilyMember } from '@/lib/family';
+import { storeFile } from '@khp/storage';
 
 export const dynamic = 'force-dynamic';
 
@@ -33,7 +34,8 @@ export async function POST(request) {
       const sizeKb = Math.ceil(file.size / 1024);
       if (sizeKb > MAX_FILE_KB) return err('file_too_large', 400);
       const buf = Buffer.from(await file.arrayBuffer());
-      fileMeta = { file_data_uri: `data:${file.type};base64,${buf.toString('base64')}`,
+      const stored = await storeFile(buf, file.type, { folder: `lab-reports/${uid}`, filename: file.name || `lab-report.${type}`, isPrivate: true });
+      fileMeta = { file_data_uri: stored.fileUrl,
         file_name: (file.name || `lab-report.${type}`).slice(0, 200), file_type: type, file_size_kb: sizeKb };
     }
     b = {
