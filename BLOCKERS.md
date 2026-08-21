@@ -4,6 +4,15 @@
 > Claude Code writes here instead of asking questions.
 > Review this file after each session and resolve NEEDS DECISION items before starting the next phase.
 
+## Session: 2026-08-21 P-G6 Public Health Trends (autopilot G 6/7)
+
+### Assumptions
+- [ASSUMPTION] No new schema — aggregates from search_logs (P-G2). Public /health-trends page: top-searched conditions (30d), district-wise search activity (from the district filter), and seasonal patterns. Seasonal data is a static curated table (monsoon/winter/summer) with the current season auto-highlighted — no historical seasonal dataset exists yet. Non-dismissable KnowledgeDisclaimer + "based on anonymous search data" note enforce the no-diagnosis healthcare constraint.
+- [ASSUMPTION] "Aggregate weekly into admin analytics" implemented as a district health-trend rollup section on /analytics/search (getHealthTrends), plus a link to the public page, rather than a separate stored weekly snapshot table.
+
+### Verified (seeded search_logs + both pages)
+- [VERIFIED] Migration count 113 (no new migration). Seeded conditions + district-tagged searches → public /ml/health-trends 200 shows top conditions, district breakdown (Alappuzha, Ernakulam), seasonal "Now" highlight, and the disclaimer. Admin /analytics/search 200 shows the district rollup. Smoke data cleaned (10 rows). Prod health 200; public trends page 200. Commit 21f79b5.
+
 ## Session: 2026-08-21 P-G5 Revenue Tracking (autopilot G 5/7)
 
 ### Assumptions
