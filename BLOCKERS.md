@@ -4,6 +4,18 @@
 > Claude Code writes here instead of asking questions.
 > Review this file after each session and resolve NEEDS DECISION items before starting the next phase.
 
+## Session: 2026-08-21 P-H6 Malayalam Voice Search (autopilot H 3/6, phase P-H6)
+
+### Assumptions
+- [ASSUMPTION] No schema, no packages — native Web Speech API. @khp/ui VoiceSearch (client) uses window.SpeechRecognition || webkitSpeechRecognition, lang ml-IN (en-IN for English). It starts supported=false and flips in useEffect, so SSR renders nothing and unsupported browsers (Firefox/old) show no mic — the required graceful degradation. Two modes: form mode (fills the enclosing form's input[name=q] and auto-submits — homepage/doctors/hospitals) and onResult callback mode (controlled input — the /symptoms SymptomsGrid client filter).
+- [ASSUMPTION] The /symptoms page has no GET search form (it uses the SymptomsGrid controlled-filter client component), so the mic there is wired via onResult=setQ rather than form submit.
+
+### Verified (deployed bundle + pages)
+- [VERIFIED] Migration count 113 (no new migration). Homepage, /doctors, /hospitals, /symptoms all 200. VoiceSearch shipped in the web client bundle (webkitSpeechRecognition + "Search by voice" + ml-IN markers present in .next/static/chunks). Health 200. Commit ba50141.
+
+### Needs human decision / browser-only
+- [ASSUMPTION] The interactive smoke tests (click mic → browser mic-permission prompt → speak "cardiologist in kochi" → search executes) require a real browser with a microphone and cannot be run in this headless context. Code path verified: SpeechRecognition(ml-IN) → transcript → fill input + requestSubmit()/onResult. Mic-hidden-on-unsupported is guaranteed by the SSR-null + capability check.
+
 ## Session: 2026-08-21 P-H2 S3/R2 File Storage (autopilot H 2/6)
 
 ### Assumptions
