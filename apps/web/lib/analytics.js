@@ -6,8 +6,10 @@ import { getPool } from '@khp/db';
 
 const EVENT_TYPES = new Set([
   'search', 'profile_view', 'booking_started', 'booking_completed',
-  'registration', 'login', 'job_applied', 'article_read'
+  'registration', 'login', 'job_applied', 'article_read', 'article_share'
 ]);
+
+const asUuid = (v) => (/^[0-9a-f-]{36}$/i.test(String(v || '')) ? v : null);
 
 const clip = (v, n) => (v == null ? null : String(v).slice(0, n));
 
@@ -36,14 +38,13 @@ export function recordSearchLog(p = {}) {
   ).catch((err) => console.error(`recordSearchLog failed: ${err.message}`));
 }
 
-/** @param {{eventType,entityType,entityId,sessionId,metadata}} p */
+/** @param {{eventType,entityType,entityId,contentId,sessionId,metadata}} p */
 export function recordEvent(p = {}) {
   if (!EVENT_TYPES.has(p.eventType)) return;
-  const entityId = /^[0-9a-f-]{36}$/i.test(String(p.entityId || '')) ? p.entityId : null;
   getPool().query(
-    `INSERT INTO conversion_events (event_type, entity_type, entity_id, session_id, metadata)
-     VALUES ($1,$2,$3,$4,$5::jsonb)`,
-    [p.eventType, clip(p.entityType, 50), entityId, clip(p.sessionId, 64),
+    `INSERT INTO conversion_events (event_type, entity_type, entity_id, content_id, session_id, metadata)
+     VALUES ($1,$2,$3,$4,$5,$6::jsonb)`,
+    [p.eventType, clip(p.entityType, 50), asUuid(p.entityId), asUuid(p.contentId), clip(p.sessionId, 64),
       p.metadata ? JSON.stringify(p.metadata) : null]
   ).catch((err) => console.error(`recordEvent failed: ${err.message}`));
 }

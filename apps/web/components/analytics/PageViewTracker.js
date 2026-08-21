@@ -48,7 +48,7 @@ export function trackEvent(eventType, opts = {}) {
   try {
     const payload = JSON.stringify({
       event_type: eventType, entity_type: opts.entityType, entity_id: opts.entityId,
-      session_id: sessionId(), metadata: opts.metadata
+      content_id: opts.contentId, session_id: sessionId(), metadata: opts.metadata
     });
     const blob = new Blob([payload], { type: 'application/json' });
     if (navigator.sendBeacon) navigator.sendBeacon('/api/analytics/event', blob);

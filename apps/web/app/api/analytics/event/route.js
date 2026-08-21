@@ -9,7 +9,7 @@ export async function POST(request) {
   const b = await request.json().catch(() => ({}));
   recordEvent({
     eventType: b.event_type, entityType: b.entity_type, entityId: b.entity_id,
-    sessionId: b.session_id, metadata: b.metadata
+    contentId: b.content_id, sessionId: b.session_id, metadata: b.metadata
   });
   return new NextResponse(null, { status: 204 });
 }

@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import { requireAdminRole } from '@/lib/auth';
 import { listContent } from '@/lib/cms';
+import { getViewCounts } from '@/lib/contentAnalytics';
 import { createAction } from './actions';
 
 export const dynamic = 'force-dynamic';
@@ -17,6 +18,7 @@ export default async function CmsList(props) {
   if (!(await requireAdminRole())) redirect('/login');
   const status = (searchParams && searchParams.status) || '';
   const items = await listContent({ status: status || undefined });
+  const views = await getViewCounts(items.map((c) => c.id));
 
   return (
     <div className="space-y-5">
@@ -33,7 +35,7 @@ export default async function CmsList(props) {
           <li key={c.id}>
             <Link href={`/cms/${c.id}`} className="flex items-center justify-between px-4 py-3 text-sm hover:bg-gray-50">
               <span>{c.title_en || c.slug} <span className="text-xs text-gray-400">· {c.type}</span></span>
-              <span className="text-xs text-gray-500">{c.status}</span>
+              <span className="text-xs text-gray-500">👁 {views[c.id] || 0} · {c.status}</span>
             </Link>
           </li>
         ))}

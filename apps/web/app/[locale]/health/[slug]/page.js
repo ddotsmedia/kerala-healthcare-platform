@@ -5,6 +5,7 @@ import { notFound } from 'next/navigation';
 import { resolveLocale, t } from '@/lib/i18n';
 import { getPublishedContent, relatedContent, contentDoctors } from '@/lib/knowledge';
 import { medicalWebPageSchema, SITE } from '@/lib/schema';
+import { recordEvent } from '@/lib/analytics';
 import ArticleCard, { catLabel } from '@/components/health/ArticleCard';
 import ShareBar from '@/components/share/ShareBar';
 import { articleShareText } from '@/lib/shareCards';
@@ -53,6 +54,7 @@ export default async function ContentPage(props) {
   const ml = locale === 'ml';
   const c = await getPublishedContent(params.slug);
   if (!c) notFound();
+  recordEvent({ eventType: 'article_read', entityType: 'article', contentId: c.id });
 
   const [related, doctors] = await Promise.all([
     relatedContent(c.category, c.id, 3),
@@ -89,7 +91,7 @@ export default async function ContentPage(props) {
           <span>{readMin} {ml ? 'മിനിറ്റ് വായന' : 'min read'}</span>
         </div>
         <div className="pt-1">
-          <ShareBar locale={locale} message={articleShareText({ title }, locale)} />
+          <ShareBar locale={locale} message={articleShareText({ title }, locale)} contentId={c.id} />
         </div>
       </header>
 

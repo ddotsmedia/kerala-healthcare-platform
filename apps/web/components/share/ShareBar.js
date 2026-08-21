@@ -5,6 +5,7 @@
 // `message` is the pre-written share text; the current page URL is appended.
 
 import { useState } from 'react';
+import { trackEvent } from '@/components/analytics/PageViewTracker';
 
 const btn = 'inline-flex items-center gap-1.5 rounded-lg px-3 py-2 text-sm font-semibold transition';
 
@@ -12,19 +13,23 @@ function pop(url) {
   window.open(url, '_blank', 'noopener,noreferrer,width=600,height=520');
 }
 
-export default function ShareBar({ message = '', locale = 'ml', showPrint = false }) {
+export default function ShareBar({ message = '', locale = 'ml', showPrint = false, contentId = null }) {
   const ml = locale === 'ml';
   const [copied, setCopied] = useState(false);
 
   const here = () => (typeof window !== 'undefined' ? window.location.href : '');
+  const share = (channel) => { if (contentId) trackEvent('article_share', { entityType: 'article', contentId, metadata: { channel } }); };
 
   function whatsapp() {
+    share('whatsapp');
     pop(`https://wa.me/?text=${encodeURIComponent(`${message} ${here()}`.trim())}`);
   }
   function facebook() {
+    share('facebook');
     pop(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(here())}`);
   }
   function twitter() {
+    share('twitter');
     pop(`https://twitter.com/intent/tweet?text=${encodeURIComponent(message)}&url=${encodeURIComponent(here())}`);
   }
   async function copy() {

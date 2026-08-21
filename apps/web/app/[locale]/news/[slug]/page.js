@@ -5,6 +5,7 @@ import { resolveLocale } from '@/lib/i18n';
 import { getNewsBySlug, relatedNews } from '@/lib/news';
 import { categoryLabel, categoryClass, relativeTime } from '@/lib/newsFormat';
 import { newsArticleSchema, SITE } from '@/lib/schema';
+import { recordEvent } from '@/lib/analytics';
 import NewsCard from '@/components/news/NewsCard';
 import WhatsAppShare from '@/components/whatsapp/WhatsAppShare';
 
@@ -30,6 +31,7 @@ export default async function NewsArticlePage(props) {
   const ml = locale === 'ml';
   const n = await getNewsBySlug(params.slug);
   if (!n) notFound();
+  recordEvent({ eventType: 'article_read', entityType: 'news', contentId: n.id });
   const related = await relatedNews(n.category, n.id, 4);
   const url = `${SITE}/${locale}/news/${n.slug}`;
   const title = (ml ? n.title_ml : n.title_en) || n.title_ml;
