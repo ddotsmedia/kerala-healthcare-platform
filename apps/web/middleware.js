@@ -12,6 +12,9 @@ const AUTH_LIMIT = 100;
 const WINDOW = 60;
 
 export function middleware(request) {
+  // Public partner API (/api/public/*) has its own per-key hourly rate limit.
+  if (request.nextUrl.pathname.startsWith('/api/public/')) return NextResponse.next();
+
   const authed = !!request.cookies.get('khp_access');
   const ip = request.headers.get('x-forwarded-for')?.split(',')[0].trim()
     || request.headers.get('x-real-ip') || 'local';
