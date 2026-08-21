@@ -4,6 +4,15 @@
 > Claude Code writes here instead of asking questions.
 > Review this file after each session and resolve NEEDS DECISION items before starting the next phase.
 
+## Session: 2026-08-21 P-G3 Provider Performance Analytics (autopilot G 3/7)
+
+### Assumptions
+- [ASSUMPTION] No new schema — uses provider_profile_views (P-F4), appointments, reviews. Service apps/admin/lib/providerAnalytics.js; admin page /analytics/providers (leaderboard + underperforming + needs-profile-completion).
+- [ASSUMPTION] Score = views×booking_rate×max(rating,1) + views×0.1 (the raw "views×booking_rate×rating" collapses to bookings×rating, so a small views term is added to rank cold-start profiles). conversion_rate = bookings/views. Underperforming = views≤3 AND 0 bookings. Review sentiment = keyword counting over approved review bodies (positive/negative word lists, no ML package).
+
+### Verified (seeded views/booking + admin page + service)
+- [VERIFIED] Migration count 111 (no new migration). getProviderPerformance for dr-anand computed views 9, unique 8, bookings 1, conversion 11.1%, rating 4.5, score 5.4, sentiment {pos 4, neg 1, 80% positive}. /analytics/providers 200 renders leaderboard (Dr. Anand ranked) with Score + Conv% columns. Seeded smoke data cleaned. Prod health 200. Commit 474f3e2.
+
 ## Session: 2026-08-21 P-G2 Search Analytics (autopilot G 2/7)
 
 ### Assumptions
