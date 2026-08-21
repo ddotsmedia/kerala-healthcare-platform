@@ -11,6 +11,8 @@ import { recordEvent } from '@/lib/analytics';
 import { providerOpd } from '@/lib/opd';
 import { reviewSummary, listApprovedReviews } from '@/lib/reviews';
 import { getPublications, getAwards } from '@/lib/publications';
+import { getInsurancePanels } from '@/lib/insurance';
+import InsuranceSection from '@/components/profile/InsuranceSection';
 import { physicianSchema, medicalWebPageSchema, SITE } from '@/lib/schema';
 import { Avatar, ModeIcons, Chip, StatusBadge, ProfileBreadcrumb, SectionCard, MODE_META } from '@/components/profile/ProfileParts';
 import Tabs from '@/components/profile/Tabs';
@@ -69,6 +71,7 @@ export default async function DoctorProfile(props) {
     getPublications(d.id),
     getAwards(d.id)
   ]);
+  const { panels: insurancePanels } = await getInsurancePanels('doctor', d.id);
   const OPD_DAYS = ml
     ? ['ഞായർ', 'തിങ്കൾ', 'ചൊവ്വ', 'ബുധൻ', 'വ്യാഴം', 'വെള്ളി', 'ശനി']
     : ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
@@ -250,6 +253,13 @@ export default async function DoctorProfile(props) {
               </li>
             ))}
           </ul>
+        </SectionCard>
+      )}
+
+      {/* SECTION 4d — insurance accepted */}
+      {insurancePanels.length > 0 && (
+        <SectionCard title={ml ? 'സ്വീകരിക്കുന്ന ഇൻഷുറൻസ്' : 'Insurance accepted'}>
+          <InsuranceSection panels={insurancePanels} locale={locale} />
         </SectionCard>
       )}
 

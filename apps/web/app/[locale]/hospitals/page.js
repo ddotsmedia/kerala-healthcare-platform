@@ -4,6 +4,7 @@
 import { resolveLocale, t } from '@/lib/i18n';
 import { searchHospitals, listDistricts } from '@/lib/providers';
 import { HospitalCard, EmptyState, DistrictFilter, Pagination, CompareBar, VoiceSearch } from '@khp/ui';
+import { listInsurers } from '@/lib/insurance';
 
 export const dynamic = 'force-dynamic';
 const LIMIT = 20;
@@ -22,14 +23,15 @@ export default async function HospitalsPage(props) {
   const locale = resolveLocale(params.locale);
   const sp = searchParams || {};
   const page = Math.max(1, parseInt(sp.page, 10) || 1);
-  const filters = { term: sp.q || '', districtId: sp.district || '', serviceSlug: sp.service || '' };
+  const filters = { term: sp.q || '', districtId: sp.district || '', serviceSlug: sp.service || '', insurer: sp.insurer || '' };
 
-  const [hospitals, districts] = await Promise.all([
+  const [hospitals, districts, insurers] = await Promise.all([
     searchHospitals({ ...filters, page, limit: LIMIT }),
-    listDistricts()
+    listDistricts(),
+    listInsurers()
   ]);
   const basePath = `/${locale}/hospitals`;
-  const query = { q: filters.term, district: filters.districtId, service: filters.serviceSlug };
+  const query = { q: filters.term, district: filters.districtId, service: filters.serviceSlug, insurer: filters.insurer };
 
   return (
     <div className="space-y-5">
@@ -44,6 +46,13 @@ export default async function HospitalsPage(props) {
                  className="min-w-0 flex-1 rounded-lg border border-gray-300 px-4 py-2 text-base focus:border-brand focus:outline-none" />
           <VoiceSearch locale={locale} />
         </div>
+        {insurers.length > 0 && (
+          <select name="insurer" defaultValue={filters.insurer} aria-label={locale === 'ml' ? 'ഇൻഷുറൻസ്' : 'Insurance'}
+            className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-brand focus:outline-none">
+            <option value="">{locale === 'ml' ? 'എല്ലാ ഇൻഷുറൻസും' : 'All insurance'}</option>
+            {insurers.map((ins) => <option key={ins} value={ins}>{ins}</option>)}
+          </select>
+        )}
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           <DistrictFilter districts={districts} selected={filters.districtId} locale={locale} />
           <label className="block text-sm">

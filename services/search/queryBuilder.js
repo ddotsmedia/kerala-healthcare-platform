@@ -67,6 +67,10 @@ function buildDoctorSearch(o = {}) {
     values.push(o.language);
     where.push(`$${values.length} = ANY(d.languages)`);
   }
+  if (o.insurer) {
+    values.push(o.insurer);
+    where.push(`EXISTS (SELECT 1 FROM insurance_panels ip WHERE ip.entity_type='doctor' AND ip.entity_id = d.id AND ip.insurer_name = $${values.length} AND ip.deleted_at IS NULL)`);
+  }
 
   values.push(limit); const limitIdx = values.length;
   values.push(offset); const offsetIdx = values.length;
@@ -110,6 +114,10 @@ function buildHospitalSearch(o = {}) {
     where.push(`EXISTS (SELECT 1 FROM hospital_departments hd
                          WHERE hd.hospital_id = h.id AND hd.deleted_at IS NULL
                            AND (hd.name_en ILIKE $${values.length} OR hd.name_ml ILIKE $${values.length}))`);
+  }
+  if (o.insurer) {
+    values.push(o.insurer);
+    where.push(`EXISTS (SELECT 1 FROM insurance_panels ip WHERE ip.entity_type='hospital' AND ip.entity_id = h.id AND ip.insurer_name = $${values.length} AND ip.deleted_at IS NULL)`);
   }
 
   values.push(limit); const limitIdx = values.length;

@@ -5,6 +5,8 @@ import { notFound } from 'next/navigation';
 import { resolveLocale, t } from '@/lib/i18n';
 import { getHospitalBySlug, searchHospitals } from '@/lib/providers';
 import { hospitalDoctors } from '@/lib/profile';
+import { getInsurancePanels } from '@/lib/insurance';
+import InsuranceSection from '@/components/profile/InsuranceSection';
 import { reviewSummary, listApprovedReviews } from '@/lib/reviews';
 import { hospitalSchema, medicalWebPageSchema, SITE } from '@/lib/schema';
 import { StatusBadge, Chip, ProfileBreadcrumb, SectionCard } from '@/components/profile/ProfileParts';
@@ -66,6 +68,7 @@ export default async function HospitalProfile(props) {
     listApprovedReviews('hospital', h.id, 1)
   ]);
   const nearby = nearbyRaw.filter((x) => x.id !== h.id).slice(0, 3);
+  const { panels: insurancePanels, isPmjay } = await getInsurancePanels('hospital', h.id);
 
   const name = nm(h, ml);
   const district = ml ? h.district_ml : h.district_en;
@@ -129,6 +132,11 @@ export default async function HospitalProfile(props) {
           <div className="flex flex-wrap items-center gap-2">
             <h1 className="text-2xl font-bold text-gray-900">{name}</h1>
             <StatusBadge status={h.verification_status} locale={locale} />
+            {isPmjay && (
+              <span className="rounded-full bg-emerald-600 px-2.5 py-1 text-xs font-bold text-white" title="PMJAY / Ayushman Bharat">
+                🩺 {ml ? 'PMJAY / ആയുഷ്മാൻ ഭാരത്' : 'PMJAY / Ayushman Bharat'}
+              </span>
+            )}
           </div>
           <div className="flex flex-wrap items-center gap-2">
             {type && <Chip tone="teal">{type[locale] || type.en}</Chip>}
@@ -218,6 +226,13 @@ export default async function HospitalProfile(props) {
               </Link>
             ))}
           </div>
+        </SectionCard>
+      )}
+
+      {/* SECTION 4b — insurance accepted */}
+      {insurancePanels.length > 0 && (
+        <SectionCard title={ml ? 'സ്വീകരിക്കുന്ന ഇൻഷുറൻസ്' : 'Insurance accepted'}>
+          <InsuranceSection panels={insurancePanels} locale={locale} />
         </SectionCard>
       )}
 
