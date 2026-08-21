@@ -1,6 +1,6 @@
 // i18n.js — locale config and minimal dictionary. Malayalam-first.
 
-const LOCALES = ['ml', 'en'];
+const LOCALES = ['ml', 'en', 'ta', 'hi'];
 const DEFAULT_LOCALE = 'ml';
 
 const DICT = {
@@ -143,6 +143,47 @@ const DICT = {
     ai_disclaimer: 'This is health information, not medical advice.',
     emergency_banner: 'Emergency? Call 112 or 108', sources: 'Sources',
     smart_search: 'Smart search'
+  },
+  // Tamil + Hindi: core keys (navigation, common UI, errors). Untranslated keys
+  // fall back to English via t(). Human review pending (see BLOCKERS.md).
+  ta: {
+    site: 'கேரளா ஹெல்த் போர்டல்',
+    doctors: 'மருத்துவர்கள்', hospitals: 'மருத்துவமனைகள்',
+    facilities: 'கிளினிக்குகள் & நோயறிதல்', clinic: 'கிளினிக்', diagnostic_centre: 'நோயறிதல் மையம்',
+    find_doctor: 'மருத்துவரைக் கண்டறியவும்', find_hospital: 'மருத்துவமனையைக் கண்டறியவும்',
+    find_a_doctor: 'மருத்துவரைக் கண்டறியவும்',
+    search_placeholder: 'பெயர், சிறப்பு, மாவட்டம்…', search: 'தேடு',
+    verified: 'சரிபார்க்கப்பட்டது', experience: 'ஆண்டு அனுபவம்', consultation_fee: 'ஆலோசனைக் கட்டணம்',
+    no_results: 'முடிவுகள் இல்லை', emergency_24x7: '24x7 அவசர சேவை',
+    beds: 'படுக்கைகள்', departments: 'துறைகள்', services: 'சேவைகள்', accreditations: 'அங்கீகாரங்கள்',
+    my_appointments: 'எனது சந்திப்புகள்', upcoming: 'வரவிருப்பவை', past: 'கடந்தவை',
+    book_now: 'பதிவு செய்யவும்', book_appointment: 'சந்திப்பைப் பதிவு செய்யவும்',
+    select_slot: 'நேரத்தைத் தேர்ந்தெடுக்கவும்', no_slots: 'கிடைக்கும் நேரம் இல்லை',
+    cancel: 'ரத்து செய்', confirm: 'உறுதிப்படுத்து', booking_confirmed: 'சந்திப்பு உறுதிசெய்யப்பட்டது',
+    status: 'நிலை', booking_ref: 'குறிப்பு',
+    health: 'சுகாதாரத் தகவல்', symptoms: 'அறிகுறிகள்', symptom_navigator: 'அறிகுறி வழிகாட்டி',
+    diseases: 'நோய்கள்', tools: 'சுகாதார கருவிகள்',
+    not_diagnosis: 'இது நோயறிதல் அல்ல. மருத்துவரை அணுகவும்.',
+    disclaimer: 'இந்தத் தகவல் பொது அறிவுக்காக மட்டுமே. இது நோயறிதல் அல்லது சிகிச்சை ஆலோசனை அல்ல. எப்போதும் தகுதியான மருத்துவரை அணுகவும். அவசரநிலையில் 112 அல்லது ஆம்புலன்ஸ் 108 ஐ அழைக்கவும்.'
+  },
+  hi: {
+    site: 'केरल हेल्थ पोर्टल',
+    doctors: 'डॉक्टर', hospitals: 'अस्पताल',
+    facilities: 'क्लिनिक और डायग्नोस्टिक्स', clinic: 'क्लिनिक', diagnostic_centre: 'डायग्नोस्टिक केंद्र',
+    find_doctor: 'डॉक्टर खोजें', find_hospital: 'अस्पताल खोजें', find_a_doctor: 'डॉक्टर खोजें',
+    search_placeholder: 'नाम, विशेषज्ञता, जिला…', search: 'खोजें',
+    verified: 'सत्यापित', experience: 'वर्षों का अनुभव', consultation_fee: 'परामर्श शुल्क',
+    no_results: 'कोई परिणाम नहीं', emergency_24x7: '24x7 आपातकाल',
+    beds: 'बिस्तर', departments: 'विभाग', services: 'सेवाएं', accreditations: 'मान्यताएं',
+    my_appointments: 'मेरी अपॉइंटमेंट', upcoming: 'आगामी', past: 'पिछली',
+    book_now: 'बुक करें', book_appointment: 'अपॉइंटमेंट बुक करें',
+    select_slot: 'समय चुनें', no_slots: 'कोई उपलब्ध समय नहीं',
+    cancel: 'रद्द करें', confirm: 'पुष्टि करें', booking_confirmed: 'अपॉइंटमेंट की पुष्टि हुई',
+    status: 'स्थिति', booking_ref: 'संदर्भ',
+    health: 'स्वास्थ्य जानकारी', symptoms: 'लक्षण', symptom_navigator: 'लक्षण नेविगेटर',
+    diseases: 'रोग', tools: 'स्वास्थ्य उपकरण',
+    not_diagnosis: 'यह निदान नहीं है। डॉक्टर से मिलें।',
+    disclaimer: 'यह जानकारी केवल सामान्य जानकारी के लिए है। यह निदान या उपचार सलाह नहीं है। हमेशा एक योग्य स्वास्थ्य पेशेवर से परामर्श करें। आपात स्थिति में 112 या एम्बुलेंस 108 पर कॉल करें।'
   }
 };
 
@@ -161,7 +202,8 @@ function resolveLocale(locale) {
  */
 function t(locale, key) {
   const l = resolveLocale(locale);
-  return (DICT[l] && DICT[l][key]) || (DICT[DEFAULT_LOCALE][key]) || key;
+  // Fallback chain: requested locale -> English -> Malayalam default -> the key.
+  return (DICT[l] && DICT[l][key]) || (DICT.en && DICT.en[key]) || DICT[DEFAULT_LOCALE][key] || key;
 }
 
 export { LOCALES, DEFAULT_LOCALE, resolveLocale, t };

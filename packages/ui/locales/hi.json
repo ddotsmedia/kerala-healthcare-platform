@@ -1,0 +1,21 @@
+{
+  "_note": "Hindi (hi) core UI translations. Human review pending. Runtime source of truth is apps/web/lib/i18n.js; keep in sync.",
+  "site": "केरल हेल्थ पोर्टल",
+  "doctors": "डॉक्टर",
+  "hospitals": "अस्पताल",
+  "find_doctor": "डॉक्टर खोजें",
+  "find_hospital": "अस्पताल खोजें",
+  "search_placeholder": "नाम, विशेषज्ञता, जिला…",
+  "search": "खोजें",
+  "verified": "सत्यापित",
+  "experience": "वर्षों का अनुभव",
+  "consultation_fee": "परामर्श शुल्क",
+  "no_results": "कोई परिणाम नहीं",
+  "emergency_24x7": "24x7 आपातकाल",
+  "book_appointment": "अपॉइंटमेंट बुक करें",
+  "cancel": "रद्द करें",
+  "confirm": "पुष्टि करें",
+  "symptoms": "लक्षण",
+  "not_diagnosis": "यह निदान नहीं है। डॉक्टर से मिलें।",
+  "disclaimer": "यह जानकारी केवल सामान्य जानकारी के लिए है। यह निदान या उपचार सलाह नहीं है। हमेशा एक योग्य स्वास्थ्य पेशेवर से परामर्श करें। आपात स्थिति में 112 या एम्बुलेंस 108 पर कॉल करें।"
+}

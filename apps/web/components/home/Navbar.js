@@ -58,7 +58,6 @@ export default function Navbar({ locale = 'ml' }) {
   const [dirOpen, setDirOpen] = useState(false); // desktop Directory dropdown
   const pathname = usePathname();
   const dirRef = useRef(null);
-  const other = locale === 'ml' ? 'en' : 'ml';
   const ml = locale === 'ml';
   const L = (l) => (ml ? l.ml : l.en);
   const isActive = (href) => pathname === `/${locale}/${href}` || pathname.startsWith(`/${locale}/${href}/`);
@@ -133,10 +132,15 @@ export default function Navbar({ locale = 'ml' }) {
             className="hidden rounded-lg bg-brand px-4 py-1.5 text-sm font-medium text-white hover:bg-brand-dark sm:inline-block">
             {ml ? 'ലോഗിൻ' : 'Login'}
           </Link>
-          <Link href={`/${other}`} aria-label={ml ? 'Switch to English' : 'മലയാളത്തിലേക്ക് മാറുക'}
-            className="rounded-lg border border-gray-300 px-2.5 py-1.5 text-xs font-semibold text-gray-600 hover:border-brand hover:text-brand">
-            {ml ? 'EN' : 'ML'}
-          </Link>
+          <div className="flex items-center gap-0.5 rounded-lg border border-gray-300 p-0.5" role="group" aria-label="Language">
+            {[['ml', 'ML'], ['en', 'EN'], ['ta', 'TA'], ['hi', 'HI']].map(([lc, lbl]) => (
+              <Link key={lc} href={`/${lc}${pathname.replace(/^\/(ml|en|ta|hi)(?=\/|$)/, '') || ''}`}
+                aria-label={`Switch to ${lbl}`} aria-current={locale === lc ? 'true' : undefined}
+                className={`rounded-md px-1.5 py-1 text-[11px] font-semibold ${locale === lc ? 'bg-brand text-white' : 'text-gray-500 hover:text-brand'}`}>
+                {lbl}
+              </Link>
+            ))}
+          </div>
           <button type="button" onClick={() => setOpen(true)} aria-label="Open menu" aria-expanded={open}
             className="rounded-lg border border-gray-300 p-2 text-gray-700 lg:hidden">
             <span className="block h-0.5 w-5 bg-current" />

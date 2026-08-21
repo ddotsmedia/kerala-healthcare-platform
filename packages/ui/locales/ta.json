@@ -1,0 +1,21 @@
+{
+  "_note": "Tamil (ta) core UI translations. Human review pending. Runtime source of truth is apps/web/lib/i18n.js; keep in sync.",
+  "site": "கேரளா ஹெல்த் போர்டல்",
+  "doctors": "மருத்துவர்கள்",
+  "hospitals": "மருத்துவமனைகள்",
+  "find_doctor": "மருத்துவரைக் கண்டறியவும்",
+  "find_hospital": "மருத்துவமனையைக் கண்டறியவும்",
+  "search_placeholder": "பெயர், சிறப்பு, மாவட்டம்…",
+  "search": "தேடு",
+  "verified": "சரிபார்க்கப்பட்டது",
+  "experience": "ஆண்டு அனுபவம்",
+  "consultation_fee": "ஆலோசனைக் கட்டணம்",
+  "no_results": "முடிவுகள் இல்லை",
+  "emergency_24x7": "24x7 அவசர சேவை",
+  "book_appointment": "சந்திப்பைப் பதிவு செய்யவும்",
+  "cancel": "ரத்து செய்",
+  "confirm": "உறுதிப்படுத்து",
+  "symptoms": "அறிகுறிகள்",
+  "not_diagnosis": "இது நோயறிதல் அல்ல. மருத்துவரை அணுகவும்.",
+  "disclaimer": "இந்தத் தகவல் பொது அறிவுக்காக மட்டுமே. இது நோயறிதல் அல்லது சிகிச்சை ஆலோசனை அல்ல. எப்போதும் தகுதியான மருத்துவரை அணுகவும். அவசரநிலையில் 112 அல்லது ஆம்புலன்ஸ் 108 ஐ அழைக்கவும்."
+}
