@@ -4,6 +4,22 @@
 > Claude Code writes here instead of asking questions.
 > Review this file after each session and resolve NEEDS DECISION items before starting the next phase.
 
+## Session: 2026-08-21 P-H2 S3/R2 File Storage (autopilot H 2/6)
+
+### Assumptions
+- [ASSUMPTION] No new schema. New workspace package @khp/storage implements AWS SigV4 with pure node:crypto (NO SDK / npm package) — signature verified against AWS's official test vector (exact match). Supports AWS virtual-hosted and R2 path-style endpoints. storeFile() uploads to S3 when configured, else falls back to an inline base64 data URI so existing uploads are unchanged. Private files are stored as "s3:<key>" refs and served via a 5-min presigned URL (302 redirect); the legacy data-URI serve path is preserved.
+- [ASSUMPTION] Wired the two real file-upload flows — prescriptions + lab reports (both private). Profile photos are a URL text field (no multipart endpoint exists), so only the migration covers doctor photo_url data URIs. services/storage/migrate.js migrates prescriptions/lab_reports/health_records/doctors photos; @khp/db is lazy-imported after the isConfigured() check so the script runs standalone (exit 0) even without workspace symlinks.
+
+### Errors fixed / infra
+- [FIXED] migrate.js failed to resolve @khp/db when run standalone → deferred it to a dynamic import inside runMigration() after the S3-config guard. Fix commit 64e0e39.
+- [INFRA] During the P-H2 deploy the VPS cycled (SSH dropped; all containers restarted, admin container missing). Re-ran deploy.sh — all 3 apps rebuilt on 64e0e39, admin restored, DB connectivity intact (api/health 200). Matches the known snap-Docker/host-cycle hazard.
+
+### Verified
+- [VERIFIED] Migration count 113 (no new migration). SigV4 matches AWS vector exactly; presign produces valid signatures; R2 path-style URL correct; storeFile inline fallback works. Prod: migration script runs clean (S3 unset → no-op, exit 0); health 200; prescriptions page 200 (no regression). Commits 3a2d5ea, 64e0e39.
+
+### Needs human decision / blocked on credentials
+- [NEEDS DECISION] LIVE S3/R2 BLOCKED: no S3_* credentials configured on prod. To enable real storage, create the R2 (recommended) or S3 bucket "malayalidoctor-files", set S3_BUCKET/S3_REGION/S3_ACCESS_KEY/S3_SECRET_KEY(/S3_ENDPOINT for R2)(/S3_PUBLIC_BASE for a CDN) in .env.production, add CORS for malayalidoctor.com + a 7-year lifecycle rule on prescription files, then run `node services/storage/migrate.js` to move existing base64 files. Live upload/signed-URL/CDN smoke tests require this.
+
 ## Session: 2026-08-21 P-H1 Fast2SMS + Resend Wiring (autopilot H 1/6)
 
 ### Assumptions
