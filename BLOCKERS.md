@@ -4,6 +4,19 @@
 > Claude Code writes here instead of asking questions.
 > Review this file after each session and resolve NEEDS DECISION items before starting the next phase.
 
+## Session: 2026-08-21 P-H1 Fast2SMS + Resend Wiring (autopilot H 1/6)
+
+### Assumptions
+- [ASSUMPTION] Fast2SMS selected by OTP_SMS_PROVIDER=fast2sms OR a fast2sms gateway URL. sendOtp() uses the Fast2SMS 'otp' route (variables_values=code); sendSms() uses the 'q' route for free-text; both keep the generic-gateway + 'simulated' fallbacks. normalizeIndianMobile strips +91/91/leading-0 to a bare 10-digit number. otp.js now calls sendOtp(). email.js warns if EMAIL_FROM is off the verified domain. Added docs/operations/RESEND_SETUP.md (Hostinger DKIM/SPF/MX + verify steps).
+
+### Verified (unit test + prod pipeline)
+- [VERIFIED] Migration count 113 (no new migration). Unit test: Fast2SMS builder emits exactly {route:'otp', variables_values, numbers:<10-digit>, flash:0} with the raw API key as the authorization header; sent/failed/simulated paths correct. Prod OTP pipeline: POST /api/auth/request-otp stores the code and returns sent:true (non-blocking on delivery failure).
+
+### Needs human decision / blocked on credentials
+- [NEEDS DECISION] LIVE SMS DELIVERY BLOCKED: prod OTP_SMS_GATEWAY_URL is https://www.fast2sms.com (correct) but OTP_SMS_API_KEY is invalid — Fast2SMS returns "Invalid Authentication, Check Authorization Key". The integration is correct; set a valid Fast2SMS key in .env.production to enable real OTP SMS.
+- [NEEDS DECISION] LIVE EMAIL DELIVERY BLOCKED: a Resend key (re_) is present but the malayalidoctor.com domain is NOT verified — Resend returns 403 "domain is not verified". Add the DNS records in docs/operations/RESEND_SETUP.md via Hostinger and verify in Resend, then real email works.
+- [ASSUMPTION] The spec's live-delivery smoke tests (SMS OTP to an Indian mobile, email OTP to Gmail within 30s) cannot be executed autonomously — no Indian SIM, invalid Fast2SMS key, unverified Resend domain. Code paths verified instead; delivery is a credential/DNS task. Commit 827e747.
+
 ## Session: 2026-08-21 P-G7 AI Assistant Analytics (autopilot G 7/7)
 
 ### Assumptions
