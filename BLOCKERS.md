@@ -4,6 +4,17 @@
 > Claude Code writes here instead of asking questions.
 > Review this file after each session and resolve NEEDS DECISION items before starting the next phase.
 
+## Session: 2026-08-21 P-G5 Revenue Tracking (autopilot G 5/7)
+
+### Assumptions
+- [ASSUMPTION] Migration 0113 revenue_events (type checked against featured_listing|premium_subscription|job_post|bulk_import|api_access). Payment integration deferred — admin manually records revenue via a form on /analytics/revenue (server action). "MRR trend" = monthly revenue totals for the last 12 months (all revenue, not strictly recurring).
+
+### Errors fixed
+- [FIXED] Revenue page 500 — `generate_series(...) g(month)` used the reserved word `month` as a column alias ("syntax error at or near month"). Renamed the alias to `gs(mon)`. Fix commit d55cad8. (Note: `g(day)` in the registration-trend query is fine; `month` specifically is reserved.)
+
+### Verified (recorded revenue + admin page)
+- [VERIFIED] Migration count 113. Recorded 2 revenue events (₹5,000 featured + ₹2,000 subscription); getRevenueSummary monthTotal ₹7,000. /analytics/revenue 200 shows month total ₹7,000, by-type breakdown, and the 12-month MRR trend. Smoke rows cleaned. Prod health 200. Commits 1038f24, d55cad8.
+
 ## Session: 2026-08-21 P-G4 Content Analytics (autopilot G 4/7)
 
 ### Assumptions
