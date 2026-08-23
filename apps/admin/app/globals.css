@@ -2,6 +2,66 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ---- Theme tokens (light default, dark via .dark on <html>) ---- */
+:root {
+  --surface: 255 255 255;      /* cards / panels */
+  --surface-2: 248 250 252;    /* app background */
+  --ink: 15 23 42;             /* primary text */
+  --ink-soft: 100 116 139;     /* muted text */
+  --line: 226 232 240;         /* borders */
+}
+.dark {
+  --surface: 30 41 59;
+  --surface-2: 15 23 42;
+  --ink: 226 232 240;
+  --ink-soft: 148 163 184;
+  --line: 51 65 85;
+}
+
+html { color-scheme: light; }
+html.dark { color-scheme: dark; }
+
 body {
-  @apply bg-gray-100 text-gray-900 antialiased;
+  background: rgb(var(--surface-2));
+  color: rgb(var(--ink));
+  @apply antialiased;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+/* Smooth, consistent interaction transitions across the panel. */
+a, button, .transitionable,
+[data-transition] { transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease, opacity 0.15s ease; }
+
+/* Thin themed scrollbars. */
+* { scrollbar-width: thin; scrollbar-color: rgb(var(--line)) transparent; }
+*::-webkit-scrollbar { width: 8px; height: 8px; }
+*::-webkit-scrollbar-thumb { background: rgb(var(--line)); border-radius: 8px; }
+
+/* ---- Loading skeleton ---- */
+.skeleton {
+  background: linear-gradient(90deg, rgb(var(--line) / 0.4) 25%, rgb(var(--line) / 0.7) 37%, rgb(var(--line) / 0.4) 63%);
+  background-size: 400% 100%;
+  animation: skeleton 1.4s ease infinite;
+  border-radius: 0.5rem;
+}
+@keyframes skeleton { 0% { background-position: 100% 50%; } 100% { background-position: 0 50%; } }
+
+/* ---- Toasts ---- */
+.toast-enter { animation: toastIn 0.25s cubic-bezier(0.16, 1, 0.3, 1); }
+@keyframes toastIn { from { opacity: 0; transform: translateY(8px) scale(0.98); } to { opacity: 1; transform: none; } }
+
+/* ---- Live pulse dot ---- */
+.pulse-dot { position: relative; }
+.pulse-dot::after {
+  content: ''; position: absolute; inset: -4px; border-radius: 9999px;
+  background: currentColor; opacity: 0.35; animation: pulse 1.8s ease-out infinite;
+}
+@keyframes pulse { 0% { transform: scale(0.6); opacity: 0.5; } 100% { transform: scale(1.8); opacity: 0; } }
+
+/* ---- Drag-and-drop (kanban) ---- */
+.kanban-col.drag-over { outline: 2px dashed rgb(13 148 136); outline-offset: -4px; background: rgb(13 148 136 / 0.06); }
+.kanban-card.dragging { opacity: 0.5; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::after { animation: none !important; transition: none !important; }
 }
