@@ -2,6 +2,7 @@
 
 import { redirect } from 'next/navigation';
 import { requireAdminRole } from '@/lib/auth';
+import AnalyticsTabs from '../AnalyticsTabs';
 import { getTopArticles, getArticlesByCategory, getZeroViewArticles } from '@/lib/contentAnalytics';
 
 export const dynamic = 'force-dynamic';
@@ -20,6 +21,7 @@ export default async function ContentAnalytics() {
         <h2 className="text-base font-semibold">Content analytics</h2>
         <a href="/analytics" className="text-sm font-semibold text-brand hover:underline">← Analytics</a>
       </div>
+      <AnalyticsTabs />
 
       <section>
         <h3 className="mb-2 text-xs font-semibold uppercase text-gray-500">Top articles (30d)</h3>

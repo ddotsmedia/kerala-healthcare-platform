@@ -2,6 +2,7 @@
 
 import { redirect } from 'next/navigation';
 import { requireAdminRole } from '@/lib/auth';
+import AnalyticsTabs from '../AnalyticsTabs';
 import { getTopPerformingProviders } from '@/lib/providerAnalytics';
 
 export const dynamic = 'force-dynamic';
@@ -17,6 +18,7 @@ export default async function ProviderAnalytics() {
         <h2 className="text-base font-semibold">Provider performance</h2>
         <a href="/analytics" className="text-sm font-semibold text-brand hover:underline">← Analytics</a>
       </div>
+      <AnalyticsTabs />
       <p className="text-xs text-gray-500">{total} published providers · last 30 days</p>
 
       <section>

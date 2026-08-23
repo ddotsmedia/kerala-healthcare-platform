@@ -4,6 +4,7 @@
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import { requireAdminRole } from '@/lib/auth';
+import AnalyticsTabs from '../AnalyticsTabs';
 import { getDailyInteractions, getRAGHitRate, getFlagBreakdown, getKnowledgeGaps, getTopRecurring } from '@/lib/aiAnalytics';
 
 export const dynamic = 'force-dynamic';
@@ -25,6 +26,7 @@ export default async function AiAnalytics() {
         <h2 className="text-base font-semibold">AI assistant analytics</h2>
         <a href="/analytics" className="text-sm font-semibold text-brand hover:underline">← Analytics</a>
       </div>
+      <AnalyticsTabs />
       <p className="text-xs text-gray-400">Questions are anonymised — the log stores only a one-way hash, never raw text.</p>
 
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">

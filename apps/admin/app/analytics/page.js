@@ -4,7 +4,11 @@ import { redirect } from 'next/navigation';
 import { requireAdminRole } from '@/lib/auth';
 import { getMetrics } from '@/lib/analytics';
 import { getOverview, getTopPages, getConversionFunnel, getRegistrationTrend, getTrafficSources, getTopSearchQueries } from '@/lib/platformAnalytics';
+import { getHealthTrends } from '@/lib/searchAnalytics';
 import { FunnelChart, LineChart, TrafficDonut } from './Charts';
+import AnalyticsTabs from './AnalyticsTabs';
+import DateRangePicker from './DateRangePicker';
+import KeralaHeatmap from '@/components/KeralaHeatmap';
 
 export const dynamic = 'force-dynamic';
 export const metadata = { title: 'Analytics · KHP Admin' };
@@ -32,25 +36,26 @@ function TrioCard({ label, t }) {
   );
 }
 
-export default async function Analytics() {
+export default async function Analytics(props) {
   if (!(await requireAdminRole())) redirect('/login');
-  const [m, overview, topPages, funnel, regTrend, sources, queries] = await Promise.all([
-    getMetrics(), getOverview(), getTopPages(30, 15), getConversionFunnel(30),
-    getRegistrationTrend(30), getTrafficSources(30), getTopSearchQueries(7, 10)
+  const sp = (await props.searchParams) || {};
+  const days = Math.max(1, Math.min(365, parseInt(sp.days, 10) || 30));
+  const [m, overview, topPages, funnel, regTrend, sources, queries, trends] = await Promise.all([
+    getMetrics(), getOverview(), getTopPages(days, 15), getConversionFunnel(days),
+    getRegistrationTrend(days), getTrafficSources(days), getTopSearchQueries(7, 10), getHealthTrends(days)
   ]);
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h2 className="text-base font-semibold">Platform analytics</h2>
-        <div className="flex gap-4">
-          <a href="/analytics/providers" className="text-sm font-semibold text-brand hover:underline">Providers →</a>
-          <a href="/analytics/content" className="text-sm font-semibold text-brand hover:underline">Content →</a>
-          <a href="/analytics/revenue" className="text-sm font-semibold text-brand hover:underline">Revenue →</a>
-          <a href="/analytics/ai" className="text-sm font-semibold text-brand hover:underline">AI →</a>
-          <a href="/analytics/search" className="text-sm font-semibold text-brand hover:underline">Search analytics →</a>
-        </div>
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <h2 className="text-lg font-bold text-ink">Platform analytics</h2>
+        <DateRangePicker defaultDays={30} />
       </div>
+      <AnalyticsTabs />
+
+      <section className="rounded-2xl border border-line bg-surface p-4">
+        <KeralaHeatmap data={trends.districts} label={`District search activity (${days}d)`} />
+      </section>
 
       {/* Section 1 — Overview */}
       <section>

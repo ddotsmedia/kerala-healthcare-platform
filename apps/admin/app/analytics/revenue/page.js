@@ -2,6 +2,7 @@
 
 import { redirect } from 'next/navigation';
 import { requireAdminRole } from '@/lib/auth';
+import AnalyticsTabs from '../AnalyticsTabs';
 import { getRevenueSummary, getMonthlyTrend, listRecent, REVENUE_TYPES } from '@/lib/revenueAnalytics';
 import { addRevenueAction, deleteRevenueAction } from './actions';
 
@@ -23,6 +24,7 @@ export default async function RevenueAnalytics() {
         <h2 className="text-base font-semibold">Revenue</h2>
         <a href="/analytics" className="text-sm font-semibold text-brand hover:underline">← Analytics</a>
       </div>
+      <AnalyticsTabs />
       <p className="rounded-lg bg-amber-50 px-3 py-2 text-xs text-amber-700">Payment integration deferred — this tracks manually-recorded revenue.</p>
 
       <div className="grid grid-cols-2 gap-3">

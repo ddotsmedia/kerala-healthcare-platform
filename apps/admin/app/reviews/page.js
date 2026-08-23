@@ -19,15 +19,15 @@ export default async function ReviewsQueue(props) {
 
   return (
     <div className="space-y-4">
-      <h2 className="text-lg font-bold text-gray-900">Review moderation</h2>
+      <h2 className="text-lg font-bold text-ink">Review moderation</h2>
       <nav className="flex flex-wrap gap-2">
         {TABS.map((s) => (
           <Link key={s} href={`/reviews?status=${s}`}
             className={`flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-medium capitalize ${
-              s === status ? 'bg-brand text-white' : 'border border-gray-300 bg-white text-gray-700'
+              s === status ? 'bg-brand text-white' : 'border border-line bg-surface text-ink-soft hover:text-brand'
             }`}>
             {s}
-            <span className={`rounded-full px-1.5 text-[10px] ${s === status ? 'bg-white/20' : 'bg-gray-100 text-gray-600'}`}>{counts[s] || 0}</span>
+            <span className={`rounded-full px-1.5 text-[10px] ${s === status ? 'bg-white/20' : 'bg-surface-2 text-ink-soft'}`}>{counts[s] || 0}</span>
           </Link>
         ))}
       </nav>

@@ -2,6 +2,7 @@
 
 import { redirect } from 'next/navigation';
 import { requireAdminRole } from '@/lib/auth';
+import AnalyticsTabs from '../AnalyticsTabs';
 import { getTopQueries, getZeroResultQueries, getFilterUsage, getQueryToClickRate, getHealthTrends } from '@/lib/searchAnalytics';
 
 export const dynamic = 'force-dynamic';
@@ -18,7 +19,8 @@ export default async function SearchAnalytics() {
 
   return (
     <div className="space-y-6">
-      <h2 className="text-base font-semibold">Search analytics</h2>
+      <h2 className="text-lg font-bold text-ink">Search analytics</h2>
+      <AnalyticsTabs />
 
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
         <div className="rounded-xl border border-gray-200 bg-white p-4"><p className="text-2xl font-bold text-brand">{filters.total}</p><p className="text-xs text-gray-500">Searches (30d)</p></div>
