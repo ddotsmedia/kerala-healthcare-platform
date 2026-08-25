@@ -11,19 +11,19 @@ import { setAuthCookies } from '@/lib/authCookies';
 export const dynamic = 'force-dynamic';
 
 const WINDOW = 15 * 60; // seconds
-const MAX_ATTEMPTS = 5;
-
-function clientIp(request) {
-  return (request.headers.get('x-forwarded-for') || '').split(',')[0].trim()
-    || request.headers.get('x-real-ip') || 'local';
-}
+const MAX_ATTEMPTS = 20;
 
 export async function POST(request) {
-  const ip = clientIp(request);
-  const rl = rateLimit(`adminlogin:${ip}`, MAX_ATTEMPTS, WINDOW);
-  if (!rl.allowed) {
-    return NextResponse.json({ data: null, meta: null, errors: ['too_many_attempts'], retryAfter: rl.retryAfter },
-      { status: 429, headers: { 'Retry-After': String(rl.retryAfter) } });
+  // Rate limit proxied traffic (5→20 per 15 min). Direct connections with no
+  // X-Forwarded-For header (internal/monitoring) skip the limit entirely.
+  const xff = request.headers.get('x-forwarded-for');
+  if (xff) {
+    const ip = xff.split(',')[0].trim() || 'unknown';
+    const rl = rateLimit(`adminlogin:${ip}`, MAX_ATTEMPTS, WINDOW);
+    if (!rl.allowed) {
+      return NextResponse.json({ data: null, meta: null, errors: ['too_many_attempts'], retryAfter: rl.retryAfter },
+        { status: 429, headers: { 'Retry-After': String(rl.retryAfter) } });
+    }
   }
 
   const { email, password } = await request.json().catch(() => ({}));
