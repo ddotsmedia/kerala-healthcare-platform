@@ -68,7 +68,15 @@ source "$ENV_FILE"; set +a
 DATABASE_URL="postgres://khp:${POSTGRES_PASSWORD}@127.0.0.1:5440/khp" pnpm db:migrate
 
 log "4/5 Recreating app containers (snap-safe, no port juggling)"
-for svc in khp-web khp-portal khp-admin; do
+# Optional first arg limits the rebuild to one app: deploy.sh [web|portal|admin].
+ONLY="${1:-}"
+if [ -n "$ONLY" ]; then
+  SERVICES="khp-$ONLY"
+  echo "  (limited to $SERVICES)"
+else
+  SERVICES="khp-web khp-portal khp-admin"
+fi
+for svc in $SERVICES; do
   snap_safe_recreate "$svc"
 done
 

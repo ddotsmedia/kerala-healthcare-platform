@@ -4,3 +4,4 @@ export { signAccess, verifyAccess, ACCESS_TTL_SECONDS } from './jwt.js';
 export { requestOtp, verifyOtp, requestEmailOtp, verifyEmailOtp, hashMobile, hashEmail } from './otp.js';
 export { issueRefresh, rotateRefresh, revokeRefresh, REFRESH_TTL_DAYS } from './refresh.js';
 export { sessionFromToken, bearer, ACCESS_COOKIE, REFRESH_COOKIE } from './session.js';
+export { hashPassword, verifyPassword } from './password.js';
