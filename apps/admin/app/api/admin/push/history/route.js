@@ -1,0 +1,1 @@
+import { getSession } from '@/lib/auth'; export async function GET(req) { const session = await getSession(); if (!session?.role?.includes('admin')) return Response.json({ error: 'Unauthorized' }, { status: 401 }); return Response.json([]); }
