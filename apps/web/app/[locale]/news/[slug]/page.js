@@ -6,6 +6,7 @@ import { getNewsBySlug, relatedNews } from '@/lib/news';
 import { categoryLabel, categoryClass, relativeTime } from '@/lib/newsFormat';
 import { newsArticleSchema, SITE } from '@/lib/schema';
 import { recordEvent } from '@/lib/analytics';
+import { ResponsiveImage } from '@/lib/images';
 import NewsCard from '@/components/news/NewsCard';
 import WhatsAppShare from '@/components/whatsapp/WhatsAppShare';
 
@@ -70,7 +71,7 @@ export default async function NewsArticlePage(props) {
         <p className="text-base text-gray-600">{(ml ? n.summary_ml : n.summary_en) || n.summary_ml}</p>
       </header>
 
-      {n.image_url && <img src={n.image_url} alt={title} className="w-full rounded-xl" />}
+      {n.image_url && <ResponsiveImage src={n.image_url} alt={title} className="rounded-xl" />}
 
       <div className="whitespace-pre-line text-[15px] leading-relaxed text-gray-800">{body}</div>
 

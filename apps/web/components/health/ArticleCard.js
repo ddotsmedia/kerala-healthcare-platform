@@ -1,6 +1,7 @@
 // ArticleCard.js — health article list item. Pure.
 
 import Link from 'next/link';
+import { ThumbnailImage } from '@/lib/images';
 
 const CAT_LABEL = {
   disease: { ml: 'രോഗം', en: 'Disease' },
@@ -26,7 +27,7 @@ export default function ArticleCard({ item, locale = 'ml', featured = false }) {
     <Link href={`/${locale}/health/${item.slug}`}
       className={`group flex flex-col overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm transition hover:shadow-md ${featured ? 'sm:flex-row' : ''}`}>
       {item.featured_image_url
-        ? <img src={item.featured_image_url} alt={title || ''} loading="lazy" decoding="async" className={`w-full object-cover ${featured ? 'sm:h-auto sm:w-1/2' : 'h-36'}`} />
+        ? <ThumbnailImage src={item.featured_image_url} alt={title || ''} className={featured ? 'sm:h-auto sm:w-1/2' : 'h-36'} />
         : <div className={`w-full bg-gradient-to-br from-teal-400 to-teal-600 ${featured ? 'h-40 sm:h-auto sm:w-1/2' : 'h-36'}`} />}
       <div className="flex flex-1 flex-col p-4">
         {item.category && <span className="mb-1 inline-block w-fit rounded-full bg-teal-50 px-2 py-0.5 text-xs font-medium text-brand">{catLabel(item.category, locale)}</span>}
