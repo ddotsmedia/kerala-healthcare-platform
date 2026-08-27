@@ -4,6 +4,66 @@
 > Claude Code writes here instead of asking questions.
 > Review this file after each session and resolve NEEDS DECISION items before starting the next phase.
 
+## Session: 2026-08-27 Feature: Dark Mode Toggle (System Preference + Manual Override)
+
+### Implementation Complete ✅
+- [FEATURE] Dark mode toggle system implemented end-to-end:
+  - Tailwind config: darkMode: 'class' enabled for dark: utilities
+  - ThemeProvider: Initializes theme from localStorage or system preference (prefers-color-scheme)
+  - ThemeToggle component: Button with sun/moon icons, persists to localStorage
+  - Navbar: Full dark mode styling (header, dropdown, mobile drawer, buttons, links)
+  - Layout: Body dark: classes (background, text color, transitions)
+  - Root layout: ThemeProvider wrapped, suppressHydrationWarning added
+  - Tests: 10+ test cases covering toggle, persistence, system preference, styling, contrast, FOUC
+
+### Technical Details
+- [IMPLEMENTATION] System preference detection on first visit (no localStorage value)
+- [MANUAL OVERRIDE] User toggle saves to localStorage, overrides system preference
+- [SYSTEM SYNC] Listens to system theme changes, only applies if no user preference
+- [NO FLASH] ThemeProvider initializes before render, prevents flash of unstyled theme
+- [RESPONSIVE] Touch target 44px+, icon changes (sun ☀️ / moon 🌙), text labels on desktop
+- [ACCESSIBILITY] aria-label, aria-expanded, skip-link + WCAG AA contrast ratios
+- [TAILWIND] Uses dark: prefix only, no custom CSS needed (leverages Tailwind's native support)
+
+### Components Updated
+- ThemeProvider.js (45 lines) — Initialization + system listener
+- ThemeToggle.js (55 lines) — Toggle button with state management
+- Navbar.js — Full dark mode styling (header, dropdown, drawer, buttons)
+- Layout.js — ThemeProvider wrapper, body dark: classes
+
+### Git History
+- Commit f6ae401: config: enable-tailwind-dark-mode
+- Commit dac8ee2: feat: theme-toggle-component
+- Commit bfe54a5: style: layout-dark-mode-support
+- Commit 99fe9a9: style: navbar-dark-mode-classes
+- Commit ae1106e: test: dark-mode-toggle-suite
+- Tag: feature/dark-mode
+
+### Verified
+- [VERIFIED] Tailwind dark: utilities working globally
+- [VERIFIED] ThemeToggle renders + toggles dark class on html element
+- [VERIFIED] localStorage persistence (darkMode key)
+- [VERIFIED] System preference respected on first visit
+- [VERIFIED] Icon/label updates on toggle (sun → moon)
+- [VERIFIED] No hydration mismatch (mounted checks)
+- [VERIFIED] Navbar dark mode styling applied (header, nav, buttons, drawer)
+- [VERIFIED] Mobile responsive (touch targets, hidden text on small screens)
+- [VERIFIED] All test cases passing (10+ scenarios)
+
+### Design Decisions
+- **Class-based** (not media query based): Users can override system preference
+- **localStorage** (not cookie): Lighter, no GDPR consent needed for preference
+- **System preference fallback**: Respects accessibility settings on first visit
+- **No new packages**: Uses native CSS, localStorage, matchMedia API
+- **Minimal dark colors**: Uses Tailwind's built-in gray scale + opacity adjustments
+
+### Next Steps (Future)
+- Add dark mode support to remaining components (50+ existing components)
+- Custom dark colors for brand elements (if needed)
+- Dark mode detection analytics (track user preferences)
+
+---
+
 ## Session: 2026-08-26 Feature: Appointment Waiting List (Auto-Notify)
 
 ### Implementation Complete ✅
