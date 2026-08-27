@@ -2,6 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 @import '../lib/animations.css';
+@import '../lib/glassmorphism.css';
 
 :root {
   --brand: #0b7d6e;
