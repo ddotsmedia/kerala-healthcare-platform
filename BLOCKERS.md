@@ -4,29 +4,50 @@
 > Claude Code writes here instead of asking questions.
 > Review this file after each session and resolve NEEDS DECISION items before starting the next phase.
 
-## Session: 2026-08-27 P-FIX-MIGRATION-ERROR — Fix Database Migration Conflict
+## Session: 2026-08-27 P-FIX-ALL-MIGRATIONS — Fix Database Migration Conflicts
 
-### ✅ MIGRATION ERROR FIXED - DEPLOYMENT CAN PROCEED
+### ✅ ALL MIGRATION ERRORS FIXED - DEPLOYMENT READY
 
-**Issue**: Migration 0128_reviews.sql failed with "column 'doctor_id' does not exist"
+**Root Cause**: Multiple Phase 6 migrations (0128-0142) trying to CREATE tables that already exist from earlier phases
 
-**Root Cause**: 
-- Migration 0032_reviews.sql created reviews table with generic schema (entity_type, entity_id)
-- Migration 0128_reviews.sql tried to CREATE TABLE IF NOT EXISTS with different schema (doctor_id, hospital_id)
-- Since table already existed, CREATE TABLE IF NOT EXISTS did nothing
-- Later code referenced doctor_id which didn't exist in the schema created by 0032
+**Migration Conflicts Identified & Fixed**:
 
-**Solution Applied**:
-- Changed 0128 from CREATE TABLE to ALTER TABLE
-- Now uses ADD COLUMN IF NOT EXISTS for additive schema changes
-- Maintains backward compatibility with existing data
-- Follows project rule: "Additive migrations only. Never drop tables or columns."
+1. **0128_reviews.sql ← 0032_reviews.sql** (DUPLICATE SCHEMA)
+   - Old (0032): entity_type + entity_id (generic)
+   - New (0128): doctor_id + hospital_id (specific)
+   - Fix: Convert 0128 to ALTER TABLE ADD COLUMN
+   - Status: ✅ FIXED (5666380)
 
-**Fix Details**:
-- File: services/db/migrations/0128_reviews.sql
-- Method: ALTER TABLE to add doctor_id and hospital_id columns
-- Indexes: Added for new columns and created_at
-- Status: ✅ FIXED and COMMITTED (5666380)
+2. **0129_prescriptions.sql ← 0061_prescriptions.sql** (DUPLICATE TABLE)
+   - Old (0061): PHR-focused schema (file_url, medications, etc.)
+   - New (0129): Pharmacy-focused columns (dosage, duration, refills_left)
+   - Fix: Convert 0129 to ALTER TABLE ADD COLUMN
+   - Status: ✅ FIXED (e0f40bf)
+
+3. **0132_lab_reports.sql ← 0062_lab_reports.sql** (DUPLICATE TABLE)
+   - Old (0062): PHR schema (results, file_url, etc.)
+   - New (0132): Enhanced columns (test_name, status, results_json)
+   - Fix: Convert 0132 to ALTER TABLE ADD COLUMN
+   - Status: ✅ FIXED (e0f40bf)
+
+4. **0141_job_portal.sql** (SYNTAX ERROR)
+   - Issue: Invalid "ON CONFLICT DO NOTHING" in CREATE TABLE statements
+   - Fix: Removed invalid clauses (ON CONFLICT only valid in INSERT)
+   - Status: ✅ FIXED (e0f40bf)
+
+**All Other Phase 6 Migrations (0130, 0131, 0133-0140, 0142)**:
+- ✅ Reviewed and verified as new tables (no conflicts)
+- ✅ CREATE TABLE IF NOT EXISTS pattern correct for new tables
+- ✅ No duplicates found in earlier migrations
+
+**Summary**:
+- ✅ 0128, 0129, 0132: Converted to ALTER TABLE pattern
+- ✅ 0141: Fixed SQL syntax error
+- ✅ All 15 Phase 6 migrations now valid
+- ✅ Additive-only rule maintained
+- ✅ Ready for production deployment
+
+**Commits**: 5666380, e0f40bf
 
 ---
 
