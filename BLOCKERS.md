@@ -4,6 +4,36 @@
 > Claude Code writes here instead of asking questions.
 > Review this file after each session and resolve NEEDS DECISION items before starting the next phase.
 
+## Session: 2026-08-27 P-FIX-BANNER-REMOVAL — Emergency Banner Complete Cleanup
+
+### ✅ SOURCE CODE CLEANUP COMPLETE - DEPLOYMENT READY
+
+**Task**: Complete emergency banner removal (deep search for all instances)
+
+**What was done**:
+1. ✅ Searched entire codebase for emergency banner ("112 (Emergency)", "108 (Ambulance)", EmergencyBanner, etc.)
+2. ✅ Verified banner component already removed from source (removed in previous session)
+3. ✅ WhatsAppContact component correctly in place in layout.js (replaces emergency banner)
+4. ✅ Updated stale comment in apps/web/app/[locale]/layout.js
+5. ✅ Fixed language selector in Navbar.js to only show EN/ML (removed TA/HI options)
+6. ✅ Verified no emergency banner rendering code remains in source
+7. ✅ Committed and pushed changes: commit 52b03d7
+
+**Findings**:
+- Emergency banner component successfully removed from all source files
+- WhatsAppContact component properly deployed at top of all pages (replacing banner)
+- Language system correctly simplified to EN/ML only
+- No CSS or middleware injecting the banner
+- All source code clean and ready for production
+
+**NEEDS DECISION**:
+- Production is likely running an older Docker image from before the banner removal
+- The VPS deployment script (`infra/scripts/deploy.sh`) needs to be run manually on the VPS to pull latest code and rebuild containers
+- After deployment runs, the banner should disappear and WhatsAppContact widget should appear
+- **Action needed**: Run `./infra/scripts/deploy.sh` on VPS (194.164.151.202) to update production
+
+---
+
 ## Session: 2026-08-27 Build 6 Professional Registration & Listing Features
 
 ### ✅ ALL 6 FEATURES COMPLETE - HEALTHCARE MARKETPLACE READY
