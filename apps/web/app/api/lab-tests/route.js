@@ -1,24 +1,32 @@
 import { sql } from '@khp/db'
 import { getSession } from '@/lib/auth'
+import { getCached, setCached, CACHE_DURATIONS } from '@/app/api/cache-middleware'
 
 export async function GET(req) {
   try {
-    const tests = await sql`
-      SELECT
-        id,
-        test_name,
-        test_code,
-        description,
-        price,
-        estimated_turnaround_hours,
-        sample_type,
-        fasting_required,
-        created_at
-      FROM lab_tests
-      WHERE active = true AND deleted_at IS NULL
-      ORDER BY test_name ASC
-      LIMIT 100
-    `
+    const cacheKey = 'labtests:active'
+    let tests = await getCached(cacheKey)
+
+    if (!tests) {
+      tests = await sql`
+        SELECT
+          id,
+          test_name,
+          test_code,
+          description,
+          price,
+          estimated_turnaround_hours,
+          sample_type,
+          fasting_required,
+          created_at
+        FROM lab_tests
+        WHERE active = true AND deleted_at IS NULL
+        ORDER BY test_name ASC
+        LIMIT 100
+      `
+
+      await setCached(cacheKey, tests, CACHE_DURATIONS.labTests)
+    }
 
     return Response.json({ data: tests })
   } catch (error) {

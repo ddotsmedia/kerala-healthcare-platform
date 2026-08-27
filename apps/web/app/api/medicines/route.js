@@ -1,32 +1,41 @@
 import { sql } from '@khp/db'
 import { getSession } from '@/lib/auth'
+import { getCached, setCached, CACHE_DURATIONS } from '@/app/api/cache-middleware'
 
 export async function GET(req) {
   const url = new URL(req.url)
   const search = url.searchParams.get('search') || ''
 
   try {
-    const medicines = await sql`
-      SELECT
-        id,
-        name,
-        dosage,
-        form,
-        manufacturer,
-        price,
-        stock_quantity,
-        requires_prescription,
-        side_effects,
-        uses,
-        rating,
-        image_url,
-        created_at
-      FROM medicines
-      WHERE active = true AND deleted_at IS NULL
-      ${search ? sql`AND (name ILIKE ${'%' + search + '%'} OR manufacturer ILIKE ${'%' + search + '%'})` : sql``}
-      ORDER BY rating DESC
-      LIMIT 50
-    `
+    const cacheKey = search ? `medicines:search:${search}` : 'medicines:active'
+
+    let medicines = await getCached(cacheKey)
+
+    if (!medicines) {
+      medicines = await sql`
+        SELECT
+          id,
+          name,
+          dosage,
+          form,
+          manufacturer,
+          price,
+          stock_quantity,
+          requires_prescription,
+          side_effects,
+          uses,
+          rating,
+          image_url,
+          created_at
+        FROM medicines
+        WHERE active = true AND deleted_at IS NULL
+        ${search ? sql`AND (name ILIKE ${'%' + search + '%'} OR manufacturer ILIKE ${'%' + search + '%'})` : sql``}
+        ORDER BY rating DESC
+        LIMIT 50
+      `
+
+      await setCached(cacheKey, medicines, CACHE_DURATIONS.medicines)
+    }
 
     return Response.json({ data: medicines })
   } catch (error) {

@@ -1,23 +1,31 @@
 import { sql } from '@khp/db'
 import { getSession } from '@/lib/auth'
+import { getCached, setCached, CACHE_DURATIONS } from '@/app/api/cache-middleware'
 
 export async function GET(req) {
   try {
-    const challenges = await sql`
-      SELECT
-        id,
-        name,
-        description,
-        emoji,
-        target_days,
-        reward_points,
-        active,
-        created_at
-      FROM health_challenges
-      WHERE active = true AND deleted_at IS NULL
-      ORDER BY created_at DESC
-      LIMIT 20
-    `
+    const cacheKey = 'challenges:active'
+    let challenges = await getCached(cacheKey)
+
+    if (!challenges) {
+      challenges = await sql`
+        SELECT
+          id,
+          name,
+          description,
+          emoji,
+          target_days,
+          reward_points,
+          active,
+          created_at
+        FROM health_challenges
+        WHERE active = true AND deleted_at IS NULL
+        ORDER BY created_at DESC
+        LIMIT 20
+      `
+
+      await setCached(cacheKey, challenges, CACHE_DURATIONS.challenges)
+    }
 
     return Response.json({ data: challenges })
   } catch (error) {
