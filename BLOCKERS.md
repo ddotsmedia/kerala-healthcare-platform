@@ -4,6 +4,32 @@
 > Claude Code writes here instead of asking questions.
 > Review this file after each session and resolve NEEDS DECISION items before starting the next phase.
 
+## Session: 2026-08-27 P-FIX-MIGRATION-ERROR — Fix Database Migration Conflict
+
+### ✅ MIGRATION ERROR FIXED - DEPLOYMENT CAN PROCEED
+
+**Issue**: Migration 0128_reviews.sql failed with "column 'doctor_id' does not exist"
+
+**Root Cause**: 
+- Migration 0032_reviews.sql created reviews table with generic schema (entity_type, entity_id)
+- Migration 0128_reviews.sql tried to CREATE TABLE IF NOT EXISTS with different schema (doctor_id, hospital_id)
+- Since table already existed, CREATE TABLE IF NOT EXISTS did nothing
+- Later code referenced doctor_id which didn't exist in the schema created by 0032
+
+**Solution Applied**:
+- Changed 0128 from CREATE TABLE to ALTER TABLE
+- Now uses ADD COLUMN IF NOT EXISTS for additive schema changes
+- Maintains backward compatibility with existing data
+- Follows project rule: "Additive migrations only. Never drop tables or columns."
+
+**Fix Details**:
+- File: services/db/migrations/0128_reviews.sql
+- Method: ALTER TABLE to add doctor_id and hospital_id columns
+- Indexes: Added for new columns and created_at
+- Status: ✅ FIXED and COMMITTED (5666380)
+
+---
+
 ## Session: 2026-08-27 P-FIX-BANNER-REMOVAL — Emergency Banner Complete Cleanup
 
 ### ✅ SOURCE CODE CLEANUP COMPLETE - DEPLOYMENT READY
