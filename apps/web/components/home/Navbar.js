@@ -134,7 +134,7 @@ export default function Navbar({ locale = 'ml' }) {
             {ml ? 'ലോഗിൻ' : 'Login'}
           </Link>
           <div className="hidden items-center gap-0.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-800 p-0.5 sm:flex" role="group" aria-label="Language">
-            {[['ml', 'ML'], ['en', 'EN'], ['ta', 'TA'], ['hi', 'HI']].map(([lc, lbl]) => (
+            {[['ml', 'ML'], ['en', 'EN']].map(([lc, lbl]) => (
               <Link key={lc} href={`/${lc}${pathname.replace(/^\/(ml|en|ta|hi)(?=\/|$)/, '') || ''}`}
                 aria-label={`Switch to ${lbl}`} aria-current={locale === lc ? 'true' : undefined}
                 className={`rounded-md px-1.5 py-1 text-[11px] font-semibold ${locale === lc ? 'bg-brand text-white' : 'text-gray-500 dark:text-gray-400 hover:text-brand dark:hover:text-brand'}`}>

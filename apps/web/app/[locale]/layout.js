@@ -1,4 +1,4 @@
-// Locale layout — emergency banner, sticky navbar, footer w/ disclaimer.
+// Locale layout — sticky navbar, footer w/ disclaimer, WhatsApp contact widget at top.
 
 import { notFound } from 'next/navigation';
 import { LOCALES } from '@/lib/i18n';
