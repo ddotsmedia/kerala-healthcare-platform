@@ -21,8 +21,7 @@ CREATE TABLE IF NOT EXISTS jobs (
   tags TEXT[],
   created_at TIMESTAMP DEFAULT NOW(),
   updated_at TIMESTAMP DEFAULT NOW(),
-  deleted_at TIMESTAMP,
-  ON CONFLICT DO NOTHING
+  deleted_at TIMESTAMP
 );
 
 CREATE INDEX idx_jobs_recruiter_id ON jobs(recruiter_id);
@@ -42,8 +41,7 @@ CREATE TABLE IF NOT EXISTS job_applications (
   applied_date TIMESTAMP DEFAULT NOW(),
   reviewed_date TIMESTAMP,
   updated_at TIMESTAMP DEFAULT NOW(),
-  deleted_at TIMESTAMP,
-  ON CONFLICT DO NOTHING
+  deleted_at TIMESTAMP
 );
 
 CREATE INDEX idx_job_applications_job_id ON job_applications(job_id);
