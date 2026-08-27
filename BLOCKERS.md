@@ -26,11 +26,31 @@
 - No CSS or middleware injecting the banner
 - All source code clean and ready for production
 
-**NEEDS DECISION**:
-- Production is likely running an older Docker image from before the banner removal
-- The VPS deployment script (`infra/scripts/deploy.sh`) needs to be run manually on the VPS to pull latest code and rebuild containers
-- After deployment runs, the banner should disappear and WhatsAppContact widget should appear
-- **Action needed**: Run `./infra/scripts/deploy.sh` on VPS (194.164.151.202) to update production
+**Verification Results** (2026-08-27 13:25 UTC):
+- ❌ Emergency banner STILL VISIBLE on https://malayalidoctor.com/en
+- ❌ WhatsApp widget NOT DEPLOYED (component not found in HTML)
+- ❌ Language selector STILL showing [ML] [EN] [TA] (not simplified)
+- ✅ HTTP 200 OK, nginx responding, Next.js running
+- ✅ All code committed, pushed to origin/main, ready for deploy
+
+**Root Cause**:
+- VPS running old Docker image (pre-banner removal)
+- Deploy script at ./infra/scripts/deploy.sh not yet executed
+- Production needs manual rebuild with latest code
+
+**CRITICAL - ACTION NEEDED**:
+Run on VPS (194.164.151.202):
+```bash
+ssh root@194.164.151.202 "cd /opt/kerala-healthcare-platform && ./infra/scripts/deploy.sh"
+```
+
+After deploy runs (~5-10 min):
+- Pull latest code from main branch
+- Build fresh Docker images
+- Remove old containers
+- Deploy with WhatsApp widget
+- Banner disappears
+- Language system simplified to EN/ML only
 
 ---
 
