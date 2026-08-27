@@ -2,6 +2,7 @@
 
 import { notFound } from 'next/navigation';
 import { LOCALES } from '@/lib/i18n';
+import { WhatsAppContact } from '@/components/home/WhatsAppContact';
 import Navbar from '@/components/home/Navbar';
 import Footer from '@/components/home/Footer';
 import WhatsAppShare from '@/components/whatsapp/WhatsAppShare';
@@ -19,6 +20,7 @@ export default async function LocaleLayout(props) {
   return (
     <div className="flex min-h-screen flex-col overflow-x-hidden">
       <a href="#main" className="skip-link">{locale === 'ml' ? 'ഉള്ളടക്കത്തിലേക്ക് പോകുക' : 'Skip to content'}</a>
+      <WhatsAppContact />
       <Navbar locale={locale} />
       <main id="main" className="mx-auto w-full max-w-3xl flex-1 px-4 py-6">{children}</main>
       <WhatsAppShare locale={locale} />
