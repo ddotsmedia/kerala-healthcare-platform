@@ -1,64 +1,75 @@
-// Admin dashboard — live stats, 30-day trends, activity feed, quick actions, health.
+'use client'
+import { useEffect, useState } from 'react'
 
-import { redirect } from 'next/navigation';
-import { requireAdminRole } from '@/lib/auth';
-import { liveStats, recentEvents, trends, systemHealth } from '@/lib/dashboard';
-import { LineChart } from '@/components/Charts';
-import LiveDashboard from './LiveDashboard';
+export default function AdminDashboard() {
+  const [stats, setStats] = useState(null)
+  const [loading, setLoading] = useState(true)
 
-export const dynamic = 'force-dynamic';
-export const metadata = { title: 'Dashboard · KHP Admin' };
+  useEffect(() => {
+    fetch('/api/admin/dashboard/stats')
+      .then(r => r.json())
+      .then(setStats)
+      .finally(() => setLoading(false))
+  }, [])
 
-const QUICK = [
-  { href: '/reviews', label: 'Approve reviews', icon: '★' },
-  { href: '/verification', label: 'Verify doctors', icon: '🩺' },
-  { href: '/qa', label: 'Moderate Q&A', icon: '？' },
-  { href: '/analytics/search', label: 'Health trends', icon: '📈' }
-];
-const Dot = ({ ok }) => <span className={`inline-block h-2.5 w-2.5 rounded-full ${ok ? 'bg-emerald-500' : 'bg-red-500'}`} />;
-
-export default async function Dashboard() {
-  if (!(await requireAdminRole())) redirect('/login');
-  const [stats, feed, tr, health] = await Promise.all([liveStats(), recentEvents(10), trends(30), systemHealth()]);
+  if (loading) return <div className="p-6">Loading...</div>
+  if (!stats) return <div className="p-6">Error loading stats</div>
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-xl font-bold text-ink">Operations dashboard</h1>
-        <p className="text-sm text-ink-soft">Real-time platform overview</p>
+    <div className="p-6 space-y-6">
+      <h1 className="text-3xl font-bold">Admin Dashboard</h1>
+
+      <div className="grid grid-cols-4 gap-4">
+        <div className="bg-white dark:bg-gray-800 p-6 rounded-lg border">
+          <p className="text-gray-500 text-sm">Total Users</p>
+          <p className="text-3xl font-bold">{stats.totalUsers}</p>
+          <p className="text-green-500 text-xs mt-1">+{stats.usersThisMonth} this month</p>
+        </div>
+
+        <div className="bg-white dark:bg-gray-800 p-6 rounded-lg border">
+          <p className="text-gray-500 text-sm">Total Appointments</p>
+          <p className="text-3xl font-bold">{stats.totalAppointments}</p>
+          <p className="text-blue-500 text-xs mt-1">{stats.appointmentsThisMonth} this month</p>
+        </div>
+
+        <div className="bg-white dark:bg-gray-800 p-6 rounded-lg border">
+          <p className="text-gray-500 text-sm">Active Doctors</p>
+          <p className="text-3xl font-bold">{stats.activeDoctors}</p>
+          <p className="text-yellow-500 text-xs mt-1">{stats.pendingDoctors} pending</p>
+        </div>
+
+        <div className="bg-white dark:bg-gray-800 p-6 rounded-lg border">
+          <p className="text-gray-500 text-sm">Total Revenue</p>
+          <p className="text-3xl font-bold">₹{(stats.totalRevenue || 0).toLocaleString()}</p>
+          <p className="text-purple-500 text-xs mt-1">₹{(stats.revenueThisMonth || 0).toLocaleString()} this month</p>
+        </div>
       </div>
 
-      <LiveDashboard initialStats={stats} initialFeed={feed} />
-
-      <section className="grid gap-4 lg:grid-cols-3">
-        <div className="rounded-2xl border border-line bg-surface p-4"><LineChart series={tr.views} label="Page views (30d)" stroke="#0d9488" /></div>
-        <div className="rounded-2xl border border-line bg-surface p-4"><LineChart series={tr.appts} label="Appointments (30d)" stroke="#6366f1" /></div>
-        <div className="rounded-2xl border border-line bg-surface p-4"><LineChart series={tr.regs} label="Registrations (30d)" stroke="#f59e0b" /></div>
-      </section>
-
-      <section className="grid gap-4 lg:grid-cols-2">
-        <div className="rounded-2xl border border-line bg-surface p-4">
-          <h3 className="mb-3 text-sm font-bold text-ink">Quick actions</h3>
-          <div className="grid grid-cols-2 gap-2">
-            {QUICK.map((q) => (
-              <a key={q.href} href={q.href} className="flex items-center gap-2 rounded-xl border border-line bg-surface-2 px-3 py-2.5 text-sm font-medium text-ink hover:border-brand hover:text-brand">
-                <span>{q.icon}</span> {q.label}
-              </a>
+      <div className="grid grid-cols-2 gap-4">
+        <div className="bg-white dark:bg-gray-800 p-6 rounded-lg border">
+          <h2 className="text-xl font-bold mb-4">Recent Users</h2>
+          <div className="space-y-2">
+            {stats.recentUsers?.map(u => (
+              <div key={u.id} className="flex justify-between p-2 border-b text-sm">
+                <span>{u.name}</span>
+                <span className="text-xs text-gray-500">{new Date(u.created_at).toLocaleDateString()}</span>
+              </div>
             ))}
           </div>
         </div>
 
-        <div className="rounded-2xl border border-line bg-surface p-4">
-          <h3 className="mb-3 text-sm font-bold text-ink">System health</h3>
-          <ul className="space-y-2 text-sm">
-            <li className="flex items-center justify-between"><span className="text-ink-soft">Database</span><span className="flex items-center gap-2 text-ink"><Dot ok={health.db === 'ok'} /> {health.db}</span></li>
-            <li className="flex items-center justify-between"><span className="text-ink-soft">Redis</span><span className="flex items-center gap-2 text-ink"><Dot ok={health.redis === 'ok'} /> {health.redis}</span></li>
-            <li className="flex items-center justify-between"><span className="text-ink-soft">DB size</span><span className="text-ink">{health.dbSize || '—'} · {health.tables} tables</span></li>
-            <li className="flex items-center justify-between"><span className="text-ink-soft">Backups</span><span className="text-ink">{health.backups}</span></li>
-            <li className="flex items-center justify-between"><span className="text-ink-soft">Disk</span><span className="text-ink">{health.disk}</span></li>
-          </ul>
+        <div className="bg-white dark:bg-gray-800 p-6 rounded-lg border">
+          <h2 className="text-xl font-bold mb-4">Recent Appointments</h2>
+          <div className="space-y-2">
+            {stats.recentAppointments?.map(a => (
+              <div key={a.id} className="flex justify-between p-2 border-b text-sm">
+                <span className="truncate">{a.patientName} → {a.doctorName}</span>
+                <span className="text-xs text-gray-500">{new Date(a.date).toLocaleDateString()}</span>
+              </div>
+            ))}
+          </div>
         </div>
-      </section>
+      </div>
     </div>
-  );
+  )
 }
