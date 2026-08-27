@@ -3,6 +3,7 @@
 import { Noto_Sans_Malayalam } from 'next/font/google';
 import './globals.css';
 import PageViewTracker from '@/components/analytics/PageViewTracker';
+import { ThemeProvider } from './ThemeProvider';
 
 const malayalam = Noto_Sans_Malayalam({
   subsets: ['malayalam', 'latin'],
@@ -42,8 +43,13 @@ export const viewport = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="ml" className={malayalam.variable}>
-      <body className="font-malayalam">{children}<PageViewTracker /></body>
+    <html lang="ml" className={malayalam.variable} suppressHydrationWarning>
+      <body className="font-malayalam bg-white dark:bg-gray-950 text-gray-900 dark:text-gray-100 transition-colors">
+        <ThemeProvider>
+          {children}
+          <PageViewTracker />
+        </ThemeProvider>
+      </body>
     </html>
   );
 }
