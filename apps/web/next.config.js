@@ -15,8 +15,6 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
-  output: 'standalone',
-  outputFileTracingRoot: path.join(__dirname, '../../'),
   transpilePackages: ['@khp/db', '@khp/search', '@khp/ui', '@khp/appointments', '@khp/notifications', '@khp/auth', '@khp/ai-assistant', '@khp/cache', '@khp/ratelimit'],
   serverExternalPackages: ['pg'],
   images: {

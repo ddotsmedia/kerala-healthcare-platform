@@ -45,10 +45,10 @@ export default function DoctorRegister() {
           <div className="mb-8">
             <div className="flex justify-between mb-4">
               {[1, 2, 3, 4].map(s => (
-                <div key={s} className={h-2 flex-1 mx-1 rounded-full \} />
+                <div key={s} className={`h-2 flex-1 mx-1 rounded-full ${step >= s ? 'bg-blue-500' : 'bg-gray-300'}`} />
               ))}
             </div>
-            <p className="text-center text-sm text-gray-600">Step \ of 4</p>
+            <p className="text-center text-sm text-gray-600">Step {step} of 4</p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-6">

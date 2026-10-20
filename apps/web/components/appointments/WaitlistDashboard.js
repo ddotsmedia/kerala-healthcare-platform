@@ -1,6 +1,6 @@
+'use client';
+
 import { useEffect, useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { Loader2, Clock, Trash2, CheckCircle } from 'lucide-react';
 import Link from 'next/link';
 
 export function WaitlistDashboard() {
@@ -67,7 +67,7 @@ export function WaitlistDashboard() {
   if (loading) {
     return (
       <div className="flex justify-center py-8">
-        <Loader2 className="h-6 w-6 animate-spin" />
+        <span className="animate-spin">⏳</span>
       </div>
     );
   }
@@ -83,7 +83,7 @@ export function WaitlistDashboard() {
   if (waitlists.length === 0) {
     return (
       <div className="rounded-lg border border-gray-200 bg-gray-50 p-8 text-center">
-        <Clock className="mx-auto mb-2 h-8 w-8 text-gray-400" />
+        <span className="mx-auto mb-2 text-4xl">🕐</span>
         <p className="text-gray-600">No active waitlists</p>
       </div>
     );
@@ -132,33 +132,30 @@ export function WaitlistDashboard() {
 
           {w.status === 'offered' && (
             <div className="flex gap-2">
-              <Button
+              <button
                 onClick={() => handleAccept(w.id)}
-                className="flex-1 bg-green-600 hover:bg-green-700"
+                className="flex-1 px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded font-medium"
               >
-                <CheckCircle className="mr-1 h-4 w-4" />
+                <span className="mr-1">✓</span>
                 Accept Offer (Book Now)
-              </Button>
-              <Button
+              </button>
+              <button
                 onClick={() => handleRemove(w.id)}
-                variant="outline"
-                className="flex-1"
+                className="flex-1 px-4 py-2 border border-gray-300 rounded font-medium hover:bg-gray-50"
               >
                 Decline
-              </Button>
+              </button>
             </div>
           )}
 
           {w.status === 'waiting' && (
-            <Button
+            <button
               onClick={() => handleRemove(w.id)}
-              variant="outline"
-              size="sm"
-              className="w-full"
+              className="w-full px-4 py-2 border border-gray-300 rounded font-medium hover:bg-gray-50"
             >
-              <Trash2 className="mr-1 h-4 w-4" />
+              <span className="mr-1">🗑️</span>
               Cancel Waitlist
-            </Button>
+            </button>
           )}
         </div>
       ))}

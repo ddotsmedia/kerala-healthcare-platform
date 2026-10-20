@@ -93,8 +93,8 @@ export default function HospitalListing() {
                         </div>
                       </div>
                       <div className="flex flex-col gap-2 justify-center">
-                        <Link href={/hospitals/\} className="px-6 py-3 bg-blue-500 text-white font-bold rounded-lg hover:bg-blue-600 text-center">View Details</Link>
-                        <a href={	el:\} className="px-6 py-3 bg-green-500 text-white font-bold rounded-lg hover:bg-green-600 text-center">Call Now</a>
+                        <Link href={`/hospitals/${hospital.id}`} className="px-6 py-3 bg-blue-500 text-white font-bold rounded-lg hover:bg-blue-600 text-center">View Details</Link>
+                        <a href="tel:+919155665588" className="px-6 py-3 bg-green-500 text-white font-bold rounded-lg hover:bg-green-600 text-center">Call Now</a>
                       </div>
                     </div>
                   </div>

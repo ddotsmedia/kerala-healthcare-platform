@@ -1,10 +1,10 @@
 import { sql } from '@khp/db';
-import { cache } from '@khp/cache';
+import { get, set, TTL } from '@khp/cache';
 
 export async function getRecommendations(userId) {
   const key = `recs:${userId}`;
-  const cached = await cache.get(key);
-  if (cached) return JSON.parse(cached);
+  const cached = get(key);
+  if (cached) return cached;
 
   const recent = await sql`
     SELECT DISTINCT doctor_id
@@ -31,6 +31,6 @@ export async function getRecommendations(userId) {
     LIMIT 5
   `;
 
-  await cache.setex(key, 3600, JSON.stringify(recs));
+  set(key, recs, TTL.profile || 3600);
   return recs;
 }
