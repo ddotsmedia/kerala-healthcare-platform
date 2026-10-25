@@ -72,7 +72,13 @@ const DICT = {
     assistant: 'ആരോഗ്യ സഹായി', ask_health: 'ആരോഗ്യ ചോദ്യം ചോദിക്കുക…', send: 'അയയ്ക്കുക',
     ai_disclaimer: 'ഇത് ആരോഗ്യ വിവരമാണ്, വൈദ്യ ഉപദേശമല്ല.',
     emergency_banner: 'അടിയന്തരാവസ്ഥ? 112 അല്ലെങ്കിൽ 108 വിളിക്കുക', sources: 'ഉറവിടങ്ങൾ',
-    smart_search: 'സ്മാർട്ട് തിരയൽ'
+    smart_search: 'സ്മാർട്ട് തിരയൽ',
+    monitoring: 'നിരീക്ഷണം', platform_health: 'പ്ലാറ്റ്‌ഫോം ആരോഗ്യം', system_metrics: 'സിസ്റ്റം മെട്രിക്സ്',
+    database_metrics: 'ഡാറ്റാബേസ് മെട്രിക്സ്', job_status: 'ജോബ് സ്ഥിതി', status_healthy: 'ആരോഗ്യകരം',
+    status_degraded: 'വിനാശാത്മകം', uptime: 'അപ്‌ടൈം', memory_usage: 'മെമോറി ഉപയോഗം',
+    cpu_load: 'സിപിയു ലോഡ്', db_ping: 'ഡിബി പിംഗ്', active_connections: 'സജീവ കണക്ഷനുകൾ',
+    idle_connections: 'വിശ്രാമ കണക്ഷനുകൾ', queries_running: 'ക്വെറികൾ റൂണിംഗ്',
+    table_sizes: 'പട്ടിക വലുപ്പങ്ങൾ', pending_jobs: 'കാത്തിരിപ്പിലുള്ള ജോബുകൾ'
   },
   en: {
     site: 'Kerala Health Portal',
@@ -142,7 +148,13 @@ const DICT = {
     assistant: 'Health assistant', ask_health: 'Ask a health question…', send: 'Send',
     ai_disclaimer: 'This is health information, not medical advice.',
     emergency_banner: 'Emergency? Call 112 or 108', sources: 'Sources',
-    smart_search: 'Smart search'
+    smart_search: 'Smart search',
+    monitoring: 'Monitoring', platform_health: 'Platform Health', system_metrics: 'System Metrics',
+    database_metrics: 'Database Metrics', job_status: 'Job Status', status_healthy: 'Healthy',
+    status_degraded: 'Degraded', uptime: 'Uptime', memory_usage: 'Memory Usage',
+    cpu_load: 'CPU Load', db_ping: 'DB Ping', active_connections: 'Active Connections',
+    idle_connections: 'Idle Connections', queries_running: 'Queries Running',
+    table_sizes: 'Table Sizes', pending_jobs: 'Pending Jobs'
   },
   // Tamil + Hindi: core keys (navigation, common UI, errors). Untranslated keys
   // fall back to English via t(). Human review pending (see BLOCKERS.md).
