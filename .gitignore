@@ -59,3 +59,4 @@ docker-compose.override.yml
 
 # Stray text dumps — never commit (may hold secrets)
 *.txt
+BLOCKERS.md
