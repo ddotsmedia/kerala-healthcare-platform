@@ -34,18 +34,18 @@ jobs:
       - name: Build Web Image
         run: |
           docker build \
-            -f apps/web/Dockerfile \
-            -t malayalimed-web:${{ github.sha }} \
-            -t malayalimed-web:latest \
+            -f infra/docker/Dockerfile.web \
+            -t khp-web:${{ github.sha }} \
+            -t khp-web:latest \
             .
 
       - name: Push to Registry
         run: |
           echo "${{ secrets.GHCR_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
-          docker tag malayalimed-web:${{ github.sha }} ghcr.io/${{ github.repository }}/malayalimed-web:${{ github.sha }}
-          docker tag malayalimed-web:latest ghcr.io/${{ github.repository }}/malayalimed-web:latest
-          docker push ghcr.io/${{ github.repository }}/malayalimed-web:${{ github.sha }}
-          docker push ghcr.io/${{ github.repository }}/malayalimed-web:latest
+          docker tag khp-web:${{ github.sha }} ghcr.io/${{ github.repository }}/khp-web:${{ github.sha }}
+          docker tag khp-web:latest ghcr.io/${{ github.repository }}/khp-web:latest
+          docker push ghcr.io/${{ github.repository }}/khp-web:${{ github.sha }}
+          docker push ghcr.io/${{ github.repository }}/khp-web:latest
 
       - name: Save Current Image Tag
         uses: appleboy/ssh-action@v1.0.3
@@ -55,9 +55,9 @@ jobs:
           key: ${{ secrets.VPS_SSH_KEY }}
           script: |
             cd /opt/kerala-healthcare-platform
-            CURRENT_IMAGE=$(docker compose -f infra/docker/docker-compose.prod.yml images mm-web | tail -1 | awk '{print $3}')
-            echo "$CURRENT_IMAGE" > /tmp/previous_image_tag
-            cat /tmp/previous_image_tag
+            CURRENT_IMAGE=$(docker inspect -f '{{.Config.Image}}' $(docker compose -f infra/docker/docker-compose.prod.yml ps -q khp-web))
+            echo "$CURRENT_IMAGE" > /opt/kerala-healthcare-platform/.last-khp-web-image
+            cat /opt/kerala-healthcare-platform/.last-khp-web-image
 
       - name: Deploy Web Service
         uses: appleboy/ssh-action@v1.0.3
@@ -65,11 +65,15 @@ jobs:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.VPS_SSH_KEY }}
+          env:
+            KHP_WEB_IMAGE: ghcr.io/${{ github.repository }}/khp-web:${{ github.sha }}
+            GHCR_TOKEN: ${{ secrets.GHCR_TOKEN }}
           script: |
             cd /opt/kerala-healthcare-platform
+            echo "$GHCR_TOKEN" | docker login ghcr.io -u $GITHUB_ACTOR --password-stdin
             git pull origin main
-            docker compose -f infra/docker/docker-compose.prod.yml pull mm-web
-            docker compose -f infra/docker/docker-compose.prod.yml up -d --no-deps mm-web
+            docker compose -f infra/docker/docker-compose.prod.yml pull khp-web
+            docker compose -f infra/docker/docker-compose.prod.yml up -d --no-deps khp-web
 
       - name: Run Migrations
         uses: appleboy/ssh-action@v1.0.3
@@ -79,27 +83,27 @@ jobs:
           key: ${{ secrets.VPS_SSH_KEY }}
           script: |
             cd /opt/kerala-healthcare-platform
-            docker compose -f infra/docker/docker-compose.prod.yml exec -T mm-web pnpm db:migrate
+            docker compose -f infra/docker/docker-compose.prod.yml exec -T khp-web pnpm db:migrate
 
       - name: Health Check
         id: health_check
-        run: |
-          for attempt in {1..5}; do
-            response=$(curl -s -w "\n%{http_code}" https://malayalimed.com/en)
-            status=$(echo "$response" | tail -n1)
-            body=$(echo "$response" | head -n-1)
-
-            if [ "$status" = "200" ] && echo "$body" | grep -q "MalayaliMed"; then
-              echo "✓ Health check passed"
-              exit 0
-            fi
-
-            echo "Attempt $attempt/5: Status $status"
-            sleep 15
-          done
-
-          echo "✗ Health check failed"
-          exit 1
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          script: |
+            cd /opt/kerala-healthcare-platform
+            for attempt in {1..5}; do
+              if docker compose -f infra/docker/docker-compose.prod.yml exec -T khp-web curl -s http://localhost:3000/api/health | grep -q '"status":"ok"'; then
+                echo "✓ Health check passed"
+                exit 0
+              fi
+              echo "Attempt $attempt/5: Health check failed"
+              sleep 10
+            done
+            echo "✗ Health check failed after 5 attempts"
+            exit 1
 
       - name: Rollback on Failure
         if: failure() && steps.health_check.outcome == 'failure'
@@ -108,19 +112,18 @@ jobs:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.VPS_SSH_KEY }}
+          env:
+            KHP_WEB_IMAGE: ''
           script: |
             cd /opt/kerala-healthcare-platform
-            PREVIOUS_IMAGE=$(cat /tmp/previous_image_tag)
+            PREVIOUS_IMAGE=$(cat /opt/kerala-healthcare-platform/.last-khp-web-image)
             echo "Rolling back to $PREVIOUS_IMAGE"
-            docker compose -f infra/docker/docker-compose.prod.yml pull
-            docker tag "$PREVIOUS_IMAGE" mm-web:rollback
-            docker compose -f infra/docker/docker-compose.prod.yml up -d --no-deps mm-web
+            export KHP_WEB_IMAGE="$PREVIOUS_IMAGE"
+            docker compose -f infra/docker/docker-compose.prod.yml up -d --no-deps khp-web
 
             # Re-verify
             sleep 10
-            response=$(curl -s -w "\n%{http_code}" https://malayalimed.com/en)
-            status=$(echo "$response" | tail -n1)
-            if [ "$status" = "200" ]; then
+            if docker compose -f infra/docker/docker-compose.prod.yml exec -T khp-web curl -s http://localhost:3000/api/health | grep -q '"status":"ok"'; then
               echo "✓ Rollback successful"
               exit 0
             else
