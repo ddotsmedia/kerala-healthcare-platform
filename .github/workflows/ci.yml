@@ -2,7 +2,7 @@ name: CI
 
 on:
   push:
-    branches: [main]
+    branches: [main, 'feature/**']
   pull_request:
     branches: [main]
 
@@ -43,6 +43,9 @@ jobs:
       - name: Lint
         run: pnpm lint
         continue-on-error: true
+
+      - name: Build Web App
+        run: pnpm --filter @khp/web build
 
   test:
     name: Test

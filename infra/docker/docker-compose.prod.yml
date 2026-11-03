@@ -45,9 +45,7 @@ services:
       retries: 5
 
   khp-web:
-    build:
-      context: ../..
-      dockerfile: infra/docker/Dockerfile.web
+    image: ${KHP_WEB_IMAGE:-ghcr.io/ddotsmedia/kerala-healthcare-platform/khp-web:latest}
     restart: unless-stopped
     env_file: ../../.env.production
     ports:
